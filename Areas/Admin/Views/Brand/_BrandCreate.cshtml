@@ -1,0 +1,35 @@
+﻿@model WebsiteBanHang.Areas.Admin.Models.BrandModel
+<div class="modal-header">
+    <h1 class="modal-title fs-5" id="exampleModalLabel">Thêm Hãng sản phẩm</h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+<form method="post" asp-area="Admin" asp-controller="Brand" asp-action="Create">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+  <div class="mb-3">
+        <label asp-for="maHang" class="control-label"></label>
+        <input asp-for="maHang" class="form-control" />
+        <span asp-validation-for="maHang" class="text-danger"></span>
+    </div>
+  <div class="mb-3">
+        <label asp-for="tenHang" class="control-label"></label>
+        <input asp-for="tenHang" class="form-control" />
+        <span asp-validation-for="tenHang" class="text-danger"></span>
+    </div>
+  <div class="mb-3">
+        <label asp-for="xuatXu" class="control-label"></label>
+        <input asp-for="xuatXu" class="form-control" />
+        <span asp-validation-for="xuatXu" class="text-danger"></span>
+    </div>
+  <div class="mb-3">
+        <label asp-for="ngaySanXuat" class="control-label"></label>
+        <input asp-for="ngaySanXuat" class="form-control" />
+        <span asp-validation-for="ngaySanXuat" class="text-danger"></span>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+        <button type="submit" class="btn btn-primary">Lưu Thông Tin</button>
+    </div>
+</form>
+
+</div>

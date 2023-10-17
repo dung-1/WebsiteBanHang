@@ -1,0 +1,56 @@
+﻿    @model WebsiteBanHang.Areas.Admin.Models.ProductModel
+
+<div class="modal-header">
+    <h1 class="modal-title fs-5" id="exampleModalLabel">Thêm Hãng sản phẩm</h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <form method="post" asp-area="Admin" asp-controller="Product" asp-action="Create">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="mb-3">
+            <label asp-for="maSanPham" class="control-label"> Mã Sản Phẩm</label>
+            <input asp-for="maSanPham" class="form-control" />
+            <span asp-validation-for="maSanPham" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="tenSanPham" class="control-label">Tên Sản Phẩm</label>
+            <input asp-for="tenSanPham" class="form-control" />
+            <span asp-validation-for="tenSanPham" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Loai" class="control-label">Loại Sản Phẩm</label>
+            <select asp-for="Loai.Id" asp-items="ViewBag.LoaiSanPhamList" class="form-control">
+                <option value="">Chọn loại sản phẩm</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Hang" class="control-label">Hãng Sản Phẩm</label>
+            <select asp-for="Hang.Id" asp-items="ViewBag.HangSanPhamList" class="form-control">
+                <option value="">Chọn hãng sản phẩm</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="gia" class="control-label">Gía Sản Phẩm</label>
+            <input asp-for="gia" class="form-control" />
+            <span asp-validation-for="gia" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="image" class="control-label">Ảnh Sản Phẩm</label>
+            <input type="f" asp-for="image" class="form-control" />
+            <span asp-validation-for="image" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="thongTinSanPham" class="control-label">Thông Tin Sản Phẩm</label>
+            <input asp-for="thongTinSanPham" class="form-control" />
+            <span asp-validation-for="thongTinSanPham" class="text-danger"></span>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="submit" class="btn btn-primary">Lưu Thông Tin</button>
+        </div>
+    </form>
+</div>
+
+

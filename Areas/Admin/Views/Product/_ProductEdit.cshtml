@@ -1,0 +1,47 @@
+﻿@model WebsiteBanHang.Areas.Admin.Models.ProductModel
+
+<h4>ProductModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="_ProductEdit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        
+                <input asp-for="Id" type="hidden" class="form-control" />
+             
+            <div class="form-group">
+                <label asp-for="tenSanPham" class="control-label"></label>
+                <input asp-for="tenSanPham" class="form-control" />
+                <span asp-validation-for="tenSanPham" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="maSanPham" class="control-label"></label>
+                <input asp-for="maSanPham" class="form-control" />
+                <span asp-validation-for="maSanPham" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="gia" class="control-label"></label>
+                <input asp-for="gia" class="form-control" />
+                <span asp-validation-for="gia" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="image" class="control-label"></label>
+                <input asp-for="image" class="form-control" />
+                <span asp-validation-for="image" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="thongTinSanPham" class="control-label"></label>
+                <input asp-for="thongTinSanPham" class="form-control" />
+                <span asp-validation-for="thongTinSanPham" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
