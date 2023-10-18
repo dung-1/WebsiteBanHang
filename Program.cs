@@ -1,13 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebsiteBanHang.Areas.Admin.Data;
 using static WebsiteBanHang.Areas.Admin.Data.ApplicationDbContext;
+using X.PagedList.Mvc.Core;
 
 namespace WebsiteBanHang
 {
     public class Program
     {
+        public void ConfigureServices(IServiceCollection services)
+        {
+            // Các dịch vụ khác
+
+            services.AddMvc();
+        }
         public static void Main(string[] args)
         {
+
             var builder = WebApplication.CreateBuilder(args);
             // Add services to the container.
             builder.Services.AddControllersWithViews();

@@ -1,6 +1,6 @@
 ﻿// Modal create Brand
 $(document).on("click", ".category_create", function (e) {
-    e.preventDefault()
+    
     $.ajax({
         url: "/Admin/Category/Create",// Đường dẫn đến API của bạn
         type: "GET",
@@ -13,7 +13,7 @@ $(document).on("click", ".category_create", function (e) {
 });
 // Modal Edit Category
 $(document).on("click", ".edit-category", function (e) {
-    e.preventDefault()
+    
     let id = $(this).data("id")
     $.ajax({
         url: "/Admin/Category/Edit?id=" + id,// Đường dẫn đến API của bạn
@@ -27,7 +27,7 @@ $(document).on("click", ".edit-category", function (e) {
 });
 // Modal create Brand
 $(document).on("click", ".create-brand", function (e) {
-    e.preventDefault()
+    
     $.ajax({
         url: "/Admin/Brand/Create" ,// Đường dẫn đến API của bạn
         type: "GET",
@@ -40,7 +40,7 @@ $(document).on("click", ".create-brand", function (e) {
 });
 // Modal Edit Category
 $(document).on("click", ".edit-brand", function (e) {
-    e.preventDefault()
+    
     let id = $(this).data("id")
     $.ajax({
         url: "/Admin/Brand/Edit?id=" + id,// Đường dẫn đến API của bạn
@@ -54,7 +54,7 @@ $(document).on("click", ".edit-brand", function (e) {
 });
 // Modal create Brand
 $(document).on("click", ".create-produt", function (e) {
-    e.preventDefault()
+    
     $.ajax({
         url: "/Admin/Product/Create",// Đường dẫn đến API của bạn
         type: "GET",
@@ -67,7 +67,7 @@ $(document).on("click", ".create-produt", function (e) {
 });
 // Modal Edit Category
 $(document).on("click", ".edit-produt", function (e) {
-    e.preventDefault()
+    
     let id = $(this).data("id")
     $.ajax({
         url: "/Admin/Product/Edit?id=" + id,// Đường dẫn đến API của bạn

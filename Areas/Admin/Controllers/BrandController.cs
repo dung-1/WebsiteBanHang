@@ -15,9 +15,12 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            var categories = _context.Brand.ToList();
-            return View(categories);
+            // Sắp xếp lại danh sách theo ID giảm dần (mới nhất lên đầu)
+            var sortedCategories = _context.Brand.OrderByDescending(c => c.Id).ToList();
+
+            return View(sortedCategories);
         }
+
         public IActionResult Create()
         {
             return PartialView("_BrandCreate");
@@ -30,10 +33,16 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             {
                 _context.Brand.Add(empobj);
                 _context.SaveChanges();
-                return RedirectToAction("Index");
+
+                // Sắp xếp lại danh sách theo ID giảm dần (mới nhất lên đầu)
+                var sortedCategories = _context.Brand.OrderByDescending(c => c.Id).ToList();
+
+                return View("Index", sortedCategories); // Trả về view "Index" với danh sách đã sắp xếp
             }
+
             return View(empobj);
         }
+
 
         [HttpGet]
         public IActionResult Edit(int id)

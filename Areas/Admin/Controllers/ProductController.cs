@@ -24,9 +24,11 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         public IActionResult Index()
         {
             var products = _context.Product
-            .Include(p => p.Brand) // Eager load Brand
-            .Include(p => p.Category) // Eager load Category
-            .ToList();
+                .Include(p => p.Brand) // Eager load Brand
+                .Include(p => p.Category) // Eager load Category
+                .OrderByDescending(p => p.Id) // Sắp xếp theo ID giảm dần
+                .ToList();
+
             var data = products.Select(e => new ProductViewDTO
             {
                 Id = e.Id,
@@ -37,10 +39,11 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 MaSanPham = e.MaSanPham,
                 TenSanPham = e.TenSanPham,
                 ThongTinSanPham = e.ThongTinSanPham
-
             });
+
             return View(data);
         }
+
 
         public IActionResult Create()
         {
@@ -86,7 +89,9 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                     // Thêm sản phẩm vào cơ sở dữ liệu
                     _context.Product.Add(product);
                     _context.SaveChanges();
-                    return RedirectToAction("Index");
+                    var sortedCategories = _context.Product.OrderByDescending(c => c.Id).ToList();
+
+                    return View("Index", sortedCategories);
                 }
             }
 
@@ -94,9 +99,6 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             // Nếu ModelState không hợp lệ hoặc không tìm thấy hãng sản phẩm hoặc loại sản phẩm, quay lại view Create với model đã nhập
             return View(product);
         }
-
-
-
 
         [HttpGet]
         public IActionResult Edit(int id)

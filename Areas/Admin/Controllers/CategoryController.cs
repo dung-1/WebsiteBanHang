@@ -1,6 +1,7 @@
-﻿    using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WebsiteBanHang.Areas.Admin.Data;
 using WebsiteBanHang.Areas.Admin.Models;
+using X.PagedList;
 using static WebsiteBanHang.Areas.Admin.Data.ApplicationDbContext;
 
 namespace WebsiteBanHang.Areas.Admin.Controllers
@@ -13,11 +14,18 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         {
             _context = context;
         }
-        public IActionResult Index()
+        public IActionResult Index(int? page)
         {
-            var categories = _context.Category.ToList();
-            return View(categories);
+            var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
+            int pageSize = 1; // Số mục trên mỗi trang
+
+            var sortedCategories = _context.Category.OrderByDescending(c => c.Id).ToList();
+
+            IPagedList<CategoryModel> pagedCategories = sortedCategories.ToPagedList(pageNumber, pageSize);
+
+            return View(pagedCategories);
         }
+
         public IActionResult Create()
         {
             return PartialView("_CategoryCreate");
@@ -30,10 +38,16 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             {
                 _context.Category.Add(empobj);
                 _context.SaveChanges();
-                return RedirectToAction("Index");
+
+                // Sắp xếp lại danh sách theo ID giảm dần (mới nhất lên đầu)
+                var sortedCategories = _context.Category.OrderByDescending(c => c.Id).ToList();
+
+                return View("Index", sortedCategories); // Trả về view "Index" với danh sách đã sắp xếp
             }
+
             return View(empobj);
         }
+
 
         [HttpGet]
         public IActionResult Edit(int id)
@@ -60,7 +74,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
             return View(empobj);
         }
-       
+
         public IActionResult Delete(int? id)
         {
             var deleterecord = _context.Category.Find(id);
