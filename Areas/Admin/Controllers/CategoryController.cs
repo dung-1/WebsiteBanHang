@@ -1,6 +1,7 @@
 ﻿    using Microsoft.AspNetCore.Mvc;
+using WebsiteBanHang.Areas.Admin.Data;
 using WebsiteBanHang.Areas.Admin.Models;
-using static WebsiteBanHang.Data.ApplicaitonDbContext;
+using static WebsiteBanHang.Areas.Admin.Data.ApplicationDbContext;
 
 namespace WebsiteBanHang.Areas.Admin.Controllers
 {
@@ -14,12 +15,12 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            var categories = _context.LoaiSanPham.ToList();
+            var categories = _context.Category.ToList();
             return View(categories);
         }
         public IActionResult Create()
         {
-            return View();
+            return PartialView("_CategoryCreate");
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -27,7 +28,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.LoaiSanPham.Add(empobj);
+                _context.Category.Add(empobj);
                 _context.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -37,7 +38,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var category = _context.LoaiSanPham.Find(id);
+            var category = _context.Category.Find(id);
             if (category == null)
             {
                 return NotFound();
@@ -51,7 +52,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.LoaiSanPham.Update(empobj);
+                _context.Category.Update(empobj);
                 _context.SaveChanges();
                 return RedirectToAction("Index");
 
@@ -62,12 +63,12 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
        
         public IActionResult Delete(int? id)
         {
-            var deleterecord = _context.LoaiSanPham.Find(id);
+            var deleterecord = _context.Category.Find(id);
             if (deleterecord == null)
             {
                 return NotFound();
             }
-            _context.LoaiSanPham.Remove(deleterecord);
+            _context.Category.Remove(deleterecord);
             _context.SaveChanges();
             return RedirectToAction("Index");
         }

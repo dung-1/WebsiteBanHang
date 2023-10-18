@@ -11,46 +11,27 @@
         </div>
         <div class="row">
             <div class="col-lg-4 grid-margin ">
-                <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <button type="button" class="btn btn-info category_create" id="generateMaLoai">
                     <i class="fa-solid fa-plus"></i> Thêm loại sản phẩm
                 </button>
 
-                <div class="modal fade"  id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal fade" id="Category_Create" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalLabel">Thêm loại sản phẩm</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form method="post" asp-area="Admin" asp-controller="Category" asp-action="Create">
-                                    <div class="mb-3">
-                                        <label for="maLoai" class="col-form-label">Mã loại sản phẩm:</label>
-                                        <input type="text" class="form-control" id="maLoai" name="maLoai">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="tenLoai" class="col-form-label">Tên loại sản phẩm:</label>
-                                        <input type="text" class="form-control" id="tenLoai" name="tenLoai">
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                        <button type="submit" class="btn btn-primary">Lưu Thông Tin</button>
-                                    </div>
-                                </form>
-                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
 
+                <div class="modal fade" id="edit-category-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
                         </div>
                     </div>
                 </div>
             </div>
 
-              <div class="modal fade" id="edit-category-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                 <div class="modal-dialog">
-                     <div class="modal-content">
-                         
-                     </div>
-                 </div>
-             </div>
+             
 
             <div class="col-lg-12 grid-margin stretch-card">
 
@@ -70,10 +51,10 @@
                                 {
                                     <tr>
                                         <td width="20%">
-                                            @item.maLoai
+                                            @item.MaLoai
                                         </td>
                                         <td width="20%">
-                                            @item.tenLoai
+                                            @item.TenLoai
                                         </td>
                                         <td width="20%">
                                             <a href="#" class="btn btn-warning edit-category" data-id="@item.Id"><i class="bi bi-pencil-square"></i><i class="fa-solid fa-pen-to-square"></i> Chỉnh Sửa</a>

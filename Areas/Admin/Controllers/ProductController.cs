@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using WebsiteBanHang.Areas.Admin.AdminDTO;
+using WebsiteBanHang.Areas.Admin.Data;
 using WebsiteBanHang.Areas.Admin.Models;
-using static WebsiteBanHang.Data.ApplicaitonDbContext;
+using static WebsiteBanHang.Areas.Admin.Data.ApplicationDbContext;
 
 namespace WebsiteBanHang.Areas.Admin.Controllers
 {
@@ -13,20 +16,37 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         {
             _context = context;
         }
+
         public IActionResult Index()
         {
-            var categories = _context.SanPham.ToList();
-            return View(categories);
+            var products = _context.Product
+            .Include(p => p.Brand) // Eager load Brand
+            .Include(p => p.Category) // Eager load Category
+            .ToList();
+            var data = products.Select(e => new ProductViewDTO
+            {
+                Id = e.Id,
+                Gia = e.gia,
+                HangTen = e.Brand.TenHang,
+                LoaiTen = e.Category.TenLoai,
+                Image = e.Image,
+                MaSanPham = e.MaSanPham,
+                TenSanPham = e.TenSanPham,
+                ThongTinSanPham = e.ThongTinSanPham
+
+            });
+            return View(data);
         }
+
         public IActionResult Create()
         {
             // Truy vấn danh sách loại sản phẩm và hãng sản phẩm từ cơ sở dữ liệu
-            var loaiSanPhamList = _context.LoaiSanPham.ToList();
-            var hangSanPhamList = _context.HangSanPham.ToList();
+            var loaiProductList = _context.Category.ToList();
+            var hangProductList = _context.Brand.ToList();
 
             // Tạo SelectList để sử dụng trong dropdown
-            ViewBag.LoaiSanPhamList = new SelectList(loaiSanPhamList, "Id", "tenLoai");
-            ViewBag.HangSanPhamList = new SelectList(hangSanPhamList, "Id", "tenHang");
+            ViewBag.LoaiProductList = new SelectList(loaiProductList, "Id", "TenLoai");
+            ViewBag.HangProductList = new SelectList(hangProductList, "Id", "TenHang");
 
             return PartialView("_ProductCreate");
         }
@@ -37,7 +57,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.SanPham.Add(empobj);
+                _context.Product.Add(empobj);
                 _context.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -47,7 +67,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var category = _context.SanPham.Find(id);
+            var category = _context.Product.Find(id);
             if (category == null)
             {
                 return NotFound();
@@ -61,10 +81,9 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.SanPham.Update(empobj);
+                _context.Product.Update(empobj);
                 _context.SaveChanges();
                 return RedirectToAction("Index");
-
             }
 
             return View(empobj);
@@ -72,12 +91,12 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
         public IActionResult Delete(int? id)
         {
-            var deleterecord = _context.SanPham.Find(id);
+            var deleterecord = _context.Product.Find(id);
             if (deleterecord == null)
             {
                 return NotFound();
             }
-            _context.SanPham.Remove(deleterecord);
+            _context.Product.Remove(deleterecord);
             _context.SaveChanges();
             return RedirectToAction("Index");
         }

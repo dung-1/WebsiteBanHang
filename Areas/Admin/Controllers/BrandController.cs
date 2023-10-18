@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebsiteBanHang.Areas.Admin.Data;
 using WebsiteBanHang.Areas.Admin.Models;
-using static WebsiteBanHang.Data.ApplicaitonDbContext;
+using static WebsiteBanHang.Areas.Admin.Data.ApplicationDbContext;
 
 namespace WebsiteBanHang.Areas.Admin.Controllers
 {
@@ -14,7 +15,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            var categories = _context.HangSanPham.ToList();
+            var categories = _context.Brand.ToList();
             return View(categories);
         }
         public IActionResult Create()
@@ -27,7 +28,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.HangSanPham.Add(empobj);
+                _context.Brand.Add(empobj);
                 _context.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -37,7 +38,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var category = _context.HangSanPham.Find(id);
+            var category = _context.Brand.Find(id);
             if (category == null)
             {
                 return NotFound();
@@ -51,7 +52,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.HangSanPham.Update(empobj);
+                _context.Brand.Update(empobj);
                 _context.SaveChanges();
                 return RedirectToAction("Index");
 
@@ -62,12 +63,12 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
         public IActionResult Delete(int? id)
         {
-            var deleterecord = _context.HangSanPham.Find(id);
+            var deleterecord = _context.Brand.Find(id);
             if (deleterecord == null)
             {
                 return NotFound();
             }
-            _context.HangSanPham.Remove(deleterecord);
+            _context.Brand.Remove(deleterecord);
             _context.SaveChanges();
             return RedirectToAction("Index");
         }

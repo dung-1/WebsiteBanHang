@@ -9,10 +9,12 @@ namespace WebsiteBanHang.Areas.Admin.Models
 
         [Required]
         [StringLength(10)]
-        public string maLoai { get; set; }
+        public string MaLoai { get; set; }
 
         [Required]
         [StringLength(15)]
-        public string tenLoai { get; set; }
+        public string TenLoai { get; set; }
+        public ICollection<ProductModel> Prodcut { get; } = new List<ProductModel>(); // Collection navigation containing dependents
+
     }
 }

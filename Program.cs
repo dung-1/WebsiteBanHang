@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using static WebsiteBanHang.Data.ApplicaitonDbContext;
+using WebsiteBanHang.Areas.Admin.Data;
+using static WebsiteBanHang.Areas.Admin.Data.ApplicationDbContext;
 
 namespace WebsiteBanHang
 {

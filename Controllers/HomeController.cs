@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using WebsiteBanHang.Areas.Admin.Data;
 using WebsiteBanHang.Areas.Admin.Models;
 using WebsiteBanHang.Models;
-using static WebsiteBanHang.Data.ApplicaitonDbContext;
+using static WebsiteBanHang.Areas.Admin.Data.ApplicationDbContext;
 
 namespace WebsiteBanHang.Controllers
 {
@@ -19,7 +20,7 @@ namespace WebsiteBanHang.Controllers
 
         public IActionResult Index()
         {
-            IEnumerable<ProductModel> objCatlist = _context.SanPham;
+            IEnumerable<ProductModel> objCatlist = _context.Product;
             return View(objCatlist);
         }
 

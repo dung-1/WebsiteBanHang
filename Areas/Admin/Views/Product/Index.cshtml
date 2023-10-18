@@ -2,7 +2,7 @@
     ViewData["Title"] = "Product";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
-@model IEnumerable<WebsiteBanHang.Areas.Admin.Models.ProductModel>
+@model IEnumerable<WebsiteBanHang.Areas.Admin.AdminDTO.ProductViewDTO>
 
 <div class="main-panel">
     <div class="content-wrapper">
@@ -36,9 +36,9 @@
                             <thead>
                                 <tr>
                                     <th> Mã Sản Phẩm </th>
+                                    <th> Tên  </th>
                                     <th> Hãng </th>
                                     <th> Loại  </th>
-                                    <th> Tên  </th>
                                     <th> Gía </th>
                                     <th> Thông Tin </th>
                                     <th> Ảnh </th>
@@ -51,35 +51,35 @@
                                 {
                                     <tr>
                                         <td width="20%">
-                                            @item.maSanPham
+                                            @item.MaSanPham
                                         </td>
                                         <td width="20%">
+                                            @item.TenSanPham
                                         </td>
                                         <td width="20%">
+                                            @item.HangTen
                                         </td>
                                         <td width="20%">
-                                            @item.tenSanPham
+                                            @item.LoaiTen
                                         </td>
                                         <td width="20%">
-                                            @item.gia
+                                            @item.Gia
                                         </td>
                                         <td width="20%">
-                                            @item.thongTinSanPham
+                                            @item.ThongTinSanPham
                                         </td>
                                         <td width="20%">
-                                            @item.image
+                                            @item.Image
                                         </td>
                                         <td>
                                             <a data-id="@item.Id" class="btn btn-sm btn-warning edit-produt"><i class="bi bi-pencil-square"></i><i class="fa-solid fa-pen-to-square"></i> Chỉnh Sửa</a>&nbsp;
                                         </td>
                                         <td>
-                                            <a asp-controller="Admin" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i><i class="fa-solid fa-trash-can"></i> Xóa</a>
+                                            <a asp-area="Admin" asp-controller="Product" asp-action="Delete" asp-route-id="@item.Id" data-id="@item.Id" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i><i class="fa-solid fa-trash-can"></i> Xóa </a>
                                         </td>
                                     </tr>
                                 }
-
                             </tbody>
-
                         </table>
                     </div>
                 </div>

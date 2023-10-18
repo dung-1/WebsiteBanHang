@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using static WebsiteBanHang.Data.ApplicaitonDbContext;
+using static WebsiteBanHang.Areas.Admin.Data.ApplicationDbContext;
 using WebsiteBanHang.Models;
+using WebsiteBanHang.Areas.Admin.Data;
 namespace WebsiteBanHang.Areas.Admin.Controllers
 {
     [Area("admin")]

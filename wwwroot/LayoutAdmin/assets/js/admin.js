@@ -1,4 +1,16 @@
-﻿
+﻿// Modal create Brand
+$(document).on("click", ".category_create", function (e) {
+    e.preventDefault()
+    $.ajax({
+        url: "/Admin/Category/Create",// Đường dẫn đến API của bạn
+        type: "GET",
+        dataType: "html", // Đặt kiểu dữ liệu trả về
+        success: function (data) {
+            $('#Category_Create').find('.modal-content').html(data)
+            $('#Category_Create').modal('show');
+        }
+    })
+});
 // Modal Edit Category
 $(document).on("click", ".edit-category", function (e) {
     e.preventDefault()

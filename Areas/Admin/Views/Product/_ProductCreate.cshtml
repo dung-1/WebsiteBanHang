@@ -8,28 +8,29 @@
     <form method="post" asp-area="Admin" asp-controller="Product" asp-action="Create">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="mb-3">
-            <label asp-for="maSanPham" class="control-label"> Mã Sản Phẩm</label>
-            <input asp-for="maSanPham" class="form-control" />
-            <span asp-validation-for="maSanPham" class="text-danger"></span>
+            <label asp-for="MaSanPham" class="control-label"> Mã Sản Phẩm</label>
+            <input asp-for="MaSanPham" class="form-control" />
+            <span asp-validation-for="MaSanPham" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="tenSanPham" class="control-label">Tên Sản Phẩm</label>
-            <input asp-for="tenSanPham" class="form-control" />
-            <span asp-validation-for="tenSanPham" class="text-danger"></span>
+            <label asp-for="TenSanPham" class="control-label">Tên Sản Phẩm</label>
+            <input asp-for="TenSanPham" class="form-control" />
+            <span asp-validation-for="TenSanPham" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Brand" class="control-label">Hãng Sản Phẩm</label>
+            <select asp-for="Brand.Id" asp-items="ViewBag.hangProductList" class="form-control">
+                <option value="">Chọn hãng sản phẩm</option>
+            </select>
         </div>
         <div class="mb-3">
-            <label asp-for="Loai" class="control-label">Loại Sản Phẩm</label>
-            <select asp-for="Loai.Id" asp-items="ViewBag.LoaiSanPhamList" class="form-control">
+            <label asp-for="Category" class="control-label">Loại Sản Phẩm</label>
+            <select asp-for="Category.Id" asp-items="ViewBag.loaiProductList" class="form-control">
                 <option value="">Chọn loại sản phẩm</option>
             </select>
         </div>
 
-        <div class="mb-3">
-            <label asp-for="Hang" class="control-label">Hãng Sản Phẩm</label>
-            <select asp-for="Hang.Id" asp-items="ViewBag.HangSanPhamList" class="form-control">
-                <option value="">Chọn hãng sản phẩm</option>
-            </select>
-        </div>
 
         <div class="mb-3">
             <label asp-for="gia" class="control-label">Gía Sản Phẩm</label>
@@ -37,14 +38,14 @@
             <span asp-validation-for="gia" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="image" class="control-label">Ảnh Sản Phẩm</label>
-            <input type="f" asp-for="image" class="form-control" />
-            <span asp-validation-for="image" class="text-danger"></span>
+            <label asp-for="Image" class="control-label">Ảnh Sản Phẩm</label>
+            <input type="file" asp-for="Image" class="form-control" />
+            <span asp-validation-for="Image" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="thongTinSanPham" class="control-label">Thông Tin Sản Phẩm</label>
-            <input asp-for="thongTinSanPham" class="form-control" />
-            <span asp-validation-for="thongTinSanPham" class="text-danger"></span>
+            <label asp-for="ThongTinSanPham" class="control-label">Thông Tin Sản Phẩm</label>
+            <input asp-for="ThongTinSanPham" class="form-control" />
+            <span asp-validation-for="ThongTinSanPham" class="text-danger"></span>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>

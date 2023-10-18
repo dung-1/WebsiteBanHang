@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Drawing.Drawing2D;
+using System.Reflection.Metadata;
 
 namespace WebsiteBanHang.Areas.Admin.Models
 {
@@ -9,26 +11,33 @@ namespace WebsiteBanHang.Areas.Admin.Models
         public int Id { get; set; }
         [Required]
         [StringLength(10)]
-        public string maSanPham { get; set; }
+        public string MaSanPham { get; set; }
         [Required]
         [StringLength(20)]
-        public string tenSanPham { get; set; }
+        public string TenSanPham { get; set; }
         [Required]
-        [ForeignKey("BrandModel")]
-        public virtual BrandModel Hang { get; set; }
+
+        public int HangId { get; set; } // Required foreign key property
+        public BrandModel Brand { get; set; } = null!;
 
         [Required]
-        [ForeignKey("CategoryModel")]
-        public virtual CategoryModel Loai { get; set; }
+
+        public int LoaiId { get; set; } // Required foreign key property
+        public CategoryModel Category { get; set; } = null!;
+
+
         [Required]
         [RegularExpression(@"^\d{1,9}(\.\d{1,2})?$", ErrorMessage = "Giá không hợp lệ.")]
         [DataType(DataType.Currency)]
         public decimal gia { get; set; }
         [StringLength(255)]
-        public string? image { get; set; }
+        public string? Image { get; set; }
 
         [Required]
         [StringLength(100)]
-        public string thongTinSanPham { get; set; }
+        public string ThongTinSanPham { get; set; }
+
+
+
     }
 }
