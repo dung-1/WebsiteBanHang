@@ -84,14 +84,19 @@ namespace WebsiteBanHang.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("HangId")
+                    b.Property<decimal>("Gia")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("HangId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("Image")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("LoaiId")
+                    b.Property<int?>("LoaiId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("MaSanPham")
@@ -108,9 +113,6 @@ namespace WebsiteBanHang.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<decimal>("gia")
-                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 

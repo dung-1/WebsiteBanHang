@@ -11,10 +11,14 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
     [Area("Admin")]
     public class ProductController : Controller
     {
+        private readonly ILogger<ProductController> _logger;
+
         private readonly ApplicationDbContext _context;
-        public ProductController(ApplicationDbContext context)
+        public ProductController(ApplicationDbContext context, ILogger<ProductController> logger)
         {
             _context = context;
+            _logger = logger;
+
         }
 
         public IActionResult Index()
@@ -26,7 +30,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             var data = products.Select(e => new ProductViewDTO
             {
                 Id = e.Id,
-                Gia = e.gia,
+                Gia = e.Gia,
                 HangTen = e.Brand.TenHang,
                 LoaiTen = e.Category.TenLoai,
                 Image = e.Image,
@@ -52,22 +56,58 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(ProductModel empobj)
+        public IActionResult Create(ProductModel product, IFormFile imageFile)
         {
-            if (ModelState.IsValid)
+            // Tìm hãng sản phẩm và loại sản phẩm dựa trên ID được chọn trong dropdownlist
+            var brand = _context.Brand.Find(product.HangId);
+            var category = _context.Category.Find(product.LoaiId);
+
+            if (brand != null && category != null)
             {
-                _context.Product.Add(empobj);
-                _context.SaveChanges();
-                return RedirectToAction("Index");
+                // Xử lý tải ảnh lên và lưu đường dẫn vào trường Image
+                if (imageFile != null)
+                {
+                    var imagePath = "images/";
+                    var imageName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imagePath, imageName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        imageFile.CopyTo(stream);
+                    }
+
+                    product.Image = Path.Combine(imagePath, imageName);
+
+
+                    // Gán hãng sản phẩm và loại sản phẩm cho sản phẩm
+                    product.Brand = brand;
+                    product.Category = category;
+
+                    // Thêm sản phẩm vào cơ sở dữ liệu
+                    _context.Product.Add(product);
+                    _context.SaveChanges();
+                    return RedirectToAction("Index");
+                }
             }
-            return View(empobj);
+
+
+            // Nếu ModelState không hợp lệ hoặc không tìm thấy hãng sản phẩm hoặc loại sản phẩm, quay lại view Create với model đã nhập
+            return View(product);
         }
+
+
+
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
             var category = _context.Product.Find(id);
+            var loaiProductList = _context.Category.ToList();
+            var hangProductList = _context.Brand.ToList();
+
+            // Tạo SelectList để sử dụng trong dropdown
+            ViewBag.LoaiProductList = new SelectList(loaiProductList, "Id", "TenLoai");
+            ViewBag.HangProductList = new SelectList(hangProductList, "Id", "TenHang");
             if (category == null)
             {
                 return NotFound();
@@ -76,17 +116,52 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(ProductModel empobj)
+        public IActionResult Edit(ProductModel updatedProduct, IFormFile imageFile)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Product.Update(empobj);
-                _context.SaveChanges();
-                return RedirectToAction("Index");
+         
+                var brand = _context.Brand.Find(updatedProduct.HangId);
+                var category = _context.Category.Find(updatedProduct.LoaiId);
+                var existingProduct = _context.Product.Find(updatedProduct.Id);
+
+                if (existingProduct != null)
+                {
+                    if (imageFile != null)
+                    {
+                        // Nếu có tệp ảnh mới được tải lên, cập nhật ảnh
+                        var imagePath = "images/";
+                        var imageName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
+                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imagePath, imageName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            imageFile.CopyTo(stream);
+                        }
+
+                        existingProduct.Image = Path.Combine(imagePath, imageName);
+                    }
+
+
+
+                    // Cập nhật các thông tin khác của sản phẩm
+                    existingProduct.Id = updatedProduct.Id;
+                    existingProduct.MaSanPham = updatedProduct.MaSanPham;
+                    existingProduct.TenSanPham = updatedProduct.TenSanPham;
+                    existingProduct.ThongTinSanPham = updatedProduct.ThongTinSanPham;
+                    existingProduct.Gia = updatedProduct.Gia;
+                    existingProduct.HangId = updatedProduct.HangId;
+                    existingProduct.LoaiId = updatedProduct.LoaiId;
+
+                    updatedProduct.Brand = brand;
+                    updatedProduct.Category = category;
+
+                    _context.Product.Update(existingProduct);
+                    _context.SaveChanges();
+                    return RedirectToAction("Index");
+                
             }
 
-            return View(empobj);
+            // Nếu ModelState không hợp lệ hoặc không tìm thấy sản phẩm, quay lại view Edit với model đã nhập
+            return View(updatedProduct);
         }
 
         public IActionResult Delete(int? id)

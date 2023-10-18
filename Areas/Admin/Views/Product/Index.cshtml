@@ -50,31 +50,32 @@
                                 @foreach (var item in Model)
                                 {
                                     <tr>
-                                        <td width="20%">
+                                        <td >
                                             @item.MaSanPham
                                         </td>
-                                        <td width="20%">
+                                        <td >
                                             @item.TenSanPham
                                         </td>
-                                        <td width="20%">
+                                        <td >
                                             @item.HangTen
                                         </td>
-                                        <td width="20%">
+                                        <td >
                                             @item.LoaiTen
                                         </td>
-                                        <td width="20%">
+                                        <td >
                                             @item.Gia
                                         </td>
-                                        <td width="20%">
+                                        <td >
                                             @item.ThongTinSanPham
                                         </td>
-                                        <td width="20%">
-                                            @item.Image
+                                        <td >
+                                            <img src="~/@item.Image" style="height: 70px; width: 70px;" alt="Hình ảnh sản phẩm" />
+
                                         </td>
-                                        <td>
-                                            <a data-id="@item.Id" class="btn btn-sm btn-warning edit-produt"><i class="bi bi-pencil-square"></i><i class="fa-solid fa-pen-to-square"></i> Chỉnh Sửa</a>&nbsp;
+                                      <td >
+                                            <a data-id="@item.Id" class="btn btn-sm btn-warning edit-produt"><i class="bi bi-pencil-square"></i><i class="fa-solid fa-pen-to-square"></i> Sửa</a>&nbsp;
                                         </td>
-                                        <td>
+                                      <td >
                                             <a asp-area="Admin" asp-controller="Product" asp-action="Delete" asp-route-id="@item.Id" data-id="@item.Id" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i><i class="fa-solid fa-trash-can"></i> Xóa </a>
                                         </td>
                                     </tr>

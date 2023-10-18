@@ -54,9 +54,6 @@ namespace WebsiteBanHang
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             });
 
-
-
-
             app.Run();
         }
     }

@@ -5,8 +5,9 @@
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
-    <form method="post" asp-area="Admin" asp-controller="Product" asp-action="Create">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <form method="post" asp-area="Admin" asp-controller="Product" asp-action="Edit" enctype="multipart/form-data">
+        <input type="hidden" asp-for="Id" class="form-control" />
+
         <div class="mb-3">
             <label asp-for="MaSanPham" class="control-label"> Mã Sản Phẩm</label>
             <input asp-for="MaSanPham" class="form-control" />
@@ -20,26 +21,26 @@
 
         <div class="mb-3">
             <label asp-for="Brand" class="control-label">Hãng Sản Phẩm</label>
-            <select asp-for="Brand.Id" asp-items="ViewBag.hangProductList" class="form-control">
+            <select asp-for="Brand.Id" asp-items="ViewBag.hangProductList" name="HangId" class="form-control">
                 <option value="">Chọn hãng sản phẩm</option>
             </select>
         </div>
         <div class="mb-3">
             <label asp-for="Category" class="control-label">Loại Sản Phẩm</label>
-            <select asp-for="Category.Id" asp-items="ViewBag.loaiProductList" class="form-control">
+            <select asp-for="Category.Id" asp-items="ViewBag.loaiProductList" name="LoaiId" class="form-control">
                 <option value="">Chọn loại sản phẩm</option>
             </select>
         </div>
 
 
         <div class="mb-3">
-            <label asp-for="gia" class="control-label">Gía Sản Phẩm</label>
-            <input asp-for="gia" class="form-control" />
-            <span asp-validation-for="gia" class="text-danger"></span>
+            <label asp-for="Gia" class="control-label">Gía Sản Phẩm</label>
+            <input asp-for="Gia" class="form-control" />
+            <span asp-validation-for="Gia" class="text-danger"></span>
         </div>
         <div class="mb-3">
             <label asp-for="Image" class="control-label">Ảnh Sản Phẩm</label>
-            <input type="file" asp-for="Image" class="form-control" />
+            <input type="file" name="imageFile" asp-for="Image" class="form-control" />
             <span asp-validation-for="Image" class="text-danger"></span>
         </div>
         <div class="mb-3">

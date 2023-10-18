@@ -7,7 +7,7 @@ namespace WebsiteBanHang.Areas.Admin.Models
 {
     public class ProductModel
     {
-        [Key]
+
         public int Id { get; set; }
         [Required]
         [StringLength(10)]
@@ -17,19 +17,18 @@ namespace WebsiteBanHang.Areas.Admin.Models
         public string TenSanPham { get; set; }
         [Required]
 
-        public int HangId { get; set; } // Required foreign key property
+        public int? HangId { get; set; } // Required foreign key property
         public BrandModel Brand { get; set; } = null!;
 
         [Required]
 
-        public int LoaiId { get; set; } // Required foreign key property
+        public int? LoaiId { get; set; } // Required foreign key property
         public CategoryModel Category { get; set; } = null!;
-
 
         [Required]
         [RegularExpression(@"^\d{1,9}(\.\d{1,2})?$", ErrorMessage = "Giá không hợp lệ.")]
         [DataType(DataType.Currency)]
-        public decimal gia { get; set; }
+        public decimal Gia { get; set; }
         [StringLength(255)]
         public string? Image { get; set; }
 

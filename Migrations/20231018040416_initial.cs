@@ -49,7 +49,7 @@ namespace WebsiteBanHang.Migrations
                     TenSanPham = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     HangId = table.Column<int>(type: "int", nullable: false),
                     LoaiId = table.Column<int>(type: "int", nullable: false),
-                    gia = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Gia = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Image = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     ThongTinSanPham = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
