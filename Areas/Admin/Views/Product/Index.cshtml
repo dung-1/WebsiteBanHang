@@ -1,15 +1,17 @@
-﻿@{
+﻿@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
+@{
     ViewData["Title"] = "Product";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
-@model IEnumerable<WebsiteBanHang.Areas.Admin.AdminDTO.ProductViewDTO>
+@model X.PagedList.IPagedList<WebsiteBanHang.Areas.Admin.AdminDTO.ProductViewDTO>
 <style>
     .table th, .table td {
         vertical-align: middle;
         font-size: 0.875rem;
         line-height: 1;
         white-space: nowrap;
-        padding:0rem;
+        padding: 0rem;
         padding-bottom: 1rem;
     }
 </style>
@@ -19,10 +21,19 @@
             <h3 class="page-title fs-3"> Quản Lý Sản Phẩm </h3>
         </div>
         <div class="row">
-            <div class="col-lg-4 grid-margin ">
-                <button type="button" class="btn btn-info create-produt">
-                    <i class="fa-solid fa-plus"></i> Thêm hãng sản phẩm
-                </button>
+            <div class="row grid-margin ">
+
+                <div class="col-lg-6">
+                    <button type="button" class="btn btn-info create-produt">
+                        <i class="fa-solid fa-plus"></i> Thêm hãng sản phẩm
+                    </button>
+                </div>
+                <div class="col-lg-6">
+                    <form class="d-flex" role="search" asp-area="Admin" asp-controller="Product" asp-action="Index" method="get">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="searchName" id="searchName" value="@ViewBag.SearchName">
+                        <button class="btn btn-success" type="submit">Search</button>
+                    </form>
+                </div>
 
                 <div class="modal fade" id="Create_Product" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
@@ -59,32 +70,32 @@
                                 @foreach (var item in Model)
                                 {
                                     <tr>
-                                        <td >
+                                        <td>
                                             @item.MaSanPham
                                         </td>
-                                        <td >
+                                        <td>
                                             @item.TenSanPham
                                         </td>
-                                        <td >
+                                        <td>
                                             @item.HangTen
                                         </td>
-                                        <td >
+                                        <td>
                                             @item.LoaiTen
                                         </td>
-                                        <td >
+                                        <td>
                                             @item.Gia
                                         </td>
-                                        <td >
+                                        <td>
                                             @item.ThongTinSanPham
                                         </td>
-                                        <td >
+                                        <td>
                                             <img src="~/@item.Image" style="height: 70px; width: 70px;" alt="Hình ảnh sản phẩm" />
 
                                         </td>
-                                      <td >
+                                        <td>
                                             <a data-id="@item.Id" class="btn btn-sm btn-warning edit-produt"><i class="bi bi-pencil-square"></i><i class="fa-solid fa-pen-to-square"></i> Sửa</a>&nbsp;
                                         </td>
-                                      <td >
+                                        <td>
                                             <a asp-area="Admin" asp-controller="Product" asp-action="Delete" asp-route-id="@item.Id" data-id="@item.Id" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i><i class="fa-solid fa-trash-can"></i> Xóa </a>
                                         </td>
                                     </tr>
@@ -92,6 +103,22 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="row">
+                        <div class="col-lg-12 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body d-flex justify-content-end">
+                                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchName = ViewBag.SearchName }), new PagedListRenderOptions
+                                    {
+                                    LiElementClasses = new string[] { "page-item" },
+                                    PageClasses = new string[] { "page-link" },
+                                    Display = PagedListDisplayMode.IfNeeded,
+                                    MaximumPageNumbersToDisplay = 3 // Số trang bạn muốn hiển thị
+                                    })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 

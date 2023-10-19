@@ -35,7 +35,7 @@
                                 <tbody>
                                     <tr>
                                         <td class="shoping__cart__item">
-                                            <img src="@cartitem.Product.Image" style="width:200px;height:180px">
+                                            <img src="/@cartitem.Product.Image" style="width:200px;height:180px">
                                             <h5>@cartitem.Product.TenSanPham</h5>
                                         </td>
                                         <td class="shoping__cart__price">
@@ -47,13 +47,13 @@
                                         </td>
                                         <td class="shoping__cart__item__close">
                                             <a  class="btn btn-success "
-                                               asp-route="addcart" asp-route-id="@cartitem.Product.Id">
+                                               asp-route="updatecart" asp-route-id="@cartitem.Product.Id">
                                                 <i class="fa-solid fa-square-pen"></i>
                                                 Cập nhật
                                             </a>
-                                            <a asp-route="removecart" asp-route-productid="@cartitem.Product.Id"
+                                            <a asp-controller="Cart" asp-action="RemoveCart" asp-route-productid="@cartitem.Product.Id"
                                                class="btn btn-danger"> <i class="fa-solid fa-delete-left"></i> Xóa</a>
-                                        </td>
+                                        </td>   
                                     </tr>
                                 </tbody>
                             }
@@ -65,10 +65,6 @@
                 <div class="col-lg-12">
                     <div class="shoping__cart__btns">
                         <a href="#" class="primary-btn cart-btn">CONTINUE SHOPPING</a>
-                        <a href="#" class="primary-btn cart-btn cart-btn-right">
-                            <span class="icon_loading"></span>
-                            Upadate Cart
-                        </a>
                     </div>
                 </div>
                 <div class="col-lg-6">
@@ -88,7 +84,7 @@
                         <ul>
                             <li>Total <span>@(total.ToString("n0"))</span></li>
                         </ul>
-                        <a href="#" class="primary-btn">PROCEED TO CHECKOUT</a>
+                        <a asp-controller="Cart" asp-action="CheckOut" class="primary-btn">PROCEED TO CHECKOUT</a>
                     </div>
                 </div>
             </div>

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using WebsiteBanHang.Areas.Admin.AdminDTO;
 using WebsiteBanHang.Areas.Admin.Data;
 using WebsiteBanHang.Areas.Admin.Models;
+using X.PagedList;
 using static WebsiteBanHang.Areas.Admin.Data.ApplicationDbContext;
 
 namespace WebsiteBanHang.Areas.Admin.Controllers
@@ -21,30 +22,41 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int? page, string searchName)
         {
-            var products = _context.Product
-                .Include(p => p.Brand) // Eager load Brand
-                .Include(p => p.Category) // Eager load Category
-                .OrderByDescending(p => p.Id) // Sắp xếp theo ID giảm dần
-                .ToList();
+            var pageNumber = page ?? 1; 
+            int pageSize = 5; 
 
-            var data = products.Select(e => new ProductViewDTO
+            var productsQuery = _context.Product
+                .Include(p => p.Brand)
+                .Include(p => p.Category)
+                .OrderByDescending(p => p.Id);
+
+            if (!string.IsNullOrEmpty(searchName))
             {
-                Id = e.Id,
-                Gia = e.Gia,
-                HangTen = e.Brand.TenHang,
-                LoaiTen = e.Category.TenLoai,
-                Image = e.Image,
-                MaSanPham = e.MaSanPham,
-                TenSanPham = e.TenSanPham,
-                ThongTinSanPham = e.ThongTinSanPham
-            });
+                productsQuery = (IOrderedQueryable<ProductModel>)productsQuery.Where(p => p.TenSanPham.Contains(searchName));
+            }
 
-            return View(data);
+            var sortedProducts = productsQuery.ToList();
+
+            ViewBag.SearchName = searchName; // Lưu trạng thái tìm kiếm trong ViewBag
+
+            IPagedList<ProductViewDTO> pagedProducts = sortedProducts
+                .Select(e => new ProductViewDTO
+                {
+                    Id = e.Id,
+                    Gia = e.Gia,
+                    HangTen = e.Brand.TenHang,
+                    LoaiTen = e.Category.TenLoai,
+                    Image = e.Image,
+                    MaSanPham = e.MaSanPham,
+                    TenSanPham = e.TenSanPham,
+                    ThongTinSanPham = e.ThongTinSanPham
+                })
+                .ToPagedList(pageNumber, pageSize);
+
+            return View(pagedProducts);
         }
-
-
         public IActionResult Create()
         {
             // Truy vấn danh sách loại sản phẩm và hãng sản phẩm từ cơ sở dữ liệu
@@ -141,9 +153,6 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
                         existingProduct.Image = Path.Combine(imagePath, imageName);
                     }
-
-
-
                     // Cập nhật các thông tin khác của sản phẩm
                     existingProduct.Id = updatedProduct.Id;
                     existingProduct.MaSanPham = updatedProduct.MaSanPham;
@@ -152,7 +161,6 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                     existingProduct.Gia = updatedProduct.Gia;
                     existingProduct.HangId = updatedProduct.HangId;
                     existingProduct.LoaiId = updatedProduct.LoaiId;
-
                     updatedProduct.Brand = brand;
                     updatedProduct.Category = category;
 
@@ -177,5 +185,6 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             _context.SaveChanges();
             return RedirectToAction("Index");
         }
+        
     }
 }

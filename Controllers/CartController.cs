@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using WebsiteBanHang.Areas.Admin.Data;
+using WebsiteBanHang.Areas.Admin.Models;
 using WebsiteBanHang.Models;
 using static WebsiteBanHang.Areas.Admin.Data.ApplicationDbContext;
 
@@ -17,6 +19,10 @@ namespace WebsiteBanHang.Controllers
             _httpContextAccessor = httpContextAccessor;
         }
         public IActionResult Index()
+        {
+            return View();
+        }
+        public IActionResult CheckOut()
         {
             return View();
         }
@@ -70,9 +76,9 @@ namespace WebsiteBanHang.Controllers
             // Lưu cart vào Session
             SaveCartSession(cart);
             // Chuyển đến trang hiện thị Cart
-            return View("Index", GetCartItems());
+            return View("Index", cart);
         }
-
+        [Route("/removecart/{productid:int}", Name = "removecart")]
         public IActionResult RemoveCart([FromRoute] int productid)
         {
             var cart = GetCartItems();
@@ -84,9 +90,10 @@ namespace WebsiteBanHang.Controllers
             }
 
             SaveCartSession(cart);
-            return View("Cart", GetCartItems());
+            return View("Index", GetCartItems());
         }
 
+        [Route("/updatecart", Name = "updatecart")]
         [HttpPost]
         public IActionResult UpdateCart([FromForm] int productid, [FromForm] int Soluong)
         {
@@ -100,13 +107,15 @@ namespace WebsiteBanHang.Controllers
             }
             SaveCartSession(cart);
             // Trả về mã thành công (không có nội dung gì - chỉ để Ajax gọi)
-            return View("Cart", GetCartItems());
+            return View("Index", GetCartItems());
         }
         [Route("/Cart", Name = "Cart")]
         public IActionResult Cart()
         {
-            return View("Cart", GetCartItems());
+            return View("Index", GetCartItems());
         }
+
+       
 
     }
 }

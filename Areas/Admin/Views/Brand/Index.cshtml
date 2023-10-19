@@ -2,17 +2,26 @@
     ViewData["Title"] = "View";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
- @model IEnumerable<WebsiteBanHang.Areas.Admin.Models.BrandModel>
+@model IEnumerable<WebsiteBanHang.Areas.Admin.Models.BrandModel>
 <div class="main-panel">
     <div class="content-wrapper">
         <div class="page-header">
             <h3 class="page-title fs-3"> Quản Lý Hãng</h3>
         </div>
         <div class="row">
-            <div class="col-lg-4 grid-margin ">
-                <button type="button" class="btn btn-info create-brand">
-                    <i class="fa-solid fa-plus"></i> Thêm hãng sản phẩm
-                </button>
+            <div class="row grid-margin ">
+
+                <div class="col-lg-6">
+                    <button type="button" class="btn btn-info create-brand">
+                        <i class="fa-solid fa-plus"></i> Thêm hãng sản phẩm
+                    </button>
+                </div>
+                <div class="col-lg-6">
+                    <form class="d-flex " role="search" asp-area="Admin" asp-controller="Brand" asp-action="SearchBrands">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="searchName" id="searchName" value="@ViewBag.SearchName">
+                        <button class="btn btn-success" type="submit">Search</button>
+                    </form>
+                </div>
 
                 <div class="modal fade" id="Create_Brand" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
@@ -28,7 +37,7 @@
                 </div>
             </div>
 
-            <div class="col-lg-12 grid-margin stretch-card">
+            <div class="row grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
                         <table class="table table-striped">

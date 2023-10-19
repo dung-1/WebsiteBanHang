@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebsiteBanHang.Areas.Admin.Data;
 using WebsiteBanHang.Areas.Admin.Models;
 using static WebsiteBanHang.Areas.Admin.Data.ApplicationDbContext;
@@ -17,7 +18,6 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         {
             // Sắp xếp lại danh sách theo ID giảm dần (mới nhất lên đầu)
             var sortedCategories = _context.Brand.OrderByDescending(c => c.Id).ToList();
-
             return View(sortedCategories);
         }
 
@@ -80,6 +80,20 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             _context.Brand.Remove(deleterecord);
             _context.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        //Hàm Tìm Kiếm
+        public async Task<IActionResult> SearchBrands(string searchName)
+        {
+            IQueryable<BrandModel> brands = _context.Brand;
+
+            if (!string.IsNullOrEmpty(searchName))
+            {
+                brands = brands.Where(b => b.TenHang.Contains(searchName));
+            }
+
+            var filteredBrands = await brands.ToListAsync();
+            return View("Index", filteredBrands);
         }
     }
 }

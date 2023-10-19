@@ -6,6 +6,8 @@ using WebsiteBanHang.Areas.Admin.Models;
 using WebsiteBanHang.Models;
 using static WebsiteBanHang.Areas.Admin.Data.ApplicationDbContext;
 using X.PagedList;
+using Microsoft.EntityFrameworkCore;
+
 namespace WebsiteBanHang.Controllers
 {
     public class HomeController : Controller
@@ -19,26 +21,40 @@ namespace WebsiteBanHang.Controllers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public IActionResult Index(int? page)
+        public async Task<IActionResult> Index(int? page, string searchName, string selectedCategory)
         {
-            var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
-            int pageSize = 8; // Số mục trên mỗi trang
+            var pageNumber = page ?? 1;
+            int pageSize = 8;
 
-            // Lấy danh sách sản phẩm từ cơ sở dữ liệu (điều này cần phải được thực hiện theo cách bạn đã thực hiện ở controller)
-            List<ProductModel> products = _context.Product.ToList();
+            IQueryable<ProductModel> products = _context.Product;
 
-            // Sử dụng PagedList để phân trang
+            if (!string.IsNullOrEmpty(searchName))
+            {
+                products = products.Where(p => p.TenSanPham.Contains(searchName));
+            }
+
+            if (!string.IsNullOrEmpty(selectedCategory) && selectedCategory != "All")
+            {
+                products = products.Where(p => p.Category.TenLoai == selectedCategory);
+            }
+
             IPagedList<ProductModel> pagedProducts = products.ToPagedList(pageNumber, pageSize);
+            ViewBag.SearchName = searchName;
+
+            // Lấy danh sách loại sản phẩm để truyền vào view
+            var categories = _context.Category.Select(c => c.TenLoai).Distinct().ToList();
+            ViewBag.Categories = categories;
 
             return View(pagedProducts);
         }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
+   
 
     }
 }
