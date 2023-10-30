@@ -9,7 +9,7 @@ using X.PagedList;
 using Microsoft.EntityFrameworkCore;
 using System.Drawing.Printing;
 using WebsiteBanHang.Areas.Admin.AdminDTO;
-
+using Microsoft.AspNetCore.Authorization;
 namespace WebsiteBanHang.Controllers
 {
     public class HomeController : Controller
@@ -23,6 +23,7 @@ namespace WebsiteBanHang.Controllers
             _httpContextAccessor = httpContextAccessor;
         }
 
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> Index(int? page, string searchName, string selectedCategory)
         {
             var pageNumber = page ?? 1;

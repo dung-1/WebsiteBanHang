@@ -87,8 +87,6 @@ namespace WebsiteBanHang.Controllers
         [HttpPost]
         public IActionResult Check_Verification(int code)
         {
-
-            // Lấy mã code từ session
             int? verificationCode = HttpContext.Session.GetInt32("VerificationCode");
 
             if (verificationCode.HasValue && code == verificationCode.Value)
@@ -111,9 +109,23 @@ namespace WebsiteBanHang.Controllers
 
                 // Thiết lập quan hệ giữa UserModel và Users_Details
                 userModel.userDetail = userDetails;
-                // Lưu thông tin vào cơ sở dữ liệu
+
+                // Lưu thông tin người dùng vào cơ sở dữ liệu
                 _context.User.Add(userModel);
                 _context.SaveChanges();
+
+                // Tạo một bản ghi trong bảng UserRole để gán người dùng vào vai trò "Customer" (hoặc vai trò tương ứng)
+                var customerRoleId = _context.Role.FirstOrDefault(r => r.Name == "Customer")?.Id;
+                if (customerRoleId.HasValue)
+                {
+                    var userRole = new UserRoleModel
+                    {
+                        User_ID = userModel.Id, // ID của người dùng mới
+                        Role_ID = customerRoleId.Value // ID của vai trò "Customer" hoặc tương ứng
+                    };
+                    _context.UserRole.Add(userRole);
+                    _context.SaveChanges();
+                }
 
                 // Xóa mã code và các thông tin từ session sau khi đã sử dụng
                 HttpContext.Session.Remove("VerificationCode");
@@ -129,6 +141,7 @@ namespace WebsiteBanHang.Controllers
             // Mã code không khớp, hiển thị thông báo lỗi
             return View();
         }
+
         public IActionResult Login()
         {
             UserModel user = new UserModel();
@@ -176,12 +189,10 @@ namespace WebsiteBanHang.Controllers
                     }
                 }
             }
-
             // Đăng nhập không thành công, hiển thị thông báo lỗi
             ModelState.AddModelError(string.Empty, "Tên đăng nhập hoặc mật khẩu không chính xác.");
             return View(loginModel);
         }
-
 
         private string GetMd5Hash(string input)
         {

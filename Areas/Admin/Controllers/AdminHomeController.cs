@@ -2,6 +2,9 @@
 using static WebsiteBanHang.Areas.Admin.Data.ApplicationDbContext;
 using WebsiteBanHang.Models;
 using WebsiteBanHang.Areas.Admin.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
+
 namespace WebsiteBanHang.Areas.Admin.Controllers
 {
     [Area("admin")]
@@ -16,9 +19,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             _context = context;
         }
         [Route("admin")]
-        [Route("Index")]
-        [Route("")]
-
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             return View();
@@ -33,5 +34,14 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         {
             return View();
         }
+        public IActionResult Logout()
+        {
+            // Đăng xuất người dùng bằng cách xóa phiên đăng nhập
+            HttpContext.SignOutAsync();
+
+            // Chuyển đến trang đăng nhập trong controller Account bên ngoài khu vực Admin
+            return RedirectToAction("Login", "Account", new { area = "" });
+        }
+
     }
 }
