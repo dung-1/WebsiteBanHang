@@ -9,6 +9,11 @@
         public string LoaiTen { get; set; } // Tên của Category
         public decimal Gia { get; set; }
         public string ThongTinSanPham { get; set; }
-        public string Image { get; set; } 
+        public string Image { get; set; }
+
+        internal ProductViewDTO Select(Func<object, ProductViewDTO> value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

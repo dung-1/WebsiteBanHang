@@ -24,8 +24,8 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
         public IActionResult Index(int? page, string searchName)
         {
-            var pageNumber = page ?? 1; 
-            int pageSize = 5; 
+            var pageNumber = page ?? 1;
+            int pageSize = 5;
 
             var productsQuery = _context.Product
                 .Include(p => p.Brand)
@@ -39,7 +39,14 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
             var sortedProducts = productsQuery.ToList();
 
-            ViewBag.SearchName = searchName; // Lưu trạng thái tìm kiếm trong ViewBag
+            if (searchName != null)
+            {
+                ViewBag.SearchName = searchName;
+            }
+            else
+            {
+                ViewBag.SearchName = ""; // Hoặc gán một giá trị mặc định khác nếu cần thiết
+            }
 
             IPagedList<ProductViewDTO> pagedProducts = sortedProducts
                 .Select(e => new ProductViewDTO
@@ -57,6 +64,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
             return View(pagedProducts);
         }
+
         public IActionResult Create()
         {
             // Truy vấn danh sách loại sản phẩm và hãng sản phẩm từ cơ sở dữ liệu
@@ -103,13 +111,14 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                     _context.SaveChanges();
                     var sortedCategories = _context.Product.OrderByDescending(c => c.Id).ToList();
 
-                    return View("Index", sortedCategories);
+
+                    return RedirectToAction("Index");
                 }
             }
 
 
             // Nếu ModelState không hợp lệ hoặc không tìm thấy hãng sản phẩm hoặc loại sản phẩm, quay lại view Create với model đã nhập
-            return View(product);
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
@@ -166,8 +175,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
                     _context.Product.Update(existingProduct);
                     _context.SaveChanges();
-                    return RedirectToAction("Index");
-                
+                return RedirectToAction("Index");
             }
 
             // Nếu ModelState không hợp lệ hoặc không tìm thấy sản phẩm, quay lại view Edit với model đã nhập

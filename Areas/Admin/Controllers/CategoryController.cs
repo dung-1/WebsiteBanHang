@@ -14,15 +14,19 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         {
             _context = context;
         }
+
         public IActionResult Index(int? page)
         {
             var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
-            int pageSize = 1; // Số mục trên mỗi trang
+            int pageSize = 5; // Số mục trên mỗi trang
 
             var sortedCategories = _context.Category.OrderByDescending(c => c.Id).ToList();
 
             IPagedList<CategoryModel> pagedCategories = sortedCategories.ToPagedList(pageNumber, pageSize);
-
+            if (TempData["SuccessMessage"] != null)
+            {
+                ViewBag.SuccessMessage = TempData["SuccessMessage"].ToString();
+            }
             return View(pagedCategories);
         }
 
@@ -30,24 +34,35 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         {
             return PartialView("_CategoryCreate");
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(CategoryModel empobj)
         {
             if (ModelState.IsValid)
             {
+                if (!IsMaLoaiUnique(empobj.MaLoai))
+                {
+                    ModelState.AddModelError("MaLoai", "Mã Loại Sản Phẩm đã tồn tại.");
+                    return RedirectToAction("Index");
+                }
+
                 _context.Category.Add(empobj);
                 _context.SaveChanges();
 
-                // Sắp xếp lại danh sách theo ID giảm dần (mới nhất lên đầu)
-                var sortedCategories = _context.Category.OrderByDescending(c => c.Id).ToList();
+                TempData["SuccessMessage"] = "Loại sản phẩm đã được thêm thành công."; // Thông báo thành công
 
-                return View("Index", sortedCategories); // Trả về view "Index" với danh sách đã sắp xếp
+                return RedirectToAction("Index"); // Chuyển đến action "Index"
             }
 
             return View(empobj);
         }
 
+
+        private bool IsMaLoaiUnique(string maLoai)
+        {
+            return !_context.Category.Any(c => c.MaLoai == maLoai);
+        }
 
         [HttpGet]
         public IActionResult Edit(int id)
@@ -68,8 +83,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             {
                 _context.Category.Update(empobj);
                 _context.SaveChanges();
-                return RedirectToAction("Index");
-
+                return RedirectToAction("Index"); // Sử dụng RedirectToAction để trả về action "Index"
             }
 
             return View(empobj);
@@ -84,9 +98,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             }
             _context.Category.Remove(deleterecord);
             _context.SaveChanges();
-            return RedirectToAction("Index");
+            return RedirectToAction("Index"); // Sử dụng RedirectToAction để trả về action "Index"
         }
-
-
     }
 }

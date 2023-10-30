@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model WebsiteBanHang.Areas.Admin.Models.UserModel
+<section class="section-content" style="margin: 100px 0;">
+    <div class="card mx-auto" style="max-width: 380px">
+        <div class="card-body">
+            <h4 class="card-title mb-4 text-dark d-flex justify-content-center text-uppercase">Đăng Nhập</h4>
+            <form asp-controller="Account" asp-action="Login" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Email"></label>
+                    <input asp-for="Email" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="MatKhau"></label>
+                    <input asp-for="MatKhau" type="password" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-secondary btn-block text-uppercase " style="margin-left:30%;margin-top:20px;">Đăng Nhập</button>
+            </form>
+        </div>
+        <!-- card-body.// -->
+    </div> <!-- card.// -->
+    <p class="text-center mt-4">Đã có tài khoản? <a asp-area="" asp-controller="Account" asp-action="Index">Đăng Ký</a></p>
+</section> <!-- section-content.// -->

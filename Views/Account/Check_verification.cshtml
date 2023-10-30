@@ -1,0 +1,22 @@
+﻿
+@{
+    ViewData["Title"] = "Check_verification";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<section class="section-content" style="margin: 100px 0;">
+    <div class="card mx-auto" style="max-width: 380px">
+        <div class="card-body">
+            <h4 class="card-title mb-4">Chào bạn <span class="fs-5 text-white text-uppercase">@ViewBag.Fullname </span>, bạn hãy vào email của bạn để lấy mã xác thực để kích hoạt tài khoản !!! </h4>
+            <div id="sweet-alert" style="display: none;"></div>
+            <form asp-controller="Account" asp-action="Check_Verification" method="post">
+                <div class="mb-3">
+                    <label for="inputUsernamecheck" class="form-label">Nhập Mã Xác Minh Của Bạn </label>
+                    <input type="text" class="form-control" id="inputCode" name="code">
+                    <span id="error-message" class="text-danger" style="display:none;">Mã xác minh không đúng.</span>
+                </div>
+
+                <button type="submit" class="d-flex m-md-auto justify-content-center btn btn-primary w-50">Xác Nhận</button>
+            </form>
+        </div> 
+    </div> 
+</section>

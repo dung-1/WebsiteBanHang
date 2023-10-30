@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
-using System;
+﻿
 using System.ComponentModel.DataAnnotations;
 
 namespace WebsiteBanHang.Areas.Admin.Models
@@ -27,6 +25,5 @@ namespace WebsiteBanHang.Areas.Admin.Models
         public DateTime NgaySanXuat { get; set; } // Thêm thuộc tính Ngày Xuất Xứ
 
         public ICollection<ProductModel> Prodcut { get; } = new List<ProductModel>(); // Collection navigation containing dependents
-
     }
 }

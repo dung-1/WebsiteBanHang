@@ -7,6 +7,8 @@ using WebsiteBanHang.Models;
 using static WebsiteBanHang.Areas.Admin.Data.ApplicationDbContext;
 using X.PagedList;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Printing;
+using WebsiteBanHang.Areas.Admin.AdminDTO;
 
 namespace WebsiteBanHang.Controllers
 {
@@ -54,7 +56,36 @@ namespace WebsiteBanHang.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-   
+
+        public IActionResult ProductDetail(int productid)
+        {
+            var product = _context.Product
+                .Include(p => p.Brand)
+                .Include(p => p.Category)
+                .Where(p => p.Id == productid)
+                .FirstOrDefault();
+
+            if (product == null)
+            {
+                // Xử lý trường hợp không tìm thấy sản phẩm
+                return NotFound(); // Hoặc thực hiện xử lý khác theo yêu cầu của bạn.
+            }
+
+            var productView = new ProductViewDTO
+            {
+                Id = product.Id,
+                Gia = product.Gia,
+                HangTen = product.Brand.TenHang,
+                LoaiTen = product.Category.TenLoai,
+                Image = product.Image,
+                MaSanPham = product.MaSanPham,
+                TenSanPham = product.TenSanPham,
+                ThongTinSanPham = product.ThongTinSanPham
+            };
+
+            return View(productView);
+        }
+
 
     }
 }

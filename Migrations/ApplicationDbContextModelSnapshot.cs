@@ -76,6 +76,54 @@ namespace WebsiteBanHang.Migrations
                     b.ToTable("Category");
                 });
 
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.PermissionRoleModel", b =>
+                {
+                    b.Property<int>("Permission_ID")
+                        .HasColumnType("int")
+                        .HasColumnOrder(0);
+
+                    b.Property<int>("Role_ID")
+                        .HasColumnType("int")
+                        .HasColumnOrder(1);
+
+                    b.HasKey("Permission_ID", "Role_ID");
+
+                    b.HasIndex("Role_ID");
+
+                    b.ToTable("PermissionRole");
+                });
+
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.PermissionsModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<bool>("Access")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Add")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Edit")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("FunctionName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Remote")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Show")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Permissions");
+                });
+
             modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.ProductModel", b =>
                 {
                     b.Property<int>("Id")
@@ -84,8 +132,8 @@ namespace WebsiteBanHang.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<decimal>("Gia")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("Gia")
+                        .HasColumnType("int");
 
                     b.Property<int?>("HangId")
                         .IsRequired()
@@ -123,6 +171,108 @@ namespace WebsiteBanHang.Migrations
                     b.ToTable("Product");
                 });
 
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.RoleModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Role");
+                });
+
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.UserModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("MatKhau")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("User");
+                });
+
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.UserRoleModel", b =>
+                {
+                    b.Property<int>("User_ID")
+                        .HasColumnType("int")
+                        .HasColumnOrder(0);
+
+                    b.Property<int>("Role_ID")
+                        .HasColumnType("int")
+                        .HasColumnOrder(1);
+
+                    b.HasKey("User_ID", "Role_ID");
+
+                    b.HasIndex("Role_ID");
+
+                    b.ToTable("UserRole");
+                });
+
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.Users_Details", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DiaChi")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("HoTen")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<int>("SoDienThoai")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("Users_Details");
+                });
+
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.PermissionRoleModel", b =>
+                {
+                    b.HasOne("WebsiteBanHang.Areas.Admin.Models.PermissionsModel", "Permission")
+                        .WithMany("PermissionRole")
+                        .HasForeignKey("Permission_ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebsiteBanHang.Areas.Admin.Models.RoleModel", "Role")
+                        .WithMany("PermissionRole")
+                        .HasForeignKey("Role_ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.ProductModel", b =>
                 {
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.BrandModel", "Brand")
@@ -142,6 +292,36 @@ namespace WebsiteBanHang.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.UserRoleModel", b =>
+                {
+                    b.HasOne("WebsiteBanHang.Areas.Admin.Models.RoleModel", "Role")
+                        .WithMany("UserRole")
+                        .HasForeignKey("Role_ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebsiteBanHang.Areas.Admin.Models.UserModel", "User")
+                        .WithMany("UserRole")
+                        .HasForeignKey("User_ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.Users_Details", b =>
+                {
+                    b.HasOne("WebsiteBanHang.Areas.Admin.Models.UserModel", "User")
+                        .WithOne("userDetail")
+                        .HasForeignKey("WebsiteBanHang.Areas.Admin.Models.Users_Details", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.BrandModel", b =>
                 {
                     b.Navigation("Prodcut");
@@ -150,6 +330,25 @@ namespace WebsiteBanHang.Migrations
             modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.CategoryModel", b =>
                 {
                     b.Navigation("Prodcut");
+                });
+
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.PermissionsModel", b =>
+                {
+                    b.Navigation("PermissionRole");
+                });
+
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.RoleModel", b =>
+                {
+                    b.Navigation("PermissionRole");
+
+                    b.Navigation("UserRole");
+                });
+
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.UserModel", b =>
+                {
+                    b.Navigation("UserRole");
+
+                    b.Navigation("userDetail");
                 });
 #pragma warning restore 612, 618
         }

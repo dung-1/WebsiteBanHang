@@ -2,6 +2,9 @@
 using WebsiteBanHang.Areas.Admin.Data;
 using static WebsiteBanHang.Areas.Admin.Data.ApplicationDbContext;
 using X.PagedList.Mvc.Core;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Principal;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace WebsiteBanHang
 {
@@ -49,6 +52,7 @@ namespace WebsiteBanHang
             app.UseSession();
             app.UseRouting();
             app.UseAuthorization();
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {
@@ -59,8 +63,10 @@ namespace WebsiteBanHang
 
                 app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Account}/{action=Index}/{id?}");
             });
+            IdentityUser user;
+            IdentityDbContext identityDbContext;
 
             app.Run();
         }

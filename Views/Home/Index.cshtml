@@ -1,48 +1,30 @@
-﻿@using X.PagedList.Mvc.Core;
+﻿﻿@using X.PagedList.Mvc.Core;
 @using X.PagedList.Web.Common;
 @{
     ViewData["Title"] = "Home Page";
 }
 @model X.PagedList.IPagedList<WebsiteBanHang.Areas.Admin.Models.ProductModel>
-<section class="featured spad">
+<section class="section-content mb-5">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="section-title">
-                    <h2>Danh Sách Sản Phẩm</h2>
-                </div>
-                <div class="featured__controls">
-                    <ul>
-                        <li class="active">All</li>
-                        <li>MacBook</li>
-                        <li>Asus</li>
-                        <li>Hp</li>
-                        <li>Acer</li>
-                        <li>Lenovo</li>
-                        <li>huawei</li>
-                    </ul>
+        <header class="section-heading py-4 d-flex justify-content-between">
+            <h3 class="section-title">Danh Sách Sản phẩm</h3>
+            <a class="btn btn-secondary" href="#" role="button" style="height: fit-content;">Xem tất cả</a>
+        </header> <!-- section-heading.// -->
+        <div class="row item-grid">
+             @foreach (var product in Model)
+            {   
+            <div class="col-lg-3 col-md-6">
+                <div class="card p-3 mb-4">
+                        <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id" class="img-wrap text-center">
+                            <img class="img-fluid" src="@product.Image">
+                    </a>
+                    <figcaption class="info-wrap mt-2">
+                            <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id class="title">@product.TenSanPham</a>
+                            <div class="price mt-1 fw-bold">@product.Gia</div>
+                    </figcaption>
                 </div>
             </div>
-        </div>
-        <div class="row featured__filter">
-            @foreach (var product in Model)
-            {
-                <div class="col-lg-3 col-md-4 col-sm-6 mix">
-                    <div class="featured__item">
-                        <div class="featured__item__pic set-bg" data-setbg="@product.Image">
-                            <ul class="featured__item__pic__hover">
-                                <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                                <li><a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@product.Id"><i class="fa fa-shopping-cart"></i></a></li>
-                            </ul>
-                        </div>
-                        <div class="featured__item__text">
-                            <h6><a href="#">@product.TenSanPham</a></h6>
-                            <h5>@product.Gia</h5>
-                        </div>
-                    </div>
-                </div>
-            }
+            }<!-- col.// -->
         </div>
         <div class="card-body d-flex  justify-content-end">
             @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchName = ViewBag.SearchName }), new PagedListRenderOptions
@@ -53,6 +35,6 @@
             MaximumPageNumbersToDisplay = 3  // Số trang bạn muốn hiển thị
             })
         </div>
-    </div>
-
-</section>
+           <!-- row.// -->
+    </div> <!-- container.// -->
+</section> 
