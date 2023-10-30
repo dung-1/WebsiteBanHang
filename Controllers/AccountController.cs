@@ -7,6 +7,9 @@ using WebsiteBanHang.Areas.Admin.Data;
 using MailKit.Security;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
 
 namespace WebsiteBanHang.Controllers
 {
@@ -126,28 +129,59 @@ namespace WebsiteBanHang.Controllers
             // Mã code không khớp, hiển thị thông báo lỗi
             return View();
         }
-
         public IActionResult Login()
         {
             UserModel user = new UserModel();
             return View(user);
         }
+
         [HttpPost]
-        public IActionResult Login(UserModel user)
+        public async Task<IActionResult> Login(UserModel loginModel)
         {
             if (ModelState.IsValid)
             {
-                var hashedPassword = GetMd5Hash(user.MatKhau);
-                var status = _context.User.FirstOrDefault(m => m.Email == user.Email && m.   == hashedPassword);
-                if (status != null)
+                var hashedPassword = GetMd5Hash(loginModel.MatKhau);
+                var user = _context.User.FirstOrDefault(m => m.Email == loginModel.Email && m.MatKhau == hashedPassword);
+
+                if (user != null)
                 {
-                    return RedirectToAction("Index", "Home");
+                    var userRoles = _context.UserRole.Where(ur => ur.User_ID == user.Id).Select(ur => ur.Role.Name).ToList();
+
+                    var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Email)
+            };
+
+                    foreach (var role in userRoles)
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, role));
+                    }
+
+                    // Tạo ClaimsIdentity
+                    var userIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                    // Tạo Principal
+                    var userPrincipal = new ClaimsPrincipal(userIdentity);
+
+                    // Đăng nhập người dùng bằng cookie
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal);
+
+                    if (userRoles.Contains("Admin"))
+                    {
+                        return RedirectToAction("Index", "AdminHome", new { area = "Admin" });
+                    }
+                    else if (userRoles.Contains("Customer"))
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
             }
+
             // Đăng nhập không thành công, hiển thị thông báo lỗi
             ModelState.AddModelError(string.Empty, "Tên đăng nhập hoặc mật khẩu không chính xác.");
-            return View(user);
+            return View(loginModel);
         }
+
 
         private string GetMd5Hash(string input)
         {
@@ -162,5 +196,6 @@ namespace WebsiteBanHang.Controllers
                 return builder.ToString();
             }
         }
+
     }
 }
