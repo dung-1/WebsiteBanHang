@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập</title>
+    <link href="~/css/bootstrap.css" type="text/css" rel="stylesheet">
+    <script src="~/js/bootstrap.bundle.js" type="text/javascript"></script>
+
+    <!-- Bootstrap Icons v1.5.0 -->
+    <link href="~/css/bootstrap-icons.css" type="text/css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Muli:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/assets/css/style-with-prefix.css">
+    <style>
+        .srouce {
+            text-align: center;
+            color: #ffffff;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <div class="form-container">
+         
+                @RenderBody()
+
+        </div><!-- FORM CONTAINER -->
+    </div>
+
+    <script src="~/js/jquery-3.3.1.min.js"></script>
+    <script src="~/js/validate.js"></script>
+</body>
+</html>

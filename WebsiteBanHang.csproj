@@ -39,6 +39,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Areas\Admin\Views\Brand\NewFolder\" />
+	  <Folder Include="Areas\Login\Models\" />
 	  <Folder Include="wwwroot\Images\" />
 	</ItemGroup>
 

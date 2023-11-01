@@ -13,6 +13,8 @@ using System.Security.Claims;
 
 namespace WebsiteBanHang.Controllers
 {
+    [Area("Login")]
+    [Route("Login/account")]
     public class AccountController : Controller
     {
         private readonly IConfiguration _configuration;
@@ -23,14 +25,15 @@ namespace WebsiteBanHang.Controllers
             _configuration = configuration;
             _context = context;
         }
-
+        [Route("account")]
         public IActionResult Index()
         {
             return View();
         }
 
         [HttpPost]
-        public IActionResult Index(string email, string fullname, string phoneNumber, string address, string password)
+        [Route("formSignUp")]
+        public IActionResult formSignUp(string email, string fullname, string phoneNumber, string address, string password)
         {
 
             bool isEmailExists = _context.User.Any(u => u.Email == email);
@@ -71,11 +74,15 @@ namespace WebsiteBanHang.Controllers
         }
 
         [HttpPost]
+        [Route("CheckEmail")]
         public IActionResult CheckEmail(string email)
         {
             bool isEmailExists = _context.User.Any(u => u.Email == email);
             return Json(!isEmailExists);
         }
+
+
+        [Route("Check_Verification")]
         public IActionResult Check_Verification()
         {
             // Lấy Fullname từ Session
@@ -85,7 +92,9 @@ namespace WebsiteBanHang.Controllers
 
 
         [HttpPost]
-        public IActionResult Check_Verification(int code)
+        [Route("formCheck_Verification")]
+
+        public IActionResult formCheck_Verification(int code)
         {
             int? verificationCode = HttpContext.Session.GetInt32("VerificationCode");
 
@@ -141,29 +150,35 @@ namespace WebsiteBanHang.Controllers
             // Mã code không khớp, hiển thị thông báo lỗi
             return View();
         }
+        [Route("Login")]
+        public IActionResult Login()
+        {
+            UserModel user = new UserModel();
+            return View(user);
+        }
 
-            public IActionResult Login()
+        [HttpPost]
+        [Route("formLogin")]
+        public async Task<IActionResult> formLogin(UserModel loginModel)
+        {
+            if (ModelState.IsValid)
             {
-                UserModel user = new UserModel();
-                return View(user);
-            }
+                var hashedPassword = GetMd5Hash(loginModel.MatKhau);
+                var user = _context.User.FirstOrDefault(m => m.Email == loginModel.Email && m.MatKhau == hashedPassword);
 
-            [HttpPost]
-            public async Task<IActionResult> Login(UserModel loginModel)
-            {
-                if (ModelState.IsValid)
+                if (user != null)
                 {
-                    var hashedPassword = GetMd5Hash(loginModel.MatKhau);
-                    var user = _context.User.FirstOrDefault(m => m.Email == loginModel.Email && m.MatKhau == hashedPassword);
-
-                    if (user != null)
+                    // Lấy thông tin UserDetail
+                    var userDetail = _context.Users_Details.FirstOrDefault(ud => ud.UserId == user.Id);
+                    if (userDetail != null)
                     {
                         var userRoles = _context.UserRole.Where(ur => ur.User_ID == user.Id).Select(ur => ur.Role.Name).ToList();
 
                         var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, user.Email)
-                };
+            {
+                new Claim(ClaimTypes.Name, user.Email),
+                new Claim(ClaimTypes.Email, userDetail.HoTen) // Sử dụng thông tin từ UserDetail
+            };
 
                         foreach (var role in userRoles)
                         {
@@ -179,20 +194,23 @@ namespace WebsiteBanHang.Controllers
                         // Đăng nhập người dùng bằng cookie
                         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal);
 
-                        if (userRoles.Contains("Admin"))
+                        if (userRoles.Contains("Admin") || userRoles.Contains("Employee"))
                         {
                             return RedirectToAction("Index", "AdminHome", new { area = "Admin" });
                         }
                         else if (userRoles.Contains("Customer"))
                         {
-                            return RedirectToAction("Index", "Home");
+                            return RedirectToAction("Index", "User", new { area = " " });
                         }
                     }
                 }
-                // Đăng nhập không thành công, hiển thị thông báo lỗi
-                ModelState.AddModelError(string.Empty, "Tên đăng nhập hoặc mật khẩu không chính xác.");
-                return View(loginModel);
             }
+
+            // Đăng nhập không thành công, hiển thị thông báo lỗi
+            ModelState.AddModelError(string.Empty, "Tên đăng nhập hoặc mật khẩu không chính xác.");
+            return View(loginModel);
+
+        }
 
         private string GetMd5Hash(string input)
         {

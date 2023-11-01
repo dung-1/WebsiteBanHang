@@ -19,8 +19,8 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             _context = context;
         }
         [Route("admin")]
-        [Authorize(Roles = "Admin")]
-        [Authorize(Policy = "AdminOnly")]
+        [Authorize(Roles = "Admin,Employee")]
+        //[Authorize(Policy = "AdminOnly")]
 
         public IActionResult Index()
         {
@@ -42,7 +42,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             HttpContext.SignOutAsync();
 
             // Chuyển đến trang đăng nhập trong controller Account bên ngoài khu vực Admin
-            return RedirectToAction("Login", "Account", new { area = "" });
+            return RedirectToAction("Login", "Account", new { area = "Login" });
         }
 
     }

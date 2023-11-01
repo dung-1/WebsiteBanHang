@@ -74,7 +74,7 @@ function validateEmailFormat(email) {
 function checkEmailAvailability(email) {
     $.ajax({
         type: 'POST',
-        url: '/Account/CheckEmail',
+        url: '/Login/Account/CheckEmail', // Sử dụng đường dẫn đầy đủ
         data: { email: email },
         success: function (result) {
             if (!result) {
@@ -90,6 +90,8 @@ function checkEmailAvailability(email) {
         }
     });
 }
+
+
 
 function isValidPhoneNumber(phoneNumber) {
     var allowedPrefixes = ['032', '033', '034', '035', '036', '037', '038', '039'];

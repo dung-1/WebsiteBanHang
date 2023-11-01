@@ -1,0 +1,35 @@
+﻿@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Areas/Login/Shared/_LayoutLogin.cshtml";
+}
+@model WebsiteBanHang.Areas.Admin.Models.UserModel
+<div class="form-body">
+    <h3 class="title text-uppercase fw-bold">Đăng Nhập</h3>
+    <div class="social-login">
+        <ul>
+            <li class="google"><a href="#">Google</a></li>
+            <li class="fb"><a href="#">Facebook</a></li>
+        </ul>
+    </div><!-- SOCIAL LOGIN -->
+
+    <div class="_or">Hoặc</div>
+
+    <form asp-area="Login" asp-controller="Account" asp-action="formLogin" method="post" class="the-form">
+
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" asp-for="Email" placeholder="Nhập Email Của Bạn">
+
+        <label for="password">Password</label>
+        <input asp-for="MatKhau" type="password" class="form-control" placeholder="Nhập Mật Khẩu Của Bạn" />
+
+        <input type="submit" value="Đăng Nhập">
+
+    </form>
+
+</div><!-- FORM BODY-->
+
+<div class="form-footer">
+    <div>
+        <span>Bạn chưa có tài khoản?</span> <a asp-area="Login" asp-controller="Account" asp-action="Index">Đăng Ký</a>
+    </div>
+</div><!-- FORM FOOTER -->

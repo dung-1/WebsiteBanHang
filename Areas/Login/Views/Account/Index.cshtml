@@ -1,0 +1,45 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Login/Shared/_LayoutLogin.cshtml";
+}
+
+<div class="form-body">
+    <h3 class="title fw-bold text-uppercase ">Đăng Ký</h3>
+    <form asp-area="Login" asp-controller="Account" asp-action="formSignUp" method="post" onsubmit="return validateForm()" class="the-form">
+
+        <label for="inputEmail" class="form-label ">Email</label>
+        <input type="email" id="inputEmail" name="email" placeholder="Nhập Email Của Bạn">
+        <span id="emailError" class="text-danger"></span>
+
+        <label for="inputName" class="form-label ">Họ tên</label>
+        <input type="text" id="inputName" name="fullname" placeholder="Nhập Tên Của Bạn">
+        <span id="fullnameError" class="text-danger"></span>
+
+
+        <label for="inputPhoneNumber" class="form-label ">Số điện thoại</label>
+        <input type="number" id="inputPhoneNumber" name="phoneNumber" placeholder="Nhập Số Điện Thoại Của Bạn">
+        <span id="phoneNumberError" class="text-danger"></span>
+
+
+        <label for="inputAddress" class="form-label ">Địa chỉ</label>
+        <input type="text" id="inputAddress" name="address" placeholder="Nhập Địa Chỉ Của Bạn">
+        <span id="addressError" class="text-danger"></span>
+
+
+        <label for="inputPassword" class="form-label ">Mật khẩu</label>
+        <input type="password" id="inputPassword" name="password" placeholder="Nhập password Của Bạn">
+        <span id="passwordError" class="text-danger"></span>
+
+        <input type="submit" value="Đăng Ký">
+    </form>
+
+
+</div><!-- FORM BODY-->
+
+<div class="form-footer">
+    <div>
+        <span class="text-center mt-4">Đã có tài khoản? <a asp-area="Login" asp-controller="Account" asp-action="Login">Đăng nhập</a></span>
+    </div>
+</div><!-- FORM FOOTER -->
+

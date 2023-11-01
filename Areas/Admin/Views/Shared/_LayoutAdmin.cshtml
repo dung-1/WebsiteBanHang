@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <!-- Required meta tags -->
@@ -42,7 +43,7 @@
                     </form>
                 </div>
                 <ul class="navbar-nav navbar-nav-right">
-                    <li class="nav-item nav-profile dropdown">
+                    @* <li class="nav-item nav-profile dropdown">
                         <a class="nav-link dropdown-toggle" id="profileDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                             <div class="nav-profile-img">
                                 <img src="../../LayoutAdmin/assets/images/faces/face1.jpg" alt="image">
@@ -61,7 +62,7 @@
                                 <i class="mdi mdi-logout me-2 text-primary"></i> Signout
                             </a>
                         </div>
-                    </li>
+                    </li> *@
                     <li class="nav-item d-none d-lg-block full-screen-link">
                         <a class="nav-link">
                             <i class="mdi mdi-fullscreen" id="fullscreen-button"></i>
@@ -184,8 +185,9 @@
                                 <!--change to offline or busy as needed-->
                             </div>
                             <div class="nav-profile-text d-flex flex-column">
-                                <span class="font-weight-bold mb-2">David Roll</span>
-                                <span class="text-secondary text-small">Quản Lý</span>
+                                <span class="font-weight-bold mb-2"> @string.Join(", ", User.Claims.Where(c => c.Type == ClaimTypes.Email).Select(c => c.Value))</span>
+                                <span class="text-secondary text-small">@string.Join(", ", User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value))</span>
+
                             </div>
                             <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
                         </a>
@@ -210,12 +212,15 @@
                             </ul>
                         </div>
                     </li>
+                      @if (User.IsInRole("Admin"))
+                                        {
                     <li class="nav-item">
                         <a class="nav-link" href="#">
                             <span class="menu-title">Quản Lý Người Dùng</span>
                             <i class="fa-solid fa-user menu-icon"></i>
                         </a>
                     </li>
+                                        }
                     <li class="nav-item">
                         <a class="nav-link" href="#">
                             <span class="menu-title">Quản Lý Khách Hàng</span>

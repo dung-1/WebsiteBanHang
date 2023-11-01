@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using WebsiteBanHang.Areas.Admin.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
+using Microsoft.AspNetCore.Builder;
 
 namespace WebsiteBanHang
 {
@@ -34,6 +30,8 @@ namespace WebsiteBanHang
                 {
                     options.Cookie.Name = "DungCTS";
                     options.LoginPath = "/Account/Login";
+                    options.AccessDeniedPath = "/Account/AccessDenied";
+
                 });
             builder.Services.AddAuthorization(options =>
             {
@@ -57,14 +55,20 @@ namespace WebsiteBanHang
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
+                endpoints.MapAreaControllerRoute(
                     name: "areas",
+                    areaName: "Admin",
                     pattern: "{area:exists}/{controller=AdminHome}/{action=Index}/{id?}"
                 );
+                endpoints.MapAreaControllerRoute(
+                 name: "areas",
+                 areaName: "Login",
+                 pattern: "{area:exists}/{controller=Account}/{action=Index}/{id?}"
+             );
 
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Account}/{action=Index}/{id?}"
+                    pattern: "{controller=Home}/{action=Index}/{id?}"
                 );
             });
 

@@ -6,21 +6,22 @@ using WebsiteBanHang.Models;
 using X.PagedList;
 using Microsoft.EntityFrameworkCore;
 using WebsiteBanHang.Areas.Admin.AdminDTO;
+using Microsoft.AspNetCore.Authorization;
 namespace WebsiteBanHang.Controllers
 {
-    
-    public class HomeController : Controller
+    public class UserController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public HomeController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
+        public UserController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<IActionResult> Index(int? page, string searchName, string selectedCategory)
+        [Authorize(Roles = "Customer")]
+        public IActionResult Index(int? page, string searchName, string selectedCategory)
         {
             var pageNumber = page ?? 1;
             int pageSize = 8;
@@ -53,7 +54,6 @@ namespace WebsiteBanHang.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
         public IActionResult ProductDetail(int productid)
         {
             var product = _context.Product
