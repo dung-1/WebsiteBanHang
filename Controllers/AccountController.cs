@@ -142,57 +142,57 @@ namespace WebsiteBanHang.Controllers
             return View();
         }
 
-        public IActionResult Login()
-        {
-            UserModel user = new UserModel();
-            return View(user);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Login(UserModel loginModel)
-        {
-            if (ModelState.IsValid)
+            public IActionResult Login()
             {
-                var hashedPassword = GetMd5Hash(loginModel.MatKhau);
-                var user = _context.User.FirstOrDefault(m => m.Email == loginModel.Email && m.MatKhau == hashedPassword);
+                UserModel user = new UserModel();
+                return View(user);
+            }
 
-                if (user != null)
+            [HttpPost]
+            public async Task<IActionResult> Login(UserModel loginModel)
+            {
+                if (ModelState.IsValid)
                 {
-                    var userRoles = _context.UserRole.Where(ur => ur.User_ID == user.Id).Select(ur => ur.Role.Name).ToList();
+                    var hashedPassword = GetMd5Hash(loginModel.MatKhau);
+                    var user = _context.User.FirstOrDefault(m => m.Email == loginModel.Email && m.MatKhau == hashedPassword);
 
-                    var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Email)
-            };
-
-                    foreach (var role in userRoles)
+                    if (user != null)
                     {
-                        claims.Add(new Claim(ClaimTypes.Role, role));
-                    }
+                        var userRoles = _context.UserRole.Where(ur => ur.User_ID == user.Id).Select(ur => ur.Role.Name).ToList();
 
-                    // Tạo ClaimsIdentity
-                    var userIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Email)
+                };
 
-                    // Tạo Principal
-                    var userPrincipal = new ClaimsPrincipal(userIdentity);
+                        foreach (var role in userRoles)
+                        {
+                            claims.Add(new Claim(ClaimTypes.Role, role));
+                        }
 
-                    // Đăng nhập người dùng bằng cookie
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal);
+                        // Tạo ClaimsIdentity
+                        var userIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                    if (userRoles.Contains("Admin"))
-                    {
-                        return RedirectToAction("Index", "AdminHome", new { area = "Admin" });
-                    }
-                    else if (userRoles.Contains("Customer"))
-                    {
-                        return RedirectToAction("Index", "Home");
+                        // Tạo Principal
+                        var userPrincipal = new ClaimsPrincipal(userIdentity);
+
+                        // Đăng nhập người dùng bằng cookie
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal);
+
+                        if (userRoles.Contains("Admin"))
+                        {
+                            return RedirectToAction("Index", "AdminHome", new { area = "Admin" });
+                        }
+                        else if (userRoles.Contains("Customer"))
+                        {
+                            return RedirectToAction("Index", "Home");
+                        }
                     }
                 }
+                // Đăng nhập không thành công, hiển thị thông báo lỗi
+                ModelState.AddModelError(string.Empty, "Tên đăng nhập hoặc mật khẩu không chính xác.");
+                return View(loginModel);
             }
-            // Đăng nhập không thành công, hiển thị thông báo lỗi
-            ModelState.AddModelError(string.Empty, "Tên đăng nhập hoặc mật khẩu không chính xác.");
-            return View(loginModel);
-        }
 
         private string GetMd5Hash(string input)
         {

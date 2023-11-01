@@ -20,6 +20,8 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         }
         [Route("admin")]
         [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOnly")]
+
         public IActionResult Index()
         {
             return View();

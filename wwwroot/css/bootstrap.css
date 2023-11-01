@@ -7339,7 +7339,8 @@ textarea.form-control-lg {
 }
 
 .text-danger {
-  color: #dc3545 !important;
+    padding-bottom: 10px;
+    color: #dc3545 !important;
 }
 
 .text-light {

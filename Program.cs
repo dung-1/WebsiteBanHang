@@ -35,7 +35,11 @@ namespace WebsiteBanHang
                     options.Cookie.Name = "DungCTS";
                     options.LoginPath = "/Account/Login";
                 });
-
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("EmployeeOnly", policy => policy.RequireRole("Employee"));
+            });
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())
