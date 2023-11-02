@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using WebsiteBanHang.Areas.Admin.AdminDTO;
 namespace WebsiteBanHang.Controllers
 {
-    
     public class HomeController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -19,7 +18,6 @@ namespace WebsiteBanHang.Controllers
             _context = context;
             _httpContextAccessor = httpContextAccessor;
         }
-
         public async Task<IActionResult> Index(int? page, string searchName, string selectedCategory)
         {
             var pageNumber = page ?? 1;

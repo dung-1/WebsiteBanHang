@@ -7,20 +7,14 @@
 <div class="main-panel">
     <div class="content-wrapper">
         <div class="page-header">
-            <h3 class="page-title fs-3"> Quản Lý User</h3>
+            <h3 class="page-title fs-3"> Quản Lý Khách Hàng</h3>
         </div>
         <div class="row">
             <div class="row grid-margin ">
-              
+
                 <div class="col-lg-6">
-                    @if (User.IsInRole("Admin"))
-                    {
-                    <button type="button" class="btn btn-info create-user">
-                        <i class="fa-solid fa-plus"></i> Thêm Người Dùng
-                    </button>
-                       }
+                   
                 </div>
-                                       
                 <div class="col-lg-6">
                     <form class="d-flex " role="search" asp-area="Admin" asp-controller="User" asp-action="SearchUsers">
                         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="searchName" id="searchName" value="@ViewBag.SearchName">
@@ -28,13 +22,13 @@
                     </form>
                 </div>
 
-                <div class="modal fade" id="Create_User" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal fade" id="Create_Brand" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                         </div>
                     </div>
                 </div>
-                <div class="modal fade" id="edit-user-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal fade" id="edit-brand-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                         </div>
@@ -51,11 +45,10 @@
                                     <th> Mã Người Dùng </th>
                                     <th> Họ Tên </th>
                                     <th> Email</th>
-                                     <th> Vai Trò</th>
-                                    @if (User.IsInRole("Admin"))
-                                    {
+                                     <th> Vai Trò</th> 
                                     <th> Chỉnh Sửa </th>
-                                 
+                                      @if (User.IsInRole("Admin"))
+                                        {
                                     <th> Xóa </th>
                                         }
                                 </tr>
@@ -78,13 +71,12 @@
                                  
                                          <td width="20%">
                                             @item.VaiTro
-                                        </td>
-                                        @if (User.IsInRole("Admin"))
-                                        {
+                                        </td> 
                                         <td>
                                             <a data-id="@item.Id" class="btn btn-sm btn-warning edit-brand"><i class="bi bi-pencil-square"></i><i class="fa-solid fa-pen-to-square"></i> Chỉnh Sửa</a>&nbsp;
                                         </td>
-                                     
+                                        @if (User.IsInRole("Admin"))
+                                        {
                                         <td width="10%">
                                            
                                                 <a asp-area="Admin" asp-controller="Brand" asp-action="Delete" asp-route-id="@item.Id" data-id="@item.Id" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i><i class="fa-solid fa-trash-can"></i> Xóa </a>

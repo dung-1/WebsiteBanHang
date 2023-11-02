@@ -10,6 +10,8 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
     [Area("admin")]
     [Route("admin")]
     [Route("admin/homeadmin")]
+    [Authorize(Roles = "Admin,Employee")]
+
     public class AdminHomeController : Controller
 
     {
@@ -19,7 +21,6 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             _context = context;
         }
         [Route("admin")]
-        [Authorize(Roles = "Admin,Employee")]
         //[Authorize(Policy = "AdminOnly")]
 
         public IActionResult Index()
@@ -36,14 +37,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         {
             return View();
         }
-        public IActionResult Logout()
-        {
-            // Đăng xuất người dùng bằng cách xóa phiên đăng nhập
-            HttpContext.SignOutAsync();
-
-            // Chuyển đến trang đăng nhập trong controller Account bên ngoài khu vực Admin
-            return RedirectToAction("Login", "Account", new { area = "Login" });
-        }
+     
 
     }
 }

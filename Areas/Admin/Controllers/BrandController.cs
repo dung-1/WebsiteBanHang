@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebsiteBanHang.Areas.Admin.Data;
 using WebsiteBanHang.Areas.Admin.Models;
@@ -7,6 +8,8 @@ using static WebsiteBanHang.Areas.Admin.Data.ApplicationDbContext;
 namespace WebsiteBanHang.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin,Employee")]
+
     public class BrandController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -14,6 +17,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         {
             _context = context;
         }
+
         public IActionResult Index()
         {
             // Sắp xếp lại danh sách theo ID giảm dần (mới nhất lên đầu)

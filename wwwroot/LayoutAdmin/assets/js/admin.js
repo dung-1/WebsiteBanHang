@@ -79,3 +79,16 @@ $(document).on("click", ".edit-produt", function (e) {
         }
     })
 });
+// Modal Create User
+$(document).on("click", ".create-user", function (e) {
+
+    $.ajax({
+        url: "/Admin/User/Create",// Đường dẫn đến API của bạn
+        type: "GET",
+        dataType: "html", // Đặt kiểu dữ liệu trả về
+        success: function (data) {
+            $('#Create_User').find('.modal-content').html(data)
+            $('#Create_User').modal('show');
+        }
+    })
+});

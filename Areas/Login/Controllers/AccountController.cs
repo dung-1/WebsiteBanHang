@@ -36,11 +36,19 @@ namespace WebsiteBanHang.Controllers
         [Route("formSignUp")]
         public IActionResult formSignUp(string email, string fullname, string phoneNumber, string address, string password)
         {
-            int userCode = 1; // Giá trị mặc định nếu chưa có trong session
-            if (HttpContext.Session.GetInt32("UserCode") != null)
+            string userCodeString = "user00001"; // Giá trị mặc định
+
+            var lastUser = _context.User.OrderByDescending(u => u.Id).FirstOrDefault();
+
+            if (lastUser != null)
             {
-                userCode = (int)(HttpContext.Session.GetInt32("UserCode") + 1);
+                // Lấy mã người dùng cuối cùng, tăng giá trị lên 1 và sử dụng cho người dùng mới
+                string lastUserCode = lastUser.MaNguoiDung;
+                int lastUserCodeNumber = int.Parse(lastUserCode.Substring(4)); // Loại bỏ "user" và chuyển thành số
+                int newCodeNumber = lastUserCodeNumber + 1;
+                userCodeString = "user" + newCodeNumber.ToString("D5");
             }
+
             bool isEmailExists = _context.User.Any(u => u.Email == email);
             if (isEmailExists)
             {
@@ -51,7 +59,6 @@ namespace WebsiteBanHang.Controllers
             // Email không trùng, lưu thông tin vào session
             Random random = new Random();
             int code = random.Next(100000, 999999);
-            string userCodeString = "user" + (userCode + 1).ToString("D5");
             HttpContext.Session.SetInt32("VerificationCode", code);// Tạo mã người dùng mới
             HttpContext.Session.SetString("iserCode", userCodeString);
             HttpContext.Session.SetString("email", email);
@@ -168,11 +175,10 @@ namespace WebsiteBanHang.Controllers
         }
 
         [HttpPost]
-        [Route("formLogin")]
-        public async Task<IActionResult> formLogin(UserModel loginModel)
+        [Route("Login")]
+        public async Task<IActionResult> Login(UserModel loginModel)
         {
-            if (ModelState.IsValid)
-            {
+          
                 var hashedPassword = GetMd5Hash(loginModel.MatKhau);
                 var user = _context.User.FirstOrDefault(m => m.Email == loginModel.Email && m.MatKhau == hashedPassword);
 
@@ -211,7 +217,7 @@ namespace WebsiteBanHang.Controllers
                         else if (userRoles.Contains("Customer"))
                         {
                             return RedirectToAction("Index", "User", new { area = " " });
-                        }
+                        
                     }
                 }
             }
@@ -234,6 +240,13 @@ namespace WebsiteBanHang.Controllers
                 }
                 return builder.ToString();
             }
+        }
+        public IActionResult Logout()
+        {
+            // Đăng xuất người dùng bằng cách xóa phiên đăng nhập
+            HttpContext.SignOutAsync();
+
+            return RedirectToAction("Index", "Home", new { area = " " });
         }
 
     }

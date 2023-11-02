@@ -207,13 +207,13 @@ li.fb a::before {
     .the-form [type="password"] {
         padding: 15px;
         font-size: 16px;
-        background: rgb(195 195 195 / 88%);
+        background: rgb(195 195 195 / 60%);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 3px;
         margin-bottom: 15px;
         -webkit-transition: background 0.3s;
         transition: background 0.3s;
-        color: #e6e6e6;
+        color: #000000;
     }
 
         .the-form [type="email"]::-webkit-input-placeholder,

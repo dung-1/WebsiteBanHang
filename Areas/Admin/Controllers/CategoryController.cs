@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebsiteBanHang.Areas.Admin.Data;
 using WebsiteBanHang.Areas.Admin.Models;
 using X.PagedList;
@@ -7,6 +8,8 @@ using static WebsiteBanHang.Areas.Admin.Data.ApplicationDbContext;
 namespace WebsiteBanHang.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin,Employee")]
+
     public class CategoryController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -49,8 +52,6 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
                 _context.Category.Add(empobj);
                 _context.SaveChanges();
-
-                TempData["SuccessMessage"] = "Loại sản phẩm đã được thêm thành công."; // Thông báo thành công
 
                 return RedirectToAction("Index"); // Chuyển đến action "Index"
             }

@@ -27,23 +27,25 @@
 }
 
 select {
-  &.form-control {
-    padding: .4375rem .75rem;
-    border: 0;
-    outline: 1px solid $border-color;
-    color: $input-placeholder-color;
-    &:focus {
-      outline: 1px solid $border-color;
-    }
-    @each $color, $value in $theme-colors {
-      &.border-#{$color} {
-        outline: 1px solid $value;
+    &.form-control {
+        padding: .4375rem .75rem;
+        border: 0;
+        outline: 1px solid $border-color;
+        color: #161616;
         &:focus {
-          outline: 1px solid $value;
+            outline: 1px solid $border-color;
         }
-      }
+
+        @each $color, $value in $theme-colors {
+            &.border-#{$color} {
+                outline: 1px solid $value;
+
+                &:focus {
+                    outline: 1px solid $value;
+                }
+            }
+        }
     }
-  }
 }
 .form-group {
   label {

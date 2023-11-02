@@ -1,0 +1,50 @@
+﻿@model WebsiteBanHang.Areas.Admin.AdminDTO.UserCreateDto
+
+<div class="modal-header">
+    <h1 class="modal-title fs-5" id="exampleModalLabel">Thêm Người Dùng</h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <form asp-area="Admin" asp-controller="User" asp-action="Create">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="mb-3">
+            <label asp-for="Email" class="control-label">Email</label>
+            <input type="email" asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="MatKhau" class="control-label">Mật Khẩu</label>
+            <input type="password" asp-for="MatKhau" class="form-control" />
+            <span asp-validation-for="MatKhau" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="HoTen" class="control-label">Họ Tên</label>
+            <input asp-for="HoTen" class="form-control" />
+            <span asp-validation-for="HoTen" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="SoDienThoai" class="control-label">Số Điện Thoại</label>
+            <input type="number" asp-for="SoDienThoai" class="form-control" />
+            <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="DiaChi" class="control-label">Địa Chỉ</label>
+            <input asp-for="DiaChi" class="form-control" />
+            <span asp-validation-for="DiaChi" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="VaiTroId" class="control-label">Vai Trò</label>
+            <select asp-for="VaiTroId" asp-items="ViewBag.Vatrolist" name="VaiTroId" class="form-control">
+                <option value="">Chọn Vai Trò</option>
+            </select>
+            <span asp-validation-for="VaiTroId" class="text-danger"></span>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="submit" class="btn btn-primary">Lưu Thông Tin</button>
+        </div>
+    </form>
+</div>
+
+

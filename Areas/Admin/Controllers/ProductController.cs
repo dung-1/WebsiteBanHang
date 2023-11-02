@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebsiteBanHang.Areas.Admin.AdminDTO;
@@ -10,6 +11,7 @@ using static WebsiteBanHang.Areas.Admin.Data.ApplicationDbContext;
 namespace WebsiteBanHang.Areas.Admin.Controllers
 {
     [Area("Admin")]
+
     public class ProductController : Controller
     {
         private readonly ILogger<ProductController> _logger;
@@ -21,6 +23,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             _logger = logger;
 
         }
+        [Authorize(Roles = "Admin,Employee")]
 
         public IActionResult Index(int? page, string searchName)
         {

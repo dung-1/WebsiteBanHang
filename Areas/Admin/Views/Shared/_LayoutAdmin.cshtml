@@ -193,7 +193,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="@Url.Action("Index","AdminHome")">
                             <span class="menu-title">Dashboard</span>
                             <i class="mdi mdi-home menu-icon"></i>
                         </a>
@@ -212,17 +212,16 @@
                             </ul>
                         </div>
                     </li>
-                      @if (User.IsInRole("Admin"))
-                                        {
+                     
                     <li class="nav-item">
                             <a class="nav-link" href="@Url.Action("Index","User")">
                             <span class="menu-title">Quản Lý Người Dùng</span>
                             <i class="fa-solid fa-user menu-icon"></i>
                         </a>
                     </li>
-                                        }
+                                   
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="@Url.Action("Index","Customer")">
                             <span class="menu-title">Quản Lý Khách Hàng</span>
                             <i class="menu-icon  fa-solid fa-users"></i>
                         </a>
@@ -248,7 +247,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="Admin" asp-controller="AdminHome" asp-action="Logout">
+                        <a class="nav-link" asp-area="Login" asp-controller="Account" asp-action="Logout">
                             <span class="menu-title">Đăng Xuất</span>
                             <i class="fa-solid fa-right-from-bracket menu-icon"></i>
                         </a>

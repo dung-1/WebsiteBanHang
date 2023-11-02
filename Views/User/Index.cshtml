@@ -1,7 +1,7 @@
 ﻿﻿@using X.PagedList.Mvc.Core;
 @using X.PagedList.Web.Common;
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "User Page";
 }
 @model X.PagedList.IPagedList<WebsiteBanHang.Areas.Admin.Models.ProductModel>
 <section class="section-content mb-5">
@@ -26,8 +26,8 @@
             </div>
             }<!-- col.// -->
         </div>
-        <div class="card-body d-flex  justify-content-end">
-            @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchName = ViewBag.SearchName }), new PagedListRenderOptions
+        <div class="card-body d-flex justify-content-end">
+            @Html.PagedListPager(Model, page => Url.Action("Index", "User", new { page, searchName = ViewBag.SearchName, area = " " }), new PagedListRenderOptions
             {
             LiElementClasses = new string[] { "page-item" },
             PageClasses = new string[] { "page-link" },
