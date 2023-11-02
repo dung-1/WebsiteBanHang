@@ -10,6 +10,9 @@ namespace WebsiteBanHang.Areas.Admin.Models
         public int Id { get; set; }
 
         [Required]
+        [StringLength(10)]
+        public string? MaNguoiDung { get; set; }
+
         [StringLength(100)]
         public string? Email { get; set; }
 

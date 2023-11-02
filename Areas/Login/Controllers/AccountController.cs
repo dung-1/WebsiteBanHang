@@ -10,6 +10,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace WebsiteBanHang.Controllers
 {
@@ -35,7 +36,11 @@ namespace WebsiteBanHang.Controllers
         [Route("formSignUp")]
         public IActionResult formSignUp(string email, string fullname, string phoneNumber, string address, string password)
         {
-
+            int userCode = 1; // Giá trị mặc định nếu chưa có trong session
+            if (HttpContext.Session.GetInt32("UserCode") != null)
+            {
+                userCode = (int)(HttpContext.Session.GetInt32("UserCode") + 1);
+            }
             bool isEmailExists = _context.User.Any(u => u.Email == email);
             if (isEmailExists)
             {
@@ -46,7 +51,9 @@ namespace WebsiteBanHang.Controllers
             // Email không trùng, lưu thông tin vào session
             Random random = new Random();
             int code = random.Next(100000, 999999);
-            HttpContext.Session.SetInt32("VerificationCode", code);
+            string userCodeString = "user" + (userCode + 1).ToString("D5");
+            HttpContext.Session.SetInt32("VerificationCode", code);// Tạo mã người dùng mới
+            HttpContext.Session.SetString("iserCode", userCodeString);
             HttpContext.Session.SetString("email", email);
             HttpContext.Session.SetString("password", password);
             HttpContext.Session.SetString("fullname", fullname);
@@ -97,12 +104,14 @@ namespace WebsiteBanHang.Controllers
         public IActionResult formCheck_Verification(int code)
         {
             int? verificationCode = HttpContext.Session.GetInt32("VerificationCode");
+            string? userCodeString = HttpContext.Session.GetString("iserCode"); 
 
             if (verificationCode.HasValue && code == verificationCode.Value)
             {
                 // Tạo một đối tượng UserModel từ session
                 var userModel = new UserModel
                 {
+                    MaNguoiDung = userCodeString, // Sử dụng mã người dùng từ session
                     Email = HttpContext.Session.GetString("email"),
                     MatKhau = GetMd5Hash(HttpContext.Session.GetString("password")),
                     NgayTao = DateTime.Now
@@ -138,6 +147,7 @@ namespace WebsiteBanHang.Controllers
 
                 // Xóa mã code và các thông tin từ session sau khi đã sử dụng
                 HttpContext.Session.Remove("VerificationCode");
+                HttpContext.Session.Remove("iserCode");
                 HttpContext.Session.Remove("username");
                 HttpContext.Session.Remove("email");
                 HttpContext.Session.Remove("password");
@@ -175,10 +185,10 @@ namespace WebsiteBanHang.Controllers
                         var userRoles = _context.UserRole.Where(ur => ur.User_ID == user.Id).Select(ur => ur.Role.Name).ToList();
 
                         var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Email),
-                new Claim(ClaimTypes.Email, userDetail.HoTen) // Sử dụng thông tin từ UserDetail
-            };
+                        {
+                            new Claim(ClaimTypes.Name, user.Email),
+                            new Claim(ClaimTypes.Email, userDetail.HoTen) // Sử dụng thông tin từ UserDetail
+                        };
 
                         foreach (var role in userRoles)
                         {

@@ -12,8 +12,8 @@ using WebsiteBanHang.Areas.Admin.Data;
 namespace WebsiteBanHang.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231030022904_initial")]
-    partial class initial
+    [Migration("20231102024838_update")]
+    partial class update
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -200,9 +200,13 @@ namespace WebsiteBanHang.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("MaNguoiDung")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("MatKhau")
                         .HasMaxLength(32)

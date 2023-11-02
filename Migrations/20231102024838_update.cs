@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WebsiteBanHang.Migrations
 {
-    public partial class initial : Migration
+    public partial class update : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -76,7 +76,8 @@ namespace WebsiteBanHang.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    MaNguoiDung = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     MatKhau = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: true),
                     NgayTao = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
