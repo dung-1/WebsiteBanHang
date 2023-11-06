@@ -10,7 +10,7 @@
 
         <div class="mb-3">
             <label asp-for="MaSanPham" class="control-label"> Mã Sản Phẩm</label>
-            <input asp-for="MaSanPham" class="form-control" disabled/>
+            <input asp-for="MaSanPham" class="form-control" readonly />
             <span asp-validation-for="MaSanPham" class="text-danger"></span>
         </div>
         <div class="mb-3">
@@ -31,12 +31,15 @@
                 <option value="">Chọn loại sản phẩm</option>
             </select>
         </div>
-
-
         <div class="mb-3">
             <label asp-for="Gia" class="control-label">Gía Sản Phẩm</label>
             <input asp-for="Gia" class="form-control" />
             <span asp-validation-for="Gia" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="GiaGiam" class="control-label">Gía Giảm</label>
+            <input asp-for="GiaGiam" class="form-control" />
+            <span asp-validation-for="GiaGiam" class="text-danger"></span>
         </div>
         <div class="mb-3">
             <label asp-for="Image" class="control-label">Ảnh Sản Phẩm</label>

@@ -38,6 +38,12 @@
             <span asp-validation-for="Gia" class="text-danger"></span>
         </div>
         <div class="mb-3">
+            <label asp-for="GiaGiam" class="control-label">Gía Giảm</label>
+            <input asp-for="GiaGiam" class="form-control" />
+            <span asp-validation-for="GiaGiam" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
             <label asp-for="Image" class="control-label">Ảnh Sản Phẩm</label>
             <input type="file" name="imageFile"  asp-for="Image" class="form-control" />
             <span asp-validation-for="Image" class="text-danger"></span>

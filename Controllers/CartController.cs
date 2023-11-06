@@ -18,9 +18,11 @@ namespace WebsiteBanHang.Controllers
             _context = context;
             _httpContextAccessor = httpContextAccessor;
         }
+       
         public IActionResult Index()
         {
-            return View();
+
+            return View("Index", GetCartItems()); ;
         }
         public IActionResult CheckOut()
         {
@@ -39,6 +41,8 @@ namespace WebsiteBanHang.Controllers
             }
             return new List<CartItemModel>();
         }
+
+
 
         // Xóa cart khỏi session
         void ClearCart()
@@ -76,9 +80,12 @@ namespace WebsiteBanHang.Controllers
             // Lưu cart vào Session
             SaveCartSession(cart);
             // Chuyển đến trang hiện thị Cart
-            return View("Index", cart);
+            return RedirectToAction("Index");
+
+
         }
-        [Route("/removecart/{productid:int}", Name = "removecart")]
+
+
         public IActionResult RemoveCart([FromRoute] int productid)
         {
             var cart = GetCartItems();
@@ -93,7 +100,6 @@ namespace WebsiteBanHang.Controllers
             return View("Index", GetCartItems());
         }
 
-        [Route("/updatecart", Name = "updatecart")]
         [HttpPost]
         public IActionResult UpdateCart([FromForm] int productid, [FromForm] int Soluong)
         {
@@ -107,15 +113,17 @@ namespace WebsiteBanHang.Controllers
             }
             SaveCartSession(cart);
             // Trả về mã thành công (không có nội dung gì - chỉ để Ajax gọi)
-            return View("Index", GetCartItems());
-        }
-        [Route("/Cart", Name = "Cart")]
-        public IActionResult Cart()
-        {
-            return View("Index", GetCartItems());
+            //return View("Index", GetCartItems());
+          return  RedirectToAction("Index");
+
         }
 
-       
+        //[Route("/Cart", Name = "Cart")]
+        //public IActionResult Cart()
+        //{
+        //    return View("Index", GetCartItems());
+        //}
+
 
     }
 }

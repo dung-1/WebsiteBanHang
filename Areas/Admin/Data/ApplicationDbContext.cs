@@ -1,7 +1,6 @@
 ﻿using WebsiteBanHang.Areas.Admin.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata;
-using System.Drawing.Drawing2D;
+using WebsiteBanHang.Models;
 
 namespace WebsiteBanHang.Areas.Admin.Data
 {
@@ -17,16 +16,15 @@ namespace WebsiteBanHang.Areas.Admin.Data
         public DbSet<BrandModel> Brand { get; set; }
         public DbSet<CategoryModel> Category { get; set; }
         public DbSet<ProductModel> Product { get; set; }
-
         public DbSet<UserModel> User { get; set; }
         public DbSet<UserRoleModel> UserRole { get; set; }
         public DbSet<RoleModel> Role { get; set; }
-
         public DbSet<Users_Details> Users_Details { get; set; }
+        public DbSet<OrderDetaiModel> Order_Detai { get; set; }
+        public DbSet<OrderModel> Order { get; set; }
+        public DbSet<InventoriesModel> Inventory { get; set; }
         public DbSet<PermissionRoleModel> PermissionRole { get; set; }
-
         public DbSet<PermissionsModel> Permissions { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<BrandModel>()
@@ -53,11 +51,35 @@ namespace WebsiteBanHang.Areas.Admin.Data
                 .HasForeignKey(e => e.Role_ID)
                 .IsRequired();
 
+            modelBuilder.Entity<ProductModel>()
+                .HasMany(e => e.Order_Detai)
+                .WithOne(e => e.product)
+                .HasForeignKey(e => e.ProductId)
+                .IsRequired();
+
+            modelBuilder.Entity<OrderModel>()
+               .HasMany(e => e.ctdh)
+               .WithOne(e => e.order)
+               .HasForeignKey(e => e.OrderId)
+               .IsRequired();
+
+            modelBuilder.Entity<ProductModel>()
+                  .HasMany(e => e.Inventory)
+                  .WithOne(e => e.product)
+                  .HasForeignKey(e => e.ProductId)
+                  .IsRequired();
+
+                modelBuilder.Entity<UserModel>()
+               .HasMany(e => e.Order)
+               .WithOne(e => e.user)
+               .HasForeignKey(e => e.UserID)
+               .IsRequired();
+
             modelBuilder.Entity<RoleModel>()
-            .HasMany(e => e.PermissionRole)
-            .WithOne(e => e.Role)
-            .HasForeignKey(e => e.Role_ID)
-            .IsRequired();
+                .HasMany(e => e.PermissionRole)
+                .WithOne(e => e.Role)
+                .HasForeignKey(e => e.Role_ID)
+                .IsRequired();
 
             modelBuilder.Entity<PermissionsModel>()
                 .HasMany(e => e.PermissionRole)

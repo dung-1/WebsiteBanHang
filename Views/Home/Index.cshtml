@@ -1,4 +1,5 @@
-﻿﻿@using X.PagedList.Mvc.Core;
+﻿@using System.Globalization;
+﻿@using X.PagedList.Mvc.Core;
 @using X.PagedList.Web.Common;
 @{
     ViewData["Title"] = "Home Page";
@@ -8,22 +9,38 @@
     <div class="container">
         <header class="section-heading py-4 d-flex justify-content-between">
             <h3 class="section-title d-flex justify-content-between">Danh Sách Sản phẩm</h3>
-@*             <a class="btn btn-secondary" href="#" role="button" style="height: fit-content;">Xem tất cả</a>
- *@        </header> <!-- section-heading.// -->
+            @*             <a class="btn btn-secondary" href="#" role="button" style="height: fit-content;">Xem tất cả</a>
+            *@
+        </header> <!-- section-heading.// -->
         <div class="row item-grid">
-             @foreach (var product in Model)
-            {   
-            <div class="col-lg-3 col-md-6">
-                <div class="card p-3 mb-4">
-                        <a asp-area=" " asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id" class="img-wrap text-center">
+            @foreach (var product in Model)
+            {
+                <div class="col-lg-3 col-md-6">
+                    <div class="card p-3 mb-4">
+                        <a href="#" class="img-wrap text-center">
                             <img class="img-fluid" src="@product.Image">
-                    </a>
-                    <figcaption class="info-wrap mt-2">
-                            <a asp-area=""  asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id class="title">@product.TenSanPham</a>
-                            <div class="price mt-1 fw-bold">@product.Gia</div>
-                    </figcaption>
+                        </a>
+                        <figcaption class="info-wrap mt-2">
+                            <a href="#" class="title text-capitalize">@product.TenSanPham</a>
+                            <div class="row">
+                                <div class="col-5 price mt-1 fw-bold text-danger">
+                                    @string.Format(new CultureInfo("vi-VN", false), "{0:c0}",@product.Gia)
+                                </div>
+                                <div class="col-7 price mt-1  " style="padding-top: 5px;font-size: 14px;color:#a29c9cd7;text-decoration: line-through;font-style: normal;">
+                                    @string.Format(new CultureInfo("vi-VN", false), "{0:c0}",@product.Gia)
+                                </div>
+
+                                <div class="row">
+                                    @* <div class="col-4 price mt-1  " style="padding-top: 5px;font-size: 14px;color:#a29c9cd7;text-decoration: line-through;font-style: normal;">
+                                </div> *@
+                                    <div class="col-12 price  fw-bold text-danger">
+                                        <a asp-area="" asp-controller="Cart" asp-action="AddToCart" asp-route-id="@product.Id" class="btn btn-primary"><i class="fa-solid fa-cart-plus"></i>  Mua Ngay</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </figcaption>
+                    </div>
                 </div>
-            </div>
             }<!-- col.// -->
         </div>
         <div class="card-body d-flex justify-content-end">
@@ -36,6 +53,6 @@
             })
         </div>
 
-           <!-- row.// -->
+        <!-- row.// -->
     </div> <!-- container.// -->
 </section> 

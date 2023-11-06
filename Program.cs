@@ -24,6 +24,11 @@ namespace WebsiteBanHang
                 cfg.Cookie.Name = "dungCTS";
                 cfg.IdleTimeout = new TimeSpan(0, 60, 0);
             });
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+
+            });
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
@@ -64,7 +69,7 @@ namespace WebsiteBanHang
                  name: "areas",
                  areaName: "Login",
                  pattern: "{area:exists}/{controller=Account}/{action=Index}/{id?}"
-             );
+                );
 
                 endpoints.MapControllerRoute(
                     name: "default",

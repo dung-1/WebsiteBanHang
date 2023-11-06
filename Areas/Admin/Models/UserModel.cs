@@ -1,6 +1,7 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
 using System.Reflection.Metadata;
+using WebsiteBanHang.Models;
 
 namespace WebsiteBanHang.Areas.Admin.Models
 {
@@ -21,6 +22,7 @@ namespace WebsiteBanHang.Areas.Admin.Models
         public DateTime NgayTao { get; set; }
         public Users_Details? userDetail { get; set; } // Reference navigation to dependent
         public ICollection<UserRoleModel> UserRole { get; } = new List<UserRoleModel>(); // Collection navigation containing dependents
+        public ICollection<OrderModel> Order { get; } = new List<OrderModel>(); // Collection navigation containing dependents
 
     }
 }

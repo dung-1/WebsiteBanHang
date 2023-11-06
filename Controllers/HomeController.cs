@@ -21,7 +21,7 @@ namespace WebsiteBanHang.Controllers
         public async Task<IActionResult> Index(int? page, string searchName, string selectedCategory)
         {
             var pageNumber = page ?? 1;
-            int pageSize = 8;
+            int pageSize = 12;
 
             IQueryable<ProductModel> products = _context.Product;
 
@@ -71,11 +71,9 @@ namespace WebsiteBanHang.Controllers
                 Id = product.Id,
                 Gia = product.Gia,
                 HangTen = product.Brand.TenHang,
-                LoaiTen = product.Category.TenLoai,
                 Image = product.Image,
                 MaSanPham = product.MaSanPham,
                 TenSanPham = product.TenSanPham,
-                ThongTinSanPham = product.ThongTinSanPham
             };
 
             return View(productView);

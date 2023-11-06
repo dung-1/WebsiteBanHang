@@ -1,19 +1,16 @@
-﻿$(document).ready(function () {
-    $(".updatecartitem").click(function (event) {
-        event.preventDefault();
-        var productid = $(this).attr("data-productid");
-        var quantity = $("#quantity-" + productid).val();
-        $.ajax({
-            type: "POST",
-            url: "@Url.RouteUrl("updatecart")",
-            data: {
-                productid: productid,
-                quantity: quantity
-            },
-            success: function (result) {
-                window.location.href = "@Url.RouteUrl("Cart")";
-            }
-        });
-    });
-});
+﻿function addToCart(id) {
+    $.ajax({
+        type: "POST",
+        url: "/Cart/AddToCart/" + id,
+        success: function (response) {
+            // Xử lý kết quả trả về nếu cần thiết
+            // Ví dụ: cập nhật giao diện người dùng
 
+            // Chuyển đến trang giỏ hàng
+            window.location.href = "/Cart/Index";
+        },
+        error: function (xhr, status, error) {
+            // Xử lý lỗi nếu có
+        }
+    });
+}

@@ -1,4 +1,5 @@
-﻿@using X.PagedList.Mvc.Core;
+﻿@using System.Globalization;
+@using X.PagedList.Mvc.Core;
 @using X.PagedList.Web.Common;
 @{
     ViewData["Title"] = "Product";
@@ -58,9 +59,7 @@
                                     <th> Mã Sản Phẩm </th>
                                     <th> Tên  </th>
                                     <th> Hãng </th>
-                                    <th> Loại  </th>
                                     <th> Gía </th>
-                                    <th> Thông Tin </th>
                                     <th> Ảnh </th>
                                     <th> Chỉnh Sửa </th>
                                       @if (User.IsInRole("Admin"))
@@ -82,15 +81,11 @@
                                         <td>
                                             @item.HangTen
                                         </td>
+                                      
                                         <td>
-                                            @item.LoaiTen
+                                            @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", item.Gia)
                                         </td>
-                                        <td>
-                                            @item.Gia
-                                        </td>
-                                        <td>
-                                            @item.ThongTinSanPham
-                                        </td>
+                                      
                                         <td>
                                             <img src="~/@item.Image" style="height: 70px; width: 70px;" alt="Hình ảnh sản phẩm" />
 

@@ -57,11 +57,9 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                     Id = e.Id,
                     Gia = e.Gia,
                     HangTen = e.Brand.TenHang,
-                    LoaiTen = e.Category.TenLoai,
                     Image = e.Image,
                     MaSanPham = e.MaSanPham,
                     TenSanPham = e.TenSanPham,
-                    ThongTinSanPham = e.ThongTinSanPham
                 })
                 .ToPagedList(pageNumber, pageSize);
 
@@ -144,40 +142,41 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Edit(ProductModel updatedProduct, IFormFile imageFile)
         {
-         
-                var brand = _context.Brand.Find(updatedProduct.HangId);
-                var category = _context.Category.Find(updatedProduct.LoaiId);
-                var existingProduct = _context.Product.Find(updatedProduct.Id);
 
-                if (existingProduct != null)
+            var brand = _context.Brand.Find(updatedProduct.HangId);
+            var category = _context.Category.Find(updatedProduct.LoaiId);
+            var existingProduct = _context.Product.Find(updatedProduct.Id);
+
+            if (existingProduct != null)
+            {
+                if (imageFile != null)
                 {
-                    if (imageFile != null)
+                    // Nếu có tệp ảnh mới được tải lên, cập nhật ảnh
+                    var imagePath = "images/";
+                    var imageName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imagePath, imageName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
                     {
-                        // Nếu có tệp ảnh mới được tải lên, cập nhật ảnh
-                        var imagePath = "images/";
-                        var imageName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
-                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imagePath, imageName);
-
-                        using (var stream = new FileStream(filePath, FileMode.Create))
-                        {
-                            imageFile.CopyTo(stream);
-                        }
-
-                        existingProduct.Image = Path.Combine(imagePath, imageName);
+                        imageFile.CopyTo(stream);
                     }
-                    // Cập nhật các thông tin khác của sản phẩm
-                    existingProduct.Id = updatedProduct.Id;
-                    existingProduct.MaSanPham = updatedProduct.MaSanPham;
-                    existingProduct.TenSanPham = updatedProduct.TenSanPham;
-                    existingProduct.ThongTinSanPham = updatedProduct.ThongTinSanPham;
-                    existingProduct.Gia = updatedProduct.Gia;
-                    existingProduct.HangId = updatedProduct.HangId;
-                    existingProduct.LoaiId = updatedProduct.LoaiId;
-                    updatedProduct.Brand = brand;
-                    updatedProduct.Category = category;
 
-                    _context.Product.Update(existingProduct);
-                    _context.SaveChanges();
+                    existingProduct.Image = Path.Combine(imagePath, imageName);
+                }
+                // Cập nhật các thông tin khác của sản phẩm
+                existingProduct.Id = updatedProduct.Id;
+                existingProduct.MaSanPham = updatedProduct.MaSanPham;
+                existingProduct.TenSanPham = updatedProduct.TenSanPham;
+                existingProduct.ThongTinSanPham = updatedProduct.ThongTinSanPham;
+                existingProduct.Gia = updatedProduct.Gia;
+                existingProduct.GiaGiam = updatedProduct.GiaGiam;
+                existingProduct.HangId = updatedProduct.HangId;
+                existingProduct.LoaiId = updatedProduct.LoaiId;
+                updatedProduct.Brand = brand;
+                updatedProduct.Category = category;
+
+                _context.Product.Update(existingProduct);
+                _context.SaveChanges();
                 return RedirectToAction("Index");
             }
 
@@ -196,6 +195,6 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             _context.SaveChanges();
             return RedirectToAction("Index");
         }
-        
+
     }
 }

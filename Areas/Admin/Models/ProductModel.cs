@@ -26,7 +26,8 @@ namespace WebsiteBanHang.Areas.Admin.Models
         public CategoryModel Category { get; set; } = null!;
 
         [Required]
-        public int Gia { get; set; }
+        public decimal Gia { get; set; }
+        public decimal GiaGiam { get; set; }
         [StringLength(255)]
         public string? Image { get; set; }
 
@@ -34,7 +35,9 @@ namespace WebsiteBanHang.Areas.Admin.Models
         [StringLength(100)]
         public string? ThongTinSanPham { get; set; }
 
+        public ICollection<OrderDetaiModel> Order_Detai { get; } = new List<OrderDetaiModel>(); // Collection navigation containing dependents
 
+        public ICollection<InventoriesModel> Inventory { get; } = new List<InventoriesModel>(); // Collection navigation containing dependents
 
     }
 }
