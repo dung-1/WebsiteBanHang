@@ -96,6 +96,8 @@ namespace WebsiteBanHang.Areas.Admin.Data
               .HasKey(ur => new { ur.User_ID, ur.Role_ID });
             modelBuilder.Entity<PermissionRoleModel>()
              .HasKey(ur => new { ur.Permission_ID, ur.Role_ID });
+            modelBuilder.Entity<OrderModel>().Property(e => e.UserID).IsRequired(false);
+
         }
     }
 }

@@ -60,6 +60,7 @@ namespace WebsiteBanHang
 
             app.UseEndpoints(endpoints =>
             {
+
                 endpoints.MapAreaControllerRoute(
                     name: "areas",
                     areaName: "Admin",
@@ -70,11 +71,11 @@ namespace WebsiteBanHang
                  areaName: "Login",
                  pattern: "{area:exists}/{controller=Account}/{action=Index}/{id?}"
                 );
-
                 endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}"
-                );
+               name: "default",
+               pattern: "{controller=Home}/{action=Index}/{id?}"
+           );
+
             });
 
             app.Run();

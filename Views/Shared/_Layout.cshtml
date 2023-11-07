@@ -17,6 +17,7 @@
     <link href="~/css/bootstrap-icons.css" type="text/css" rel="stylesheet">
     <!-- Include SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.9.0/sweetalert2.min.js" integrity="sha512-GAaXlfJeIbLNG2LQu2v4pf8YEc7iPz+GE3LZyUmdR7d7Id5JsER9vmJVxMKw1MqmdlVh3NXxTxQVd9AS53G+4w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- Custom Styles -->
     <link href="~/css/styles.css" type="text/css" rel="stylesheet">
 </head>
@@ -28,12 +29,12 @@
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-lg-3 py-3">
-                        <a class="text-body" asp-area=" " asp-controller="Home" asp-action="Index">
+                        <a class="text-body"  asp-controller="Home" asp-action="Index">
                             <h3>Shop Bán Laptop</h3>
                         </a>
                     </div> <!-- col.// -->
                     <div class="col-lg-4 col-xl-5">
-                        <form asp-area=" " asp-controller="Home" asp-action="Index">
+                        <form  asp-controller="Home" asp-action="Index">
                             <div class="input-group w-100">
                                 <input type="text" class="form-control" placeholder="Nhập từ khóa cần tìm ..." name="searchName" id="searchName" value="@ViewBag.SearchName">
                                 <button type="submit" class="btn btn-primary">
@@ -168,7 +169,10 @@
             <div class="container-fluid">© 2021 — Shop Bán Sách</div> <!-- container-fluid.// -->
         </section> <!-- footer-bottom.// -->
     </footer> <!-- section-footer.// -->
-    <script src="~/js/jquery-3.3.1.min.js"></script>
+    <!-- Sử dụng CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <!-- Bao gồm SweetAlert2 từ CDN -->
     <script src="~/js/Cart.js"></script>
 </body>

@@ -21,7 +21,7 @@ namespace WebsiteBanHang.Controllers
         public async Task<IActionResult> Index(int? page, string searchName, string selectedCategory)
         {
             var pageNumber = page ?? 1;
-            int pageSize = 12;
+            int pageSize = 8;
 
             IQueryable<ProductModel> products = _context.Product;
 
@@ -29,21 +29,17 @@ namespace WebsiteBanHang.Controllers
             {
                 products = products.Where(p => p.TenSanPham.Contains(searchName));
             }
+            var pagedProducts = products.ToList();
 
-            if (!string.IsNullOrEmpty(selectedCategory) && selectedCategory != "All")
-            {
-                products = products.Where(p => p.Category.TenLoai == selectedCategory);
-            }
 
-            IPagedList<ProductModel> pagedProducts = products.ToPagedList(pageNumber, pageSize);
+            IPagedList<ProductModel> pagedProductsList = pagedProducts.ToPagedList(pageNumber, pageSize);
             ViewBag.SearchName = searchName;
 
-            // Lấy danh sách loại sản phẩm để truyền vào view
-            var categories = _context.Category.Select(c => c.TenLoai).Distinct().ToList();
-            ViewBag.Categories = categories;
 
-            return View(pagedProducts);
+            return View(pagedProductsList);
         }
+
+
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

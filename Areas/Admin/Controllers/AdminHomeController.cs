@@ -27,17 +27,5 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         {
             return View();
         }
-        [Route("Order")]
-        public IActionResult Order()
-        {
-            return View();
-        }
-        [Route("OrderDetail")] 
-        public IActionResult OrderDetail()
-        {
-            return View();
-        }
-     
-
     }
 }

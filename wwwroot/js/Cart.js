@@ -14,3 +14,78 @@
         }
     });
 }
+$(document).ready(function () {
+    $(".updatecartitem").click(function () {
+        var productId = $(this).data("productid");
+        var quantity = $("#quantity-" + productId).val();
+
+        // Gọi AJAX để cập nhật số lượng
+        $.ajax({
+            url: "/Cart/UpdateCartItem",
+            method: "POST",
+            data: { productId: productId, quantity: quantity },
+            success: function (data) {
+                // Cập nhật thành công, hiển thị thông báo
+                Swal.fire("cập nhật thành công", "", "success").then(function () {
+                    // Sau khi người dùng đóng thông báo, làm điều gì đó (nếu cần)
+                    // Ví dụ: Reload lại trang giỏ hàng
+                    location.reload();
+                });
+            },
+            error: function () {
+                // Xử lý lỗi nếu có
+                Swal.fire("Lỗi", "Không thể cập nhật sản phẩm.", "error");
+            }
+        });
+    });
+});
+
+
+
+
+$(".delete-item").on("click", function (e) {
+    e.preventDefault(); // Ngăn chặn hành động mặc định của liên kết
+
+    var link = $(this).attr("href");
+
+    Swal.fire({
+        title: "Xác nhận xóa sản phẩm?",
+        text: "Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?",
+        icon: "error",
+        showCancelButton: true,
+        confirmButtonText: "Xóa",
+        cancelButtonText: "Hủy",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Gọi AJAX để xóa sản phẩm
+            $.ajax({
+                url: link,
+                method: "POST",
+                success: function (data) {
+                    // Hiển thị thông báo xóa thành công
+                    Swal.fire("Xóa thành công", "", "success").then(function () {
+                        // Sau khi người dùng đóng thông báo, làm điều gì đó (nếu cần)
+                        // Ví dụ: Reload lại trang giỏ hàng
+                        location.reload();
+                    });
+                },
+                error: function () {
+                    // Xử lý lỗi nếu có
+                    Swal.fire("Lỗi", "Không thể xóa sản phẩm.", "error");
+                }
+            });
+        }
+    });
+});
+$(document).on("click", ".create-checkout", function (e) {
+
+    $.ajax({
+        url: "/Cart/Checkoutcart",// Đường dẫn đến API của bạn
+        type: "GET",
+        dataType: "html", // Đặt kiểu dữ liệu trả về
+        success: function (data) {
+            $('#Create_checkout').find('.modal-content').html(data)
+            $('#Create_checkout').modal('show');
+        }
+    })
+});

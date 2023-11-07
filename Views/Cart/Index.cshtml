@@ -15,7 +15,12 @@
             <h2 class="title-page">Giỏ hàng</h2>
         </div> <!-- container.// -->
     </section> <!-- section-pagetop.// -->
-
+    <div class="modal fade" id="Create_checkout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>
     <section class="section-content padding-y">
         <div class="container">
             <div class="row">
@@ -43,7 +48,7 @@
                                                 <figure class="itemside">
                                                     <div class="float-start me-3"><img src="/@cartitem.Product.Image" style="width:80px;height:80px"></div>
                                                     <figcaption class="info">
-                                                        <a href="#" class="title">@cartitem.Product.TenSanPham</a>
+                                                        <span class="title text-capitalize">@cartitem.Product.TenSanPham</span>
                                                     </figcaption>
                                                 </figure>
                                             </td>
@@ -53,16 +58,17 @@
                                                 </div>
                                             </td>
                                             <td>
-
-                                                <input asp-for="@cartitem.Soluong" id="@($"quantity-{cartitem.Product.Id}")" class="form-control">
-                                            </td>
+                                                    <input asp-for="@cartitem.Soluong" id="@($"quantity-{cartitem.Product.Id}")" class="form-control">
+                                            </td>                                            
                                             <td class="text-center text-nowrap">
                                                 <button class="btn btn-success updatecartitem"
-                                                        asp-route-productid="@cartitem.Product.Id">
-                                                        <i class="fa-solid fa-square-pen"></i>
-                                                        Cập nhật
+                                                        data-productid="@cartitem.Product.Id">
+                                                    <i class="fa-solid fa-square-pen"></i>
+                                                    Cập nhật
                                                 </button>
-                                                <a asp-area=" " asp-controller="Cart" asp-action="RemoveCart" asp-route-productid="@cartitem.Product.Id" class="btn btn-danger ms-1"> <i class="fa-solid fa-delete-left"></i> Xóa</a>
+                                                <a asp-controller="Cart" asp-action="RemoveFromCart" asp-route-id="@cartitem.Product.Id" class="btn btn-danger ms-1 delete-item">
+                                                    <i class="fa-solid fa-delete-left"></i> Xóa
+                                                </a>
                                             </td>
                                         </tr>
 
@@ -72,8 +78,8 @@
                         </div> <!-- table.responsive-md.// -->
 
                         <div class="card-body border-top">
-                            <a href="#" class="btn btn-primary float-end"> <i class="fa-solid fa-receipt"></i> Đặt hàng</a>
-                            <a asp-area=" " asp-controller="Home" asp-action="Index" class="btn btn-secondary"><i class="fa-solid fa-circle-left"></i> Tiếp tục mua sắm</a>
+                            <a class="btn btn-primary float-end create-checkout"> <i class="fa-solid fa-receipt"></i> Đặt hàng</a>
+                            <a  asp-controller="Home" asp-action="Index" class="btn btn-secondary"><i class="fa-solid fa-circle-left"></i> Tiếp tục mua sắm</a>
                         </div> <!-- card-body.// -->
 
                     </div> <!-- card.// -->
