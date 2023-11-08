@@ -89,3 +89,49 @@ $(document).on("click", ".create-checkout", function (e) {
         }
     })
 });
+// updateCartItemCount.js
+
+function updateCartItemCount() {
+    $.ajax({
+        type: "GET",
+        url: "/Cart/GetCartItemCount",
+        success: function (data) {
+            $("#cartItemCount").text(data);
+        },
+        error: function () {
+            console.log("Lỗi khi lấy số lượng sản phẩm trong giỏ hàng.");
+        }
+    });
+}
+
+// Gọi hàm cập nhật số lượng sản phẩm trong giỏ hàng khi trang web được tải
+updateCartItemCount();
+
+
+
+// Tạo hàm để gọi action ListCategory và hiển thị danh mục sản phẩm
+// Tạo hàm để gọi action ListCategory và hiển thị danh mục sản phẩm
+function loadCategories() {
+    $.ajax({
+        type: "GET",
+        url: "/Home/ListCategory", // Thay thế 'ControllerName' bằng tên thật của controller
+        dataType: "json",
+        success: function (data) {
+            var categoryDropdown = $("#categoryDropdown");
+            categoryDropdown.empty();
+            $.each(data, function (index, item) {
+                categoryDropdown.append(`<li><a class="dropdown-item" href="#">${item.tenLoai}</a></li>`);
+            });
+            //categoryDropdown.append(`<li><hr class="dropdown-divider"></li>`);
+        //    categoryDropdown.append(`<li><a class="dropdown-item" href="#">Tất cả danh mục</a></li>`);
+        },
+        error: function () {
+            console.log("Lỗi khi tải danh mục sản phẩm.");
+        }
+    });
+}
+
+// Gọi hàm để tải danh mục sản phẩm khi trang web được tải
+loadCategories();
+
+

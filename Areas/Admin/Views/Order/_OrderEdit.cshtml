@@ -1,0 +1,49 @@
+﻿@model WebsiteBanHang.Areas.Admin.Models.OrdersModel
+@using System.Globalization;
+
+
+<div class="modal-header">
+    <h1 class="modal-title fs-5" id="exampleModalLabel">Sửa Hãng sản phẩm</h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <form asp-action="#">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="id" class="form-control" />
+        <div class="mb-3">
+            <label asp-for="MaHoaDon" class="control-label"></label>
+            <input asp-for="MaHoaDon" class="form-control" />
+            <span asp-validation-for="MaHoaDon" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="UserID" class="control-label"></label>
+            <select asp-for="UserID" asp-items="ViewBag.UserDetailList" class="form-control"></select>
+            <span asp-validation-for="UserID" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="ngayBan" class="control-label"></label>
+            <input asp-for="ngayBan" class="form-control" />
+            <span asp-validation-for="ngayBan" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="tongTien" class="control-label"></label>
+            <input asp-for="tongTien" class="form-control" />
+            <span asp-validation-for="tongTien" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="trangThai" class="control-label"></label>
+            <input asp-for="trangThai" class="form-control" />
+            <span asp-validation-for="trangThai" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="LoaiHoaDon" class="control-label"></label>
+            <input asp-for="LoaiHoaDon" class="form-control" />
+            <span asp-validation-for="LoaiHoaDon" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <input type="submit" value="Save" class="btn btn-primary" />
+        </div>
+    </form>
+</div>
+
+

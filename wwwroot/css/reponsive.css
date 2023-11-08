@@ -1,0 +1,24 @@
+/* Mobile: width:<740px */
+@media only screen and (max-width:740px) {
+    .hide-mobile {
+        display: none;
+    }
+   
+}
+
+/* Tablet: width >= 740px and width < 1024px */
+@media only screen and (min-width: 740px) and (max-width: 1024px) {
+    .hide-tablet {
+        display: none;
+    }    
+    header .navbar__search-form {
+       flex-grow: 1; 
+    }
+    
+}
+/* PC: width >= 1024px */
+@media only screen and (min-width: 64em) {
+    header .navbar__search-form {
+        width: 40%;
+    }
+}

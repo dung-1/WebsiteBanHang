@@ -1,19 +1,22 @@
-﻿@{
+﻿@using System.Globalization;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
+@{
     ViewData["Title"] = "View";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
-@model IEnumerable<WebsiteBanHang.Areas.Admin.Models.>
+@model X.PagedList.IPagedList<WebsiteBanHang.Areas.Admin.AdminDTO.OderDto>
 <div class="main-panel">
     <div class="content-wrapper">
         <div class="page-header">
-            <h3 class="page-title fs-3"> Quản Lý Hãng</h3>
+            <h3 class="page-title fs-3"> Hóa Đơn</h3>
         </div>
         <div class="row">
             <div class="row grid-margin ">
 
                 <div class="col-lg-6">
-                    <button type="button" class="btn btn-info create-brand">
-                        <i class="fa-solid fa-plus"></i> Thêm hãng sản phẩm
+                    <button type="button" class="btn btn-info create-Order">
+                        <i class="fa-solid fa-plus"></i> Thêm Hóa Đơn
                     </button>
                 </div>
                 <div class="col-lg-6">
@@ -44,9 +47,10 @@
                             <thead>
                                 <tr>
                                     <th> Mã Hóa Đơn </th>
-                                    <th> Tên Sản Phẩm </th>
-                                    <th> Số Lượng</th>
-                                    <th> Đơn Gía </th>
+                                    <th> Tên Nhân Viên </th>
+                                    <th> Ngày Bán</th>
+                                    <th> Loại Hóa Đơn  </th>
+                                    <th> Trạng Thái  </th>
                                     <th> Chỉnh Sửa </th>
                                     @if (User.IsInRole("Admin"))
                                     {
@@ -59,35 +63,54 @@
                                 {
                                     <tr>
                                         <td width="20%">
-                                            @item.OrderId
+                                            @item.MaHoaDon
                                         </td>
                                         <td width="20%">
-                                            @item.ProductId
+                                            @(item.TenNhanVien ?? "Tên không có sẵn")
+                                        </td>
 
+                                        <td width="20%">
+                                            @item.NgayBan
                                         </td>
                                         <td width="20%">
-                                            @item.soLuong
-
+                                            @item.LoaiHoaDon
                                         </td>
                                         <td width="20%">
-                                            @item.gia
+                                            @item.TrangThai
                                         </td>
-
                                         <td>
-                                            <a data-id="@item.ID" class="btn btn-sm btn-warning edit-OderDetai"><i class="bi bi-pencil-square"></i><i class="fa-solid fa-pen-to-square"></i> Chỉnh Sửa</a>&nbsp;
+                                            <a data-id="@item.Id" class="btn btn-sm btn-warning edit-OderDetail">
+                                                <i class="bi bi-pencil-square"></i><i class="fa-solid fa-pen-to-square"></i> Chỉnh Sửa
+                                            </a>
                                         </td>
                                         @if (User.IsInRole("Admin"))
                                         {
                                             <td width="10%">
-
-                                                <a class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i><i class="fa-solid fa-trash-can"></i> Xóa </a>
-
+                                                <a class="btn btn-sm btn-danger">
+                                                    <i class="bi bi-trash-fill"></i><i class="fa-solid fa-trash-can"></i> Xóa
+                                                </a>
                                             </td>
                                         }
                                     </tr>
                                 }
+
                             </tbody>
                         </table>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body d-flex justify-content-end">
+                                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchName = ViewBag.SearchName }), new PagedListRenderOptions
+                                    {
+                                    LiElementClasses = new string[] { "page-item" },
+                                    PageClasses = new string[] { "page-link" },
+                                    Display = PagedListDisplayMode.IfNeeded,
+                                    MaximumPageNumbersToDisplay = 3 // Số trang bạn muốn hiển thị
+                                    })
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

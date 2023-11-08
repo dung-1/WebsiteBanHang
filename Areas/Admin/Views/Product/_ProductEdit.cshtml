@@ -1,4 +1,5 @@
-﻿@model WebsiteBanHang.Areas.Admin.Models.ProductModel
+﻿@using System.Globalization;
+@model WebsiteBanHang.Areas.Admin.Models.ProductModel
 
 <div class="modal-header">
     <h1 class="modal-title fs-5" id="exampleModalLabel">Sửa Hãng sản phẩm</h1>
@@ -33,12 +34,12 @@
         </div>
         <div class="mb-3">
             <label asp-for="Gia" class="control-label">Gía Sản Phẩm</label>
-            <input asp-for="Gia" class="form-control" />
+            <input asp-for="Gia" class="form-control" value="@string.Format(new CultureInfo("vi-VN", false), "{0:c0}", Model.Gia)" />
             <span asp-validation-for="Gia" class="text-danger"></span>
         </div>
         <div class="mb-3">
             <label asp-for="GiaGiam" class="control-label">Gía Giảm</label>
-            <input asp-for="GiaGiam" class="form-control" />
+            <input asp-for="GiaGiam" class="form-control" value="@string.Format(new CultureInfo("vi-VN", false), "{0:c0}", Model.GiaGiam)" />
             <span asp-validation-for="GiaGiam" class="text-danger"></span>
         </div>
         <div class="mb-3">

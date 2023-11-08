@@ -1,4 +1,18 @@
-﻿// Modal create Brand
+﻿
+$(document).on("click", ".edit-OderDetail", function (e) {
+
+    let id = $(this).data("id")
+    $.ajax({
+        url: "/Admin/Order/Edit?id=" + id,// Đường dẫn đến API của bạn
+        type: "GET",
+        dataType: "html", // Đặt kiểu dữ liệu trả về
+        success: function (data) {
+            $('#edit-Order-modal').find('.modal-content').html(data)
+            $('#edit-Order-modal').modal('show');
+        }
+    })
+});
+// Modal create Brand
 $(document).on("click", ".category_create", function (e) {
     
     $.ajax({
@@ -92,3 +106,11 @@ $(document).on("click", ".create-user", function (e) {
         }
     })
 });
+
+function formatCurrency(input) {
+    var value = input.value.replace(/\D/g, '');
+    if (value) {
+        var formattedValue = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(parseInt(value));
+        input.value = formattedValue;
+    }
+}

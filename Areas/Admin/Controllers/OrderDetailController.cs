@@ -1,7 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using WebsiteBanHang.Areas.Admin.Data;
+using WebsiteBanHang.Areas.Admin.Models;
+using WebsiteBanHang.Areas.Admin.AdminDTO;
+
+using X.PagedList;
 
 namespace WebsiteBanHang.Areas.Admin.Controllers
 {
@@ -15,15 +20,36 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         {
             _context = context;
             _logger = logger;
-
         }
         [Authorize(Roles = "Admin,Employee")]
-
-        public IActionResult Index()
+        public IActionResult Index(int? page)
         {
-            // Sắp xếp lại danh sách theo ID giảm dần (mới nhất lên đầu)
-            var sortedCategories = _context.Order_Detai.OrderByDescending(c => c.ID).ToList();
-            return View(sortedCategories);
+            var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
+            int pageSize = 5; // Số mục trên mỗi trang
+
+            // Lấy dữ liệu sản phẩm đã sắp xếp
+            var productsQuery = _context.Order_Detai
+                .Include(p => p.product)
+                .Include(p => p.order)
+                .OrderByDescending(p => p.ID);
+            var sortedProducts = productsQuery.ToList();
+
+            // Tạo danh sách sản phẩm đã sắp xếp dưới dạng danh sách DTO
+            var pagedCategories = sortedProducts.Select(e => new OderDetailDto
+            {
+                Id = e.ID,
+                MaHoaDon = e.order.MaHoaDon,
+                TenSanPham = e.product.TenSanPham,
+                SoLuong = e.soLuong,
+                Gia = e.gia,
+            }).ToPagedList(pageNumber, pageSize); // Sử dụng PagedList.Mvc để phân trang
+
+            if (TempData["SuccessMessage"] != null)
+            {
+                ViewBag.SuccessMessage = TempData["SuccessMessage"].ToString();
+            }
+
+            return View(pagedCategories);
         }
         public IActionResult Delete(int? id)
         {

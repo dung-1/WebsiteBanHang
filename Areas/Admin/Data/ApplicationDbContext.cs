@@ -21,7 +21,7 @@ namespace WebsiteBanHang.Areas.Admin.Data
         public DbSet<RoleModel> Role { get; set; }
         public DbSet<Users_Details> Users_Details { get; set; }
         public DbSet<OrderDetaiModel> Order_Detai { get; set; }
-        public DbSet<OrderModel> Order { get; set; }
+        public DbSet<OrdersModel> Order { get; set; }
         public DbSet<InventoriesModel> Inventory { get; set; }
         public DbSet<PermissionRoleModel> PermissionRole { get; set; }
         public DbSet<PermissionsModel> Permissions { get; set; }
@@ -57,7 +57,7 @@ namespace WebsiteBanHang.Areas.Admin.Data
                 .HasForeignKey(e => e.ProductId)
                 .IsRequired();
 
-            modelBuilder.Entity<OrderModel>()
+            modelBuilder.Entity<OrdersModel>()
                .HasMany(e => e.ctdh)
                .WithOne(e => e.order)
                .HasForeignKey(e => e.OrderId)
@@ -96,7 +96,7 @@ namespace WebsiteBanHang.Areas.Admin.Data
               .HasKey(ur => new { ur.User_ID, ur.Role_ID });
             modelBuilder.Entity<PermissionRoleModel>()
              .HasKey(ur => new { ur.Permission_ID, ur.Role_ID });
-            modelBuilder.Entity<OrderModel>().Property(e => e.UserID).IsRequired(false);
+            modelBuilder.Entity<OrdersModel>().Property(e => e.UserID).IsRequired(false);
 
         }
     }

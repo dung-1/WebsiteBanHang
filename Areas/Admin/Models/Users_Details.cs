@@ -9,7 +9,7 @@ namespace WebsiteBanHang.Areas.Admin.Models
         [Key]
         public int UserId { get; set; }
         [StringLength(64)]
-        public string HoTen { get; set; }
+        public string ?HoTen { get; set; }
         public int SoDienThoai { get; set; }
         [StringLength(64)]
         public string DiaChi { get; set; }

@@ -6,6 +6,8 @@ using WebsiteBanHang.Models;
 using X.PagedList;
 using Microsoft.EntityFrameworkCore;
 using WebsiteBanHang.Areas.Admin.AdminDTO;
+using Microsoft.AspNetCore.Authentication;
+
 namespace WebsiteBanHang.Controllers
 {
     public class HomeController : Controller
@@ -21,7 +23,7 @@ namespace WebsiteBanHang.Controllers
         public async Task<IActionResult> Index(int? page, string searchName, string selectedCategory)
         {
             var pageNumber = page ?? 1;
-            int pageSize = 8;
+            int pageSize = 16;
 
             IQueryable<ProductModel> products = _context.Product;
 
@@ -40,7 +42,12 @@ namespace WebsiteBanHang.Controllers
         }
 
 
-
+        public IActionResult Logout()
+        {
+            // Đăng xuất người dùng bằng cách xóa phiên đăng nhập
+            HttpContext.SignOutAsync();
+            return RedirectToAction("Index", "Home");
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
@@ -74,7 +81,11 @@ namespace WebsiteBanHang.Controllers
 
             return View(productView);
         }
-
+        public IActionResult ListCategory()
+        {
+            var categories = _context.Category.ToList();
+            return Json(categories);
+        }
 
     }
 }

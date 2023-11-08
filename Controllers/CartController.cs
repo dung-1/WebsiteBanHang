@@ -61,7 +61,7 @@ namespace WebsiteBanHang.Controllers
 
             TempData["AddToCartSuccess"] = "Sản phẩm đã được thêm vào giỏ hàng thành công.";
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index","Home");
         }
 
         public IActionResult RemoveFromCart(int id)
@@ -122,7 +122,7 @@ namespace WebsiteBanHang.Controllers
             float totalPrice = (float)cart.Sum(cartItem => cartItem.Product.Gia * cartItem.Soluong);
 
             // Create a new order
-            var order = new OrderModel
+            var order = new OrdersModel
             {
                 MaHoaDon = GenerateOrderCode(), // Implement your own order code generation logic
                 UserID = null,// Set the user ID as needed
@@ -158,7 +158,7 @@ namespace WebsiteBanHang.Controllers
 
             return RedirectToAction("Index");
         }
-        private void SendInvoiceByEmail(string recipientEmail, OrderModel order)
+        private void SendInvoiceByEmail(string recipientEmail, OrdersModel order)
         {
             var emailMessage = new MimeMessage();
 
@@ -239,6 +239,14 @@ namespace WebsiteBanHang.Controllers
         {
             return PartialView("CheckOutModal");
         }
+
+        public IActionResult GetCartItemCount()
+        {
+            var cart = GetCartItems();
+            var cartItemCount = cart.Sum(item => item.Soluong);
+            return Json(cartItemCount);
+        }
+
 
     }
 }

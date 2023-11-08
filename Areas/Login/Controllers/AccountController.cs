@@ -241,13 +241,6 @@ namespace WebsiteBanHang.Controllers
                 return builder.ToString();
             }
         }
-        public IActionResult Logout()
-        {
-            // Đăng xuất người dùng bằng cách xóa phiên đăng nhập
-            HttpContext.SignOutAsync();
-
-            return RedirectToAction("Index", "Home", new { area = " " });
-        }
-
+      
     }
 }

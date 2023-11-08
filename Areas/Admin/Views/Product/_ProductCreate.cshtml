@@ -34,7 +34,7 @@
 
         <div class="mb-3">
             <label asp-for="Gia" class="control-label">Gía Sản Phẩm</label>
-            <input asp-for="Gia" class="form-control" />
+            <input asp-for="Gia" class="form-control" id="formattedGia" oninput="formatCurrency(this)" />
             <span asp-validation-for="Gia" class="text-danger"></span>
         </div>
         <div class="mb-3">

@@ -36,7 +36,6 @@ namespace WebsiteBanHang
                     options.Cookie.Name = "DungCTS";
                     options.LoginPath = "/Account/Login";
                     options.AccessDeniedPath = "/Account/AccessDenied";
-
                 });
             builder.Services.AddAuthorization(options =>
             {
@@ -55,27 +54,30 @@ namespace WebsiteBanHang
             app.UseStaticFiles();
             app.UseSession();
             app.UseRouting();
-            app.UseAuthentication(); // Di chuyển dòng này lên trước UseAuthorization
+            app.UseAuthentication(); 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-
+                // Đặt route của Admin area lên trước với tiền tố "admin"
                 endpoints.MapAreaControllerRoute(
-                    name: "areas",
+                    name: "adminArea",
                     areaName: "Admin",
-                    pattern: "{area:exists}/{controller=AdminHome}/{action=Index}/{id?}"
+                    pattern: "admin/{controller=Home}/{action=Index}/{id?}"
                 );
-                endpoints.MapAreaControllerRoute(
-                 name: "areas",
-                 areaName: "Login",
-                 pattern: "{area:exists}/{controller=Account}/{action=Index}/{id?}"
-                );
-                endpoints.MapControllerRoute(
-               name: "default",
-               pattern: "{controller=Home}/{action=Index}/{id?}"
-           );
 
+                // Sau đó đặt route của Login area với tiền tố "login"
+                endpoints.MapAreaControllerRoute(
+                    name: "loginArea",
+                    areaName: "Login",
+                    pattern: "login/{controller=Account}/{action=Index}/{id?}"
+                );
+
+                // Cuối cùng, đặt route mặc định cho Home controller
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}"
+                );
             });
 
             app.Run();
