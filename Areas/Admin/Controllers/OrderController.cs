@@ -28,30 +28,37 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
             int pageSize = 5; // Số mục trên mỗi trang
 
-
-            var productsQuery = _context.Order
-              .Include(p => p.user.userDetail)
-              .OrderByDescending(p => p.id);
+            var productsQuery = from order in _context.Order
+                                join userDetail in _context.Users_Details
+                                on order.UserID equals userDetail.UserId into orderUserDetails
+                                from userDetail in orderUserDetails.DefaultIfEmpty()
+                                orderby order.id descending
+                                select new
+                                {
+                                    Order = order,
+                                    UserDetail = userDetail
+                                };
 
             var sortedProducts = productsQuery.ToList();
 
-
             IPagedList<OderDto> pagedCategories = sortedProducts.Select(e => new OderDto
             {
-                Id = e.id,
-                MaHoaDon = e.MaHoaDon,
-                TenNhanVien = e.user.userDetail.HoTen,
-                NgayBan = e.ngayBan,
-                LoaiHoaDon = e.LoaiHoaDon,
-                TrangThai = e.trangThai,
+                Id = e.Order.id,
+                MaHoaDon = e.Order.MaHoaDon,
+                TenNhanVien = e.UserDetail != null ? e.UserDetail.HoTen : null,
+                NgayBan = e.Order.ngayBan,
+                LoaiHoaDon = e.Order.LoaiHoaDon,
+                TrangThai = e.Order.trangThai,
             }).ToPagedList(pageNumber, pageSize);
+
             if (TempData["SuccessMessage"] != null)
             {
                 ViewBag.SuccessMessage = TempData["SuccessMessage"].ToString();
             }
-            return View(pagedCategories);
-        }
 
+            return View(pagedCategories);
+
+        }
         [HttpGet]
         public IActionResult Edit(int id)
         {
@@ -65,10 +72,60 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             // Lấy danh sách Users_Details
             var userDetailList = _context.Users_Details.ToList();
 
-            // Tạo SelectList để sử dụng trong dropdown
-            ViewBag.UserDetailList = new SelectList(userDetailList, "UserId", "HoTen");
+            // Tạo SelectList để sử dụng trong dropdown với giá trị mặc định "-"
+            var userDetailSelectList = new List<SelectListItem>
+                    {
+                        new SelectListItem { Value = null, Text =null } // Mục mặc định
+                    };
+
+
+            userDetailSelectList.AddRange(userDetailList.Select(ud => new SelectListItem
+            {
+                Value = ud.UserId.ToString(),
+                Text = ud.HoTen,
+            }));
+
+            ViewBag.UserDetailList = new SelectList(userDetailSelectList, "Value", "Text");
+
             return PartialView("_OrderEdit", order);
         }
+        [HttpGet]
+    //    public IActionResult Edit(int id)
+    //    {
+    //        var orders = (from order in _context.Order
+    //                      join userDetail in _context.Users_Details
+    //                      on order.UserID equals userDetail.UserId into orderUserDetails
+    //                      from userDetail in orderUserDetails.DefaultIfEmpty()
+    //                      where order.id == id
+    //                      orderby order.id descending
+    //                      select new
+    //                      {
+    //                          Order = order,
+    //                          UserDetail = userDetail
+    //                      })
+    //                     .FirstOrDefault(); // Lấy một dòng đầu tiên hoặc null nếu không có
+
+    //        // Lấy danh sách Users_Details
+    //        var userDetailList = _context.Users_Details.ToList();
+
+    //        // Tạo SelectList để sử dụng trong dropdown với giá trị mặc định "-"
+    //        var userDetailSelectList = new List<SelectListItem>
+    //{
+    //    new SelectListItem { Value = null, Text = "Chọn người dùng" } // Mục mặc định
+    //};
+
+    //        userDetailSelectList.AddRange(userDetailList.Select(ud => new SelectListItem
+    //        {
+    //            Value = ud.UserId.ToString(),
+    //            Text = ud.HoTen,
+    //        }));
+
+    //        ViewBag.UserDetailList = new SelectList(userDetailSelectList, "Value", "Text");
+
+    //        return PartialView("_OrderEdit", orders);
+    //    }
+
+
 
 
         public IActionResult Delete(int? id)

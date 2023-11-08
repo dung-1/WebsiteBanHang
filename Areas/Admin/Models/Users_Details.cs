@@ -14,7 +14,7 @@ namespace WebsiteBanHang.Areas.Admin.Models
         [StringLength(64)]
         public string DiaChi { get; set; }
         [ForeignKey("UserId")] // Đây là thuộc tính làm khóa ngoại
-        public UserModel User { get; set; } = null!; // Required reference navigation to principal
+        public UserModel User { get; set; } // Required reference navigation to principal
 
     }
 }

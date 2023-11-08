@@ -11,8 +11,8 @@ namespace WebsiteBanHang.Areas.Admin.Models
             [Required]
             [StringLength(10)]
             public string? MaHoaDon { get; set; }
-            public int? UserID { get; set; } // Required foreign key property
-            public UserModel? user { get; set; } = null!;
+                public int? UserID { get; set; } 
+                public UserModel?user { get; set; }
             public DateTime ngayBan { get; set; }
             public float tongTien { get; set; }
             [StringLength(20)]

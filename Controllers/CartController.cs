@@ -7,6 +7,7 @@ using MimeKit;
 using MimeKit.Text;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using WebsiteBanHang.Areas.Admin.Data;
 using WebsiteBanHang.Areas.Admin.Models;
@@ -167,37 +168,53 @@ namespace WebsiteBanHang.Controllers
             emailMessage.Subject = "Hóa Đơn Mua Hàng";
 
             var builder = new BodyBuilder();
-            builder.HtmlBody = "<p>Đây là hóa đơn của bạn:</p>";
 
-            // Thêm thông tin hóa đơn vào email
-            builder.HtmlBody += $"<p>Mã Hóa Đơn: {order.MaHoaDon}</p>";
-            builder.HtmlBody += $"<p>Ngày Mua: {order.ngayBan}</p>";
+            // Bắt đầu tạo nội dung email
+            builder.HtmlBody = "<div style='font-family: Arial, sans-serif; padding: 20px;'>";
 
-            // Bắt đầu tạo bảng
-            builder.HtmlBody += "<table style='width:100%'>";
-            builder.HtmlBody += "<tr><th>Số Thứ Tự</th><th>Tên Sản Phẩm</th><th>Số Lượng</th><th>Giá</th></tr>";
+            // Thêm tiêu đề hóa đơn
+            builder.HtmlBody += "<h2>HÓA ĐƠN CỦA BẠN</h2>";
 
-            // Thêm chi tiết đơn hàng vào bảng
+            // Thêm thông tin hóa đơn
+            builder.HtmlBody += $"<p>Mã Hóa Đơn: {order.MaHoaDon} | Ngày Mua: {order.ngayBan:dd/MM/yyyy HH:mm:ss}</p>";
+
+            // Thêm bảng chi tiết đơn hàng
+            builder.HtmlBody += "<table style='width:100%; border-collapse: collapse;'>";
+            builder.HtmlBody += "<tr><th style='border: 1px solid #ddd; padding: 8px;'>STT</th><th style='border: 1px solid #ddd; padding: 8px;'>Sản phẩm</th><th style='border: 1px solid #ddd; padding: 8px;'>Số lượng</th><th style='border: 1px solid #ddd; padding: 8px;'>Đơn giá</th><th style='border: 1px solid #ddd; padding: 8px;'>Thành tiền</th></tr>";
+
+            // Thêm chi tiết đơn hàng
             int stt = 1;
+            decimal tongCong = 0;
             foreach (var orderDetail in order.ctdh)
             {
-                builder.HtmlBody += $"<tr><td>{stt}</td><td>{orderDetail.product?.TenSanPham}</td><td>{orderDetail.soLuong}</td><td>{orderDetail.gia:C}</td></tr>";
+                var product = _context.Product.Find(orderDetail.ProductId);
+
+                // Tính tổng tiền cho sản phẩm này
+                decimal thanhTien = (decimal)(orderDetail.soLuong * orderDetail.gia);
+
+                builder.HtmlBody += $"<tr><td style='border: 1px solid #ddd; padding: 8px;'>{stt}</td><td style='border: 1px solid #ddd; padding: 8px;'>{product?.TenSanPham}</td><td style='border: 1px solid #ddd; padding: 8px;'>{orderDetail.soLuong}</td><td style='border: 1px solid #ddd; padding: 8px;'>{orderDetail.gia.ToString("C0", new CultureInfo("vi-VN"))}</td><td style='border: 1px solid #ddd; padding: 8px;'>{thanhTien.ToString("C0", new CultureInfo("vi-VN"))}</td></tr>";
+
+                tongCong += thanhTien;
                 stt++;
             }
 
             // Kết thúc bảng
             builder.HtmlBody += "</table>";
 
-            // Thêm tổng tiền
-            builder.HtmlBody += $"<p><strong>Tổng Tiền: {order.tongTien:C}</strong></p>";
+            // Thêm tổng cộng
+            builder.HtmlBody += $"<p style='text-align: right; font-weight: bold;'>Tổng cộng: {tongCong.ToString("C0", new CultureInfo("vi-VN"))}</p>";
 
-            // Hoàn thành nội dung HTML của email
+            // Thêm dòng chân trang và cảm ơn
+            builder.HtmlBody += "<hr>";
+            builder.HtmlBody += "<p style='text-align: center; font-weight: bold;'>Cảm ơn bạn đã thanh toán !!!</p>";
+
+            // Kết thúc nội dung email
+            builder.HtmlBody += "</div>";
 
             emailMessage.Body = new TextPart(TextFormat.Html)
             {
                 Text = builder.HtmlBody
             };
-            emailMessage.Body = builder.ToMessageBody();
 
             using var smtp = new SmtpClient();
             smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
@@ -205,6 +222,7 @@ namespace WebsiteBanHang.Controllers
             smtp.Send(emailMessage);
             smtp.Disconnect(true);
         }
+
         private void ClearCart()
         {
             // Remove the cart cookie

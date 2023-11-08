@@ -61,21 +61,21 @@
                             <tbody>
                                 @foreach (var item in Model)
                                 {
-                                    <tr>
-                                        <td width="20%">
-                                            @item.MaHoaDon
-                                        </td>
-                                        <td width="20%">
-                                            @(item.TenNhanVien ?? "Tên không có sẵn")
+                                    <tr >
+                                        <td width="20%" class="text-center">
+                                             @item.MaHoaDon
+                                         </td>
+                                        <td width="20%" class="text-center">
+                                            @item.TenNhanVien
                                         </td>
 
-                                        <td width="20%">
+                                        <td width="20%" class="text-center">
                                             @item.NgayBan
                                         </td>
-                                        <td width="20%">
+                                        <td width="20%" class="text-center">
                                             @item.LoaiHoaDon
                                         </td>
-                                        <td width="20%">
+                                        <td width="20%" class="text-center">
                                             @item.TrangThai
                                         </td>
                                         <td>
