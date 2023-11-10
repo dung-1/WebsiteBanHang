@@ -15,6 +15,7 @@
     <link href="~/css/home.css" type="text/css" rel="stylesheet">
     <link href="~/css/reponsive.css" type="text/css" rel="stylesheet">
 
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
     <script src="~/js/bootstrap.bundle.js" type="text/javascript"></script>
 
@@ -64,9 +65,9 @@
                             </li>
                             <li>
                                 <a asp-controller="Cart" asp-action="Index" class="nav-link text-body position-relative">
-                                    <i class="bi bi-cart d-block text-center fs-3"></i>
+                                    <i class="bi bi-cart d-block text-center fs-3" style="margin-right:auto;"></i>
                                     Giỏ hàng
-                                    <span class="position-absolute top-0  badge rounded-pill bg-danger" id="cartItemCount">0</span>
+                                    <span class="position-absolute top-0  badge rounded-pill bg-danger" style="    margin-left: -10px;" id="cartItemCount">0</span>
                                 </a>
                             </li>
 
@@ -115,8 +116,8 @@
                 else
                 {
                     <!-- Hiển thị nút đăng ký và đăng nhập -->
-                    <a class=" me-2 text-white" asp-area="Login" asp-controller="Account" asp-action="Index" role="button"> <i class="fa-solid fa-user-plus"></i> Đăng ký</a>
-                    <a class=" text-white" asp-area="Login" asp-controller="Account" asp-action="Login" role="button"><i class="fa-solid fa-right-to-bracket"></i>  Đăng nhập</a>
+                    <a class=" me-2 text-white " asp-area="Login" asp-controller="Account" asp-action="Index" role="button"> <i class="fa-solid fa-user-plus"></i> Đăng ký</a>
+                    <a class=" text-white" style="margin-left:15px" asp-area="Login" asp-controller="Account" asp-action="Login" role="button"><i class="fa-solid fa-right-to-bracket"></i>  Đăng nhập</a>
                 }
 
             </div>
@@ -347,8 +348,10 @@
     </script>
     <!-- Sử dụng CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
+    <!-- jQuery UI -->
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <!-- Bao gồm SweetAlert2 từ CDN -->
     <script src="~/js/Cart.js"></script>
     <script>
@@ -365,6 +368,35 @@
 
         setInterval(carouselNext, interval);
     </script>
+    <input type="text" id="autocomplete" class="form-control" placeholder="Nhập địa chỉ">
+
+    <script>
+        $(function () {
+            $("#autocomplete").autocomplete({
+                source: function (request, response) {
+                    // Sử dụng Google Places API để gợi ý địa chỉ
+                    $.ajax({
+                        url: "https://maps.googleapis.com/maps/api/place/autocomplete/json",
+                        dataType: "json",
+                        data: {
+                            input: request.term,
+                            key: "YOUR_GOOGLE_API_KEY", // Đặt khóa API của bạn ở đây
+                        },
+                        success: function (data) {
+                            response(data.predictions.map(function (item) {
+                                return {
+                                    label: item.description,
+                                    value: item.description,
+                                };
+                            }));
+                        },
+                    });
+                },
+                minLength: 2, // Số ký tự ít nhất trước khi bắt đầu tìm kiếm
+            });
+        });
+    </script>
+
 </body>
 
 </html>

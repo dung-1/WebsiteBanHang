@@ -19,6 +19,16 @@ $(document).ready(function () {
         var productId = $(this).data("productid");
         var quantity = $("#quantity-" + productId).val();
 
+        // Kiểm tra số lượng nhập vào
+        if (quantity < 1) {
+            Swal.fire("Cập nhật thất bại", "Vui lòng nhập số lượng ít nhất là 1.", "error");
+            return; // Dừng lại nếu số lượng không hợp lệ
+        }
+
+        if (quantity < 1) {
+            quantity = 3; // Thay 3 bằng giá trị mặc định bạn muốn giữ nguyên
+        }
+
         // Gọi AJAX để cập nhật số lượng
         $.ajax({
             url: "/Cart/UpdateCartItem",
@@ -26,7 +36,7 @@ $(document).ready(function () {
             data: { productId: productId, quantity: quantity },
             success: function (data) {
                 // Cập nhật thành công, hiển thị thông báo
-                Swal.fire("cập nhật thành công", "", "success").then(function () {
+                Swal.fire("Cập nhật thành công", "", "success").then(function () {
                     // Sau khi người dùng đóng thông báo, làm điều gì đó (nếu cần)
                     // Ví dụ: Reload lại trang giỏ hàng
                     location.reload();
@@ -39,6 +49,7 @@ $(document).ready(function () {
         });
     });
 });
+
 
 
 

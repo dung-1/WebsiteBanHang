@@ -171,12 +171,19 @@ namespace WebsiteBanHang.Controllers
 
             // Bắt đầu tạo nội dung email
             builder.HtmlBody = "<div style='font-family: Arial, sans-serif; padding: 20px;'>";
+            builder.HtmlBody += "<h1 style=\"color: #007bff; font-weight: bold; text-transform: uppercase;\">" +
+                                "vifiretek <span style=\"font-size: 1.25rem; color: #dc3545;\">.VN</span></h1>";
 
             // Thêm tiêu đề hóa đơn
-            builder.HtmlBody += "<h2>HÓA ĐƠN CỦA BẠN</h2>";
+            builder.HtmlBody += "<h3 style='text-align: center; font-weight: bold;'>HÓA ĐƠN CỦA BẠN</h3>";
 
             // Thêm thông tin hóa đơn
-            builder.HtmlBody += $"<p>Mã Hóa Đơn: {order.MaHoaDon} | Ngày Mua: {order.ngayBan:dd/MM/yyyy HH:mm:ss}</p>";
+            builder.HtmlBody += "<p style=\"font-family: Arial, sans-serif; font-size: 16px;\">" +
+                     $"<span style=\"float: left; width: 50%;\">Mã Hóa Đơn: {order.MaHoaDon}</span>" +
+                     $"<span style=\"float: right; width: 50%; text-align: right;\">Ngày Mua: {order.ngayBan.ToString("dd/MM/yyyy HH:mm:ss")}</span>" +
+                     $"<div style=\"clear: both;\"></div>" +
+                     $"</p>";
+
 
             // Thêm bảng chi tiết đơn hàng
             builder.HtmlBody += "<table style='width:100%; border-collapse: collapse;'>";
@@ -192,7 +199,7 @@ namespace WebsiteBanHang.Controllers
                 // Tính tổng tiền cho sản phẩm này
                 decimal thanhTien = (decimal)(orderDetail.soLuong * orderDetail.gia);
 
-                builder.HtmlBody += $"<tr><td style='border: 1px solid #ddd; padding: 8px;'>{stt}</td><td style='border: 1px solid #ddd; padding: 8px;'>{product?.TenSanPham}</td><td style='border: 1px solid #ddd; padding: 8px;'>{orderDetail.soLuong}</td><td style='border: 1px solid #ddd; padding: 8px;'>{orderDetail.gia.ToString("C0", new CultureInfo("vi-VN"))}</td><td style='border: 1px solid #ddd; padding: 8px;'>{thanhTien.ToString("C0", new CultureInfo("vi-VN"))}</td></tr>";
+                builder.HtmlBody += $"<tr><td style='border: 1px solid #ddd; padding: 8px;text-align:center;'>{stt}</td><td style='border: 1px solid #ddd; padding: 8px;text-align:center;'>{product?.TenSanPham}</td><td style='border: 1px solid #ddd; padding: 8px;text-align:center;'>{orderDetail.soLuong}</td><td style='border: 1px solid #ddd; padding: 8px;text-align:center;'>{orderDetail.gia.ToString("C0", new CultureInfo("vi-VN"))}</td><td style='border: 1px solid #ddd; padding: 8px;text-align:end;'>{thanhTien.ToString("C0", new CultureInfo("vi-VN"))}</td></tr>";
 
                 tongCong += thanhTien;
                 stt++;
@@ -202,11 +209,11 @@ namespace WebsiteBanHang.Controllers
             builder.HtmlBody += "</table>";
 
             // Thêm tổng cộng
-            builder.HtmlBody += $"<p style='text-align: right; font-weight: bold;'>Tổng cộng: {tongCong.ToString("C0", new CultureInfo("vi-VN"))}</p>";
+            builder.HtmlBody += $"<p style='text-align: right; font-weight: bold;font-site:18px;'>Tổng cộng: {tongCong.ToString("C0", new CultureInfo("vi-VN"))}</p>";
 
             // Thêm dòng chân trang và cảm ơn
             builder.HtmlBody += "<hr>";
-            builder.HtmlBody += "<p style='text-align: center; font-weight: bold;'>Cảm ơn bạn đã thanh toán !!!</p>";
+            builder.HtmlBody += "<p style='text-align: center; font-weight: bold;'>Cảm ơn quý khách đã mua hàng của chúng tôi !!!</p>";
 
             // Kết thúc nội dung email
             builder.HtmlBody += "</div>";

@@ -9,37 +9,47 @@
 <div class="modal-body">
     <form asp-action="#">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <input type="hidden" asp-for="id" class="form-control" />
+        <input type="hidden" asp-for="id" class="form-control" />
         <div class="mb-3">
-            <label asp-for="MaHoaDon" class="control-label"></label>
+            <label asp-for="MaHoaDon" class="control-label">Mã Hóa Đơn</label>
             <input asp-for="MaHoaDon" class="form-control" />
             <span asp-validation-for="MaHoaDon" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="UserID" class="control-label"></label>
+            <label asp-for="UserID" class="control-label">Tên Nhân Viên</label>
             <select asp-for="UserID" asp-items="ViewBag.UserDetailList" class="form-control"></select>
             <span asp-validation-for="UserID" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="ngayBan" class="control-label"></label>
-            <input asp-for="ngayBan" class="form-control" />
+            <label asp-for="ngayBan" class="control-label">Ngày Bán </label>
+            <input asp-for="ngayBan" class="form-control" type="datetime-local" value="@Model.ngayBan.ToString("yyyy-MM-dd HH:mm:ss")" />
             <span asp-validation-for="ngayBan" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="tongTien" class="control-label"></label>
+            <label asp-for="tongTien" class="control-label">Tổng Tiền</label>
             <input asp-for="tongTien" class="form-control" />
             <span asp-validation-for="tongTien" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="trangThai" class="control-label"></label>
-            <input asp-for="trangThai" class="form-control" />
+            <label asp-for="trangThai" class="control-label">Trạng Thái</label>
+            <select asp-for="trangThai" class="form-control">
+                <option value="DangXuLy">Đang xử lý</option>
+                <option value="DangGiaoHang">Đang giao hàng</option>
+                <option value="DaHuy">Đã hủy</option>
+                <option value="GiaoHangThanhCong">Giao hàng thành công</option>
+            </select>
             <span asp-validation-for="trangThai" class="text-danger"></span>
         </div>
+
         <div class="mb-3">
-            <label asp-for="LoaiHoaDon" class="control-label"></label>
-            <input asp-for="LoaiHoaDon" class="form-control" />
+            <label asp-for="LoaiHoaDon" class="control-label">Loại Hóa Đơn</label>
+            <select asp-for="LoaiHoaDon" class="form-control">
+                <option value="MuaHang">Mua hàng</option>
+                <option value="MuaHangTrucTuyen">Mua hàng trực tuyến</option>
+            </select>
             <span asp-validation-for="LoaiHoaDon" class="text-danger"></span>
         </div>
+
         <div class="mb-3">
             <input type="submit" value="Save" class="btn btn-primary" />
         </div>

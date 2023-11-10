@@ -40,7 +40,7 @@
                                 </thead>
                                 @foreach (var cartitem in Model)
                                 {
-                                    var thanhtien = Convert.ToDouble(cartitem.Soluong * cartitem.Product.Gia);
+                                    var thanhtien = Convert.ToDouble(cartitem.Soluong * cartitem.Product.GiaGiam);
                                     total += thanhtien;
                                     <tbody>
                                         <tr>
@@ -54,12 +54,12 @@
                                             </td>
                                             <td>
                                                 <div class="price-wrap">
-                                                    <span class="price">  @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @cartitem.Product.Gia)</span>
+                                                    <span class="price">  @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @cartitem.Product.GiaGiam)</span>
                                                 </div>
                                             </td>
                                             <td>
-                                                    <input asp-for="@cartitem.Soluong" id="@($"quantity-{cartitem.Product.Id}")" class="form-control">
-                                            </td>                                            
+                                                <input asp-for="@cartitem.Soluong" id="@($"quantity-{cartitem.Product.Id}")" class="form-control" type="number" min="1">
+                                            </td>
                                             <td class="text-center text-nowrap">
                                                 <button class="btn btn-success updatecartitem"
                                                         data-productid="@cartitem.Product.Id">
