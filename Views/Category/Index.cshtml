@@ -1,0 +1,182 @@
+﻿@using System.Globalization;
+﻿@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model X.PagedList.IPagedList<WebsiteBanHang.Areas.Admin.AdminDTO.ProductViewDTO>
+
+
+<section class="section-pagetop bg-light">
+    <div class="container">
+        <h2 class="title-page">@Model.FirstOrDefault()?.LoaiTen</h2>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page"><a href="/">Trang chủ</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.FirstOrDefault()?.LoaiTen</li>
+            </ol>
+        </nav>
+    </div> <!-- container.// -->
+</section> <!-- section-pagetop.// -->
+
+<section class="section-content padding-y">
+    <div class="container">
+        <div class="row">
+            <aside class="col-md-4 col-lg-3 mb-md-0 mb-3">
+                <div class="card">
+
+                    <article class="filter-group">
+                        <header class="card-header my-1">
+                            <a data-bs-toggle="collapse" href="#collapse_2" aria-expanded="true" aria-controls="collapse_2">
+                                <i class="float-end bi bi-chevron-down"></i>
+                                <h6 class="title fw-bold">Giá bán</h6>
+                            </a>
+                        </header>
+                        <form action="@Url.Action("Index")" method="get">
+                            <!-- Các checkbox giá -->
+                            <div class="filter-content collapse show" id="collapse_2">
+                                <div class="card-body pt-0">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="true" name="checkbox_all" id="checkbox_all" @(Model.FirstOrDefault()?.CheckboxAll ?? false ? "checked" : "") checked>
+                                        <label class="form-check-label" for="checkbox_all">
+                                            Tất cả
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check" id="checkbox_price_1_container">
+                                        <input class="form-check-input" type="checkbox" value="true" name="checkbox_price_1" id="checkbox_price_1" @(Model.FirstOrDefault()?.CheckboxPrice1 ?? false ? "checked" : "")>
+                                        <label class="form-check-label" for="checkbox_price_1">
+                                            Dưới 10 triệu
+                                        </label>
+                                    </div>
+                                    <div class="form-check" id="checkbox_price_2_container">
+                                        <input class="form-check-input" type="checkbox" value="true" name="checkbox_price_2" id="checkbox_price_2" @(Model.FirstOrDefault()?.CheckboxPrice2 ?? false ? "checked" : "")>
+                                        <label class="form-check-label" for="checkbox_price_2">
+                                            Từ 10 triệu đến 15 triệu
+                                        </label>
+                                    </div>
+                                    <div class="form-check" id="checkbox_price_3_container">
+                                        <input class="form-check-input" type="checkbox" value="true" name="checkbox_price_3" id="checkbox_price_3" @(Model.FirstOrDefault()?.CheckboxPrice3 ?? false  ? "checked" : "")>
+                                        <label class="form-check-label" for="checkbox_price_3">
+                                            Từ 15 triệu đến 20 triệu
+                                        </label>
+                                    </div>
+                                    <div class="form-check" id="checkbox_price_4_container">
+                                        <input class="form-check-input" type="checkbox" value="true" name="checkbox_price_4" id="checkbox_price_4" @(Model.FirstOrDefault()?.CheckboxPrice4 ?? false ? "checked" : "")>
+                                        <label class="form-check-label" for="checkbox_price_4">
+                                            Từ 20 triệu đến 25 triệu
+                                        </label>
+                                    </div>
+                                    <div class="form-check" id="checkbox_price_5_container">
+                                        <input class="form-check-input" type="checkbox" value="true" name="checkbox_price_5" id="checkbox_price_5" @(Model.FirstOrDefault()?.CheckboxPrice5 ?? false  ? "checked" : "")>
+                                        <label class="form-check-label" for="checkbox_price_5">
+                                            Trên 25 triệu
+                                        </label>
+                                    </div>
+
+                                    <!-- Nút lọc -->
+                                    <button type="submit" class="btn btn-primary">Lọc</button>
+                                </div> <!-- card-body.// -->
+                            </div>
+                        </form>
+
+                    </article>
+                </div> <!-- card.// -->
+            </aside> <!-- col.// -->
+
+            <main class="col-md-8 col-lg-9">
+                <header class="border-bottom mb-4 pb-3">
+                    <div class="form-inline d-flex justify-content-between align-items-center">
+                        <span>@ViewBag.TotalProducts sản phẩm</span>
+                        @*  <div>
+                        <select class="form-select">
+                        <option>Bán chạy nhất</option>
+                        <option>Mới nhất</option>
+                        <option>Đánh giá cao nhất</option>
+                        <option>Giá thấp nhất</option>
+                        </select>
+                        </div> *@
+                    </div>
+                </header> <!-- sect-heading -->
+
+                <div class="row item-grid">
+                    @foreach (var product in Model)
+                    {
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card p-3 mb-4 hvr-float">
+                                <span class="productType" style="position: absolute; top: 10px; left: 10px; width: 40px;">
+                                    <img class="img-fluid" src="~/img/sales.png" alt="sale off">
+                                    <span class="percent" style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); line-height: 40px; color: #fff; font-weight: 600;">
+                                        @if (product.GiaGiam > 0)
+                                        {
+                                            var phanTramGiam = ((product.Gia - product.GiaGiam) / product.Gia) * 100;
+                                            @("-" + phanTramGiam.ToString("0"))
+                                        }%
+
+                                    </span>
+                                </span>
+                                <a href="#" class="img-wrap text-center">
+                                    <img class="img-fluid" src="~/@product.Image">
+                                </a>
+                                <figcaption class="info-wrap mt-2">
+                                    <a href="#" class="title text-capitalize">@product.TenSanPham</a>
+                                    <div class="row">
+                                        <div class="col-6 price mt-1 fw-bold text-danger">
+                                            @string.Format(new CultureInfo("vi-VN", false), "{0:c0}",@product.GiaGiam)
+                                        </div>
+                                        <div class="col-6 price mt-1  " style="padding-top: 5px;font-size: 14px;color:#a29c9cd7;text-decoration: line-through;font-style: normal;">
+                                            @string.Format(new CultureInfo("vi-VN", false), "{0:c0}",@product.Gia)
+                                        </div>
+
+                                        <div class="row">
+                                            @* <div class="col-4 price mt-1  " style="padding-top: 5px;font-size: 14px;color:#a29c9cd7;text-decoration: line-through;font-style: normal;">
+                                        </div> *@
+                                            <div class="col-12 price  fw-bold text-danger">
+                                                <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@product.Id" class="btn btn-primary" id="addToCartButton">
+                                                    <i class="fa-solid fa-cart-plus"></i> Mua Ngay
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </figcaption>
+                            </div>
+                        </div> <!-- col.// -->
+                    }
+                </div> <!-- row end.// -->
+
+
+                <div class="card-body d-flex justify-content-center">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                            <li class="page-item @(Model.IsFirstPage ? "disabled" : "")">
+                                <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1, searchName = ViewBag.SearchName })" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo; Trang trước</span>
+                                </a>
+                            </li>
+
+                            @for (var i = 1; i <= Model.PageCount; i++)
+                            {
+                                if (i >= Model.PageNumber - 1 && i <= Model.PageNumber + 1)
+                                {
+                                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                                        <a class="page-link" href="@Url.Action("Index", new { page = i, searchName = ViewBag.SearchName })">@i</a>
+                                    </li>
+                                }
+                            }
+
+                            <li class="page-item @(Model.IsLastPage ? "disabled" : "")">
+                                <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1, searchName = ViewBag.SearchName })" aria-label="Next">
+                                    <span aria-hidden="true">Trang sau &raquo;</span>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </nav>
+                </div>
+
+            </main>
+        </div> <!-- row.// -->
+    </div> <!-- container.//  -->
+</section> <!-- section-content.// -->

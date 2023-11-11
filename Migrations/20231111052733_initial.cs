@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WebsiteBanHang.Migrations
 {
-    public partial class update : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -37,6 +37,22 @@ namespace WebsiteBanHang.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Category", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Customer",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MaNguoiDung = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    MatKhau = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: true),
+                    NgayTao = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Customer", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -96,7 +112,8 @@ namespace WebsiteBanHang.Migrations
                     TenSanPham = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     HangId = table.Column<int>(type: "int", nullable: false),
                     LoaiId = table.Column<int>(type: "int", nullable: false),
-                    Gia = table.Column<int>(type: "int", nullable: false),
+                    Gia = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    GiaGiam = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Image = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     ThongTinSanPham = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
@@ -113,6 +130,50 @@ namespace WebsiteBanHang.Migrations
                         name: "FK_Product_Category_LoaiId",
                         column: x => x.LoaiId,
                         principalTable: "Category",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Customer_Details",
+                columns: table => new
+                {
+                    CustomerId = table.Column<int>(type: "int", nullable: false),
+                    HoTen = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
+                    SoDienThoai = table.Column<int>(type: "int", nullable: false),
+                    DiaChi = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Customer_Details", x => x.CustomerId);
+                    table.ForeignKey(
+                        name: "FK_Customer_Details_Customer_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customer",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CustomerRole",
+                columns: table => new
+                {
+                    Customer_ID = table.Column<int>(type: "int", nullable: false),
+                    Role_ID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CustomerRole", x => new { x.Customer_ID, x.Role_ID });
+                    table.ForeignKey(
+                        name: "FK_CustomerRole_Customer_Customer_ID",
+                        column: x => x.Customer_ID,
+                        principalTable: "Customer",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CustomerRole_Role_Role_ID",
+                        column: x => x.Role_ID,
+                        principalTable: "Role",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -137,6 +198,37 @@ namespace WebsiteBanHang.Migrations
                         name: "FK_PermissionRole_Role_Role_ID",
                         column: x => x.Role_ID,
                         principalTable: "Role",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Order",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MaHoaDon = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    UserID = table.Column<int>(type: "int", nullable: true),
+                    CustomerID = table.Column<int>(type: "int", nullable: true),
+                    ngayBan = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    tongTien = table.Column<float>(type: "real", nullable: false),
+                    trangThai = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    LoaiHoaDon = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Order", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_Order_Customer_UserID",
+                        column: x => x.UserID,
+                        principalTable: "Customer",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Order_User_UserID",
+                        column: x => x.UserID,
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -170,7 +262,7 @@ namespace WebsiteBanHang.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    HoTen = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    HoTen = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
                     SoDienThoai = table.Column<int>(type: "int", nullable: false),
                     DiaChi = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
                 },
@@ -184,6 +276,81 @@ namespace WebsiteBanHang.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "Inventory",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MaKho = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    NgayNhap = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    SoLuong = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Inventory", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Inventory_Product_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Product",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Order_Detai",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    soLuong = table.Column<int>(type: "int", nullable: false),
+                    gia = table.Column<float>(type: "real", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Order_Detai", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Order_Detai_Order_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Order",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Order_Detai_Product_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Product",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomerRole_Role_ID",
+                table: "CustomerRole",
+                column: "Role_ID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Inventory_ProductId",
+                table: "Inventory",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Order_UserID",
+                table: "Order",
+                column: "UserID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Order_Detai_OrderId",
+                table: "Order_Detai",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Order_Detai_ProductId",
+                table: "Order_Detai",
+                column: "ProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PermissionRole_Role_ID",
@@ -209,10 +376,19 @@ namespace WebsiteBanHang.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "PermissionRole");
+                name: "Customer_Details");
 
             migrationBuilder.DropTable(
-                name: "Product");
+                name: "CustomerRole");
+
+            migrationBuilder.DropTable(
+                name: "Inventory");
+
+            migrationBuilder.DropTable(
+                name: "Order_Detai");
+
+            migrationBuilder.DropTable(
+                name: "PermissionRole");
 
             migrationBuilder.DropTable(
                 name: "UserRole");
@@ -221,19 +397,28 @@ namespace WebsiteBanHang.Migrations
                 name: "Users_Details");
 
             migrationBuilder.DropTable(
+                name: "Order");
+
+            migrationBuilder.DropTable(
+                name: "Product");
+
+            migrationBuilder.DropTable(
                 name: "Permissions");
+
+            migrationBuilder.DropTable(
+                name: "Role");
+
+            migrationBuilder.DropTable(
+                name: "Customer");
+
+            migrationBuilder.DropTable(
+                name: "User");
 
             migrationBuilder.DropTable(
                 name: "Brand");
 
             migrationBuilder.DropTable(
                 name: "Category");
-
-            migrationBuilder.DropTable(
-                name: "Role");
-
-            migrationBuilder.DropTable(
-                name: "User");
         }
     }
 }

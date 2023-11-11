@@ -184,7 +184,6 @@ namespace WebsiteBanHang.Controllers
                      $"<div style=\"clear: both;\"></div>" +
                      $"</p>";
 
-
             // Thêm bảng chi tiết đơn hàng
             builder.HtmlBody += "<table style='width:100%; border-collapse: collapse;'>";
             builder.HtmlBody += "<tr><th style='border: 1px solid #ddd; padding: 8px;'>STT</th><th style='border: 1px solid #ddd; padding: 8px;'>Sản phẩm</th><th style='border: 1px solid #ddd; padding: 8px;'>Số lượng</th><th style='border: 1px solid #ddd; padding: 8px;'>Đơn giá</th><th style='border: 1px solid #ddd; padding: 8px;'>Thành tiền</th></tr>";

@@ -23,7 +23,7 @@ namespace WebsiteBanHang.Controllers
         public async Task<IActionResult> Index(int? page, string searchName, string selectedCategory)
         {
             var pageNumber = page ?? 1;
-            int pageSize = 16;
+            int pageSize = 12;
 
             IQueryable<ProductModel> products = _context.Product;
 

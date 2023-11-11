@@ -11,6 +11,7 @@ namespace WebsiteBanHang.Areas.Admin.Models
         [StringLength(50)]
         public string? Name { get; set; }
         public ICollection<UserRoleModel> UserRole { get; } = new List<UserRoleModel>(); // Collection navigation containing dependents
+        public ICollection<CustomerRoleModel> CustomerRole { get; } = new List<CustomerRoleModel>(); // Collection navigation containing dependents
         public ICollection<PermissionRoleModel> PermissionRole { get; } = new List<PermissionRoleModel>(); // Collection navigation containing dependents
 
     }

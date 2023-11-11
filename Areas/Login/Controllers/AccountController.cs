@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebsiteBanHang.Controllers
 {
@@ -36,9 +37,9 @@ namespace WebsiteBanHang.Controllers
         [Route("formSignUp")]
         public IActionResult formSignUp(string email, string fullname, string phoneNumber, string address, string password)
         {
-            string userCodeString = "user00001"; // Giá trị mặc định
+            string userCodeString = "KH00001"; // Giá trị mặc định
 
-            var lastUser = _context.User.OrderByDescending(u => u.Id).FirstOrDefault();
+            var lastUser = _context.Customer.OrderByDescending(u => u.Id).FirstOrDefault();
 
             if (lastUser != null)
             {
@@ -46,10 +47,10 @@ namespace WebsiteBanHang.Controllers
                 string lastUserCode = lastUser.MaNguoiDung;
                 int lastUserCodeNumber = int.Parse(lastUserCode.Substring(4)); // Loại bỏ "user" và chuyển thành số
                 int newCodeNumber = lastUserCodeNumber + 1;
-                userCodeString = "user" + newCodeNumber.ToString("D5");
+                userCodeString = "KH" + newCodeNumber.ToString("D5");
             }
 
-            bool isEmailExists = _context.User.Any(u => u.Email == email);
+            bool isEmailExists = _context.Customer.Any(u => u.Email == email);
             if (isEmailExists)
             {
                 // Email đã tồn tại, quay lại trang đăng ký
@@ -91,7 +92,7 @@ namespace WebsiteBanHang.Controllers
         [Route("CheckEmail")]
         public IActionResult CheckEmail(string email)
         {
-            bool isEmailExists = _context.User.Any(u => u.Email == email);
+            bool isEmailExists = _context.Customer.Any(u => u.Email == email);
             return Json(!isEmailExists);
         }
 
@@ -111,21 +112,21 @@ namespace WebsiteBanHang.Controllers
         public IActionResult formCheck_Verification(int code)
         {
             int? verificationCode = HttpContext.Session.GetInt32("VerificationCode");
-            string? userCodeString = HttpContext.Session.GetString("iserCode"); 
+            string? customerCodeString = HttpContext.Session.GetString("iserCode"); 
 
             if (verificationCode.HasValue && code == verificationCode.Value)
             {
                 // Tạo một đối tượng UserModel từ session
-                var userModel = new UserModel
+                var CustomerModel = new CustomerModel
                 {
-                    MaNguoiDung = userCodeString, // Sử dụng mã người dùng từ session
+                    MaNguoiDung = customerCodeString, // Sử dụng mã người dùng từ session
                     Email = HttpContext.Session.GetString("email"),
                     MatKhau = GetMd5Hash(HttpContext.Session.GetString("password")),
                     NgayTao = DateTime.Now
                 };
 
                 // Tạo một đối tượng Users_Details từ session
-                var userDetails = new Users_Details
+                var CustomerDetails = new Customer_Details
                 {
                     HoTen = HttpContext.Session.GetString("fullname"),
                     SoDienThoai = int.Parse(HttpContext.Session.GetString("phoneNumber")),
@@ -133,22 +134,22 @@ namespace WebsiteBanHang.Controllers
                 };
 
                 // Thiết lập quan hệ giữa UserModel và Users_Details
-                userModel.userDetail = userDetails;
+                CustomerModel.CustomerDetail = CustomerDetails;
 
                 // Lưu thông tin người dùng vào cơ sở dữ liệu
-                _context.User.Add(userModel);
+                _context.Customer.Add(CustomerModel);
                 _context.SaveChanges();
 
                 // Tạo một bản ghi trong bảng UserRole để gán người dùng vào vai trò "Customer" (hoặc vai trò tương ứng)
                 var customerRoleId = _context.Role.FirstOrDefault(r => r.Name == "Customer")?.Id;
                 if (customerRoleId.HasValue)
                 {
-                    var userRole = new UserRoleModel
+                    var CustomerRole = new CustomerRoleModel
                     {
-                        User_ID = userModel.Id, // ID của người dùng mới
+                        Customer_ID = CustomerModel.Id, // ID của người dùng mới
                         Role_ID = customerRoleId.Value // ID của vai trò "Customer" hoặc tương ứng
                     };
-                    _context.UserRole.Add(userRole);
+                    _context.CustomerRole.Add(CustomerRole);
                     _context.SaveChanges();
                 }
 
@@ -178,55 +179,92 @@ namespace WebsiteBanHang.Controllers
         [Route("Login")]
         public async Task<IActionResult> Login(UserModel loginModel)
         {
-          
-                var hashedPassword = GetMd5Hash(loginModel.MatKhau);
-                var user = _context.User.FirstOrDefault(m => m.Email == loginModel.Email && m.MatKhau == hashedPassword);
+            var hashedPassword = GetMd5Hash(loginModel.MatKhau);
 
-                if (user != null)
+            // Check in the User table
+            var user = _context.User
+                .Include(u => u.userDetail) // Include the navigation property
+                .FirstOrDefault(m => m.Email == loginModel.Email && m.MatKhau == hashedPassword);
+
+            if (user == null)
+            {
+                // Check in the Customer table
+                var customer = _context.Customer
+                    .Include(c => c.CustomerDetail) // Include the navigation property
+                    .FirstOrDefault(m => m.Email == loginModel.Email && m.MatKhau == hashedPassword);
+
+                if (customer != null)
                 {
-                    // Lấy thông tin UserDetail
-                    var userDetail = _context.Users_Details.FirstOrDefault(ud => ud.UserId == user.Id);
-                    if (userDetail != null)
+                    var customerRoles = _context.CustomerRole
+                        .Include(cr => cr.Role)
+                        .Where(cr => cr.Customer_ID == customer.Id)
+                        .Select(cr => cr.Role.Name)
+                        .ToList();
+
+                    var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, customer.Email),
+                new Claim(ClaimTypes.Email, customer.CustomerDetail?.HoTen) // Assuming CustomerDetail is a navigation property
+            };
+
+                    foreach (var role in customerRoles)
                     {
-                        var userRoles = _context.UserRole.Where(ur => ur.User_ID == user.Id).Select(ur => ur.Role.Name).ToList();
+                        claims.Add(new Claim(ClaimTypes.Role, role));
+                    }
 
-                        var claims = new List<Claim>
-                        {
-                            new Claim(ClaimTypes.Name, user.Email),
-                            new Claim(ClaimTypes.Email, userDetail.HoTen) // Sử dụng thông tin từ UserDetail
-                        };
+                    var userIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var userPrincipal = new ClaimsPrincipal(userIdentity);
 
-                        foreach (var role in userRoles)
-                        {
-                            claims.Add(new Claim(ClaimTypes.Role, role));
-                        }
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal);
 
-                        // Tạo ClaimsIdentity
-                        var userIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-                        // Tạo Principal
-                        var userPrincipal = new ClaimsPrincipal(userIdentity);
-
-                        // Đăng nhập người dùng bằng cookie
-                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal);
-
-                        if (userRoles.Contains("Admin") || userRoles.Contains("Employee"))
-                        {
-                            return RedirectToAction("Index", "AdminHome", new { area = "Admin" });
-                        }
-                        else if (userRoles.Contains("Customer"))
-                        {
-                            return RedirectToAction("Index", "User", new { area = " " });
-                        
+                    if (customerRoles.Contains("Admin") || customerRoles.Contains("Employee"))
+                    {
+                        return RedirectToAction("Index", "AdminHome", new { area = "Admin" });
+                    }
+                    else if (customerRoles.Contains("Customer"))
+                    {
+                        return RedirectToAction("Index", "User", new { area = "" });
                     }
                 }
             }
+            else
+            {
+                var userRoles = _context.UserRole
+                    .Include(ur => ur.Role)
+                    .Where(ur => ur.User_ID == user.Id)
+                    .Select(ur => ur.Role.Name)
+                    .ToList();
 
-            // Đăng nhập không thành công, hiển thị thông báo lỗi
+                var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, user.Email),
+            new Claim(ClaimTypes.Email, user.userDetail?.HoTen) // Assuming userDetail is a navigation property
+        };
+
+                foreach (var role in userRoles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
+
+                var userIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var userPrincipal = new ClaimsPrincipal(userIdentity);
+
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal);
+
+                if (userRoles.Contains("Admin") || userRoles.Contains("Employee"))
+                {
+                    return RedirectToAction("Index", "AdminHome", new { area = "Admin" });
+                }
+                else if (userRoles.Contains("Customer"))
+                {
+                    return RedirectToAction("Index", "User");
+                }
+            }
+
             ModelState.AddModelError(string.Empty, "Tên đăng nhập hoặc mật khẩu không chính xác.");
             return View(loginModel);
-
         }
+
 
         private string GetMd5Hash(string input)
         {

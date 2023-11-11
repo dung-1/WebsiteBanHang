@@ -86,9 +86,7 @@
                                         @if (User.IsInRole("Admin"))
                                         {
                                             <td width="10%">
-                                                <a class="btn btn-sm btn-danger">
-                                                    <i class="bi bi-trash-fill"></i><i class="fa-solid fa-trash-can"></i> Xóa
-                                                </a>
+                                                <a asp-area="Admin" asp-controller="Order" asp-action="Delete" asp-route-id="@item.Id" data-id="@item.Id" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i><i class="fa-solid fa-trash-can"></i> Xóa </a>
                                             </td>
                                         }
                                     </tr>

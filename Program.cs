@@ -72,12 +72,17 @@ namespace WebsiteBanHang
                     areaName: "Login",
                     pattern: "login/{controller=Account}/{action=Index}/{id?}"
                 );
+                endpoints.MapControllerRoute(
+                   name: "category",
+                   pattern: "Category/Index/{categoryid?}",
+                   defaults: new { controller = "Category", action = "Index" });
 
                 // Cuối cùng, đặt route mặc định cho Home controller
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}"
                 );
+
             });
 
             app.Run();

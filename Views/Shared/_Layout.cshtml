@@ -111,7 +111,7 @@
                 @if (User.Identity.IsAuthenticated)
                 {
                     <!-- Hiển thị nút đăng xuất -->
-                    <a class="btn btn-danger" asp-area="Login" asp-controller="Account" asp-action="Logout" role="button"><i class="fa-solid fa-left-long"></i> Đăng xuất</a>
+                    <a class="btn btn-danger"  asp-controller="Home" asp-action="Logout" role="button"><i class="fa-solid fa-left-long"></i> Đăng xuất</a>
                 }
                 else
                 {
@@ -354,48 +354,7 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <!-- Bao gồm SweetAlert2 từ CDN -->
     <script src="~/js/Cart.js"></script>
-    <script>
-        var carousel = document.getElementById('carouselExampleCrossfade');
-        var interval = 3000;
-
-        function carouselNext() {
-            var currentSlide = carousel.querySelector('.carousel-item.active');
-            var nextSlide = currentSlide.nextElementSibling || carousel.querySelector('.carousel-item:first-child');
-
-            currentSlide.classList.remove('active');
-            nextSlide.classList.add('active');
-        }
-
-        setInterval(carouselNext, interval);
-    </script>
-    <input type="text" id="autocomplete" class="form-control" placeholder="Nhập địa chỉ">
-
-    <script>
-        $(function () {
-            $("#autocomplete").autocomplete({
-                source: function (request, response) {
-                    // Sử dụng Google Places API để gợi ý địa chỉ
-                    $.ajax({
-                        url: "https://maps.googleapis.com/maps/api/place/autocomplete/json",
-                        dataType: "json",
-                        data: {
-                            input: request.term,
-                            key: "YOUR_GOOGLE_API_KEY", // Đặt khóa API của bạn ở đây
-                        },
-                        success: function (data) {
-                            response(data.predictions.map(function (item) {
-                                return {
-                                    label: item.description,
-                                    value: item.description,
-                                };
-                            }));
-                        },
-                    });
-                },
-                minLength: 2, // Số ký tự ít nhất trước khi bắt đầu tìm kiếm
-            });
-        });
-    </script>
+   
 
 </body>
 
