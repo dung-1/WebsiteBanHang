@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using WebsiteBanHang.Areas.Admin.AdminDTO;
 using WebsiteBanHang.Areas.Admin.Data;
 using WebsiteBanHang.Areas.Admin.Models;
@@ -79,9 +80,26 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             return PartialView("_ProductCreate");
         }
 
+        [HttpGet]
+        public JsonResult IsTenSanPhamExists(string tenSanPham)
+        {
+            bool isTenSanPhamExists = _context.Product.Any(p => p.TenSanPham == tenSanPham);
+            return Json(new { exists = isTenSanPhamExists });
+        }
+
         [HttpPost]
         public IActionResult Create(ProductModel product, IFormFile imageFile)
         {
+            bool isTenSanPhamExists = _context.Product.Any(p => p.TenSanPham == product.TenSanPham);
+            if (isTenSanPhamExists)
+            {
+                ModelState.AddModelError("TenSanPham", "Tên sản phẩm đã tồn tại.");
+                return View(product);
+            }
+
+            // Tạo mã sản phẩm mới tự động và gán cho product.MaSanPham
+            product.MaSanPham = GenerateProductCode(product);
+
             // Tìm hãng sản phẩm và loại sản phẩm dựa trên ID được chọn trong dropdownlist
             var brand = _context.Brand.Find(product.HangId);
             var category = _context.Category.Find(product.LoaiId);
@@ -89,10 +107,10 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             if (brand != null && category != null)
             {
                 // Xử lý tải ảnh lên và lưu đường dẫn vào trường Image
-                if (imageFile != null)
+                if (imageFile != null && imageFile.Length > 0)
                 {
                     var imagePath = "images/";
-                    var imageName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
+                    var imageName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(imageFile.FileName);
                     var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imagePath, imageName);
 
                     using (var stream = new FileStream(filePath, FileMode.Create))
@@ -102,7 +120,6 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
                     product.Image = Path.Combine(imagePath, imageName);
 
-
                     // Gán hãng sản phẩm và loại sản phẩm cho sản phẩm
                     product.Brand = brand;
                     product.Category = category;
@@ -110,17 +127,36 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                     // Thêm sản phẩm vào cơ sở dữ liệu
                     _context.Product.Add(product);
                     _context.SaveChanges();
-                    var sortedCategories = _context.Product.OrderByDescending(c => c.Id).ToList();
-
 
                     return RedirectToAction("Index");
                 }
             }
 
-
             // Nếu ModelState không hợp lệ hoặc không tìm thấy hãng sản phẩm hoặc loại sản phẩm, quay lại view Create với model đã nhập
-            return RedirectToAction("Index");
+            return View(product);
         }
+
+        private string GenerateProductCode(ProductModel product)
+        {
+            // Tạo mã sản phẩm mới tự động và gán cho product.MaSanPham
+            var latestProduct = _context.Product
+                .OrderByDescending(p => p.MaSanPham)
+                .FirstOrDefault();
+
+            if (latestProduct != null)
+            {
+                // Extract the numeric part of the latest product code
+                if (int.TryParse(latestProduct.MaSanPham.Substring(3), out int latestProductNumber))
+                {
+                    // Increment the product number and format it as MSPxxxxx
+                    return "MSP" + (latestProductNumber + 1).ToString("D5");
+                }
+            }
+
+            // If no existing products, start from MSP00001
+            return "MSP00001";
+        }
+
 
         [HttpGet]
         public IActionResult Edit(int id)
@@ -140,7 +176,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(ProductModel updatedProduct, IFormFile imageFile)
+        public IActionResult Edit([FromBody]ProductModel updatedProduct, IFormFile imageFile)
         {
 
             var brand = _context.Brand.Find(updatedProduct.HangId);
@@ -191,9 +227,18 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            _context.Product.Remove(deleterecord);
-            _context.SaveChanges();
-            return RedirectToAction("Index");
+
+            try
+            {
+                _context.Product.Remove(deleterecord);
+                _context.SaveChanges();
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi hoặc xử lý nếu cần
+                return Json(new { success = false });
+            }
         }
 
     }

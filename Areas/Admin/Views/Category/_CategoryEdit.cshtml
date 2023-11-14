@@ -4,22 +4,22 @@
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
-    <form method="post" asp-area="Admin" asp-controller="Category" asp-action="Edit">
-        <input type="hidden" class="form-control mb-3" asp-for="Id">
+    <form id="EditFormCategory">
+        <input type="hidden" class="form-control mb-3" id="Id" asp-for="Id">
 
         <div class="mb-3">
             <label asp-for="MaLoai">Mã Loại Sản Phẩm</label>
-            <input type="text" class="form-control mb-3" asp-for="MaLoai">
+            <input type="text" class="form-control id=" id=" MaLoai" mb-3" asp-for="MaLoai" readonly>
             <span asp-validation-for="MaLoai" class=" alert-danger"></span>
             </div>
         <div class="mb-3">
                 <label asp-for="TenLoai">Tên Loại Sản Phẩm</label>
-                <input type="text" class="form-control mb-3" asp-for="TenLoai">
+            <input type="text" class="form-control mb-3" id="TenLoai" asp-for="TenLoai">
                 <span asp-validation-for="TenLoai" class=" alert-danger"></span>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-            <button type="submit" class="btn btn-primary">Lưu Thông Tin</button>
+            <button type="button" class="btn btn-primary" onclick="validateEditCategory()">Sửa Thông Tin</button>
         </div>
     </form>
 </div>

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebsiteBanHang.Areas.Admin.Data;
 using WebsiteBanHang.Areas.Admin.Models;
-using static WebsiteBanHang.Areas.Admin.Data.ApplicationDbContext;
+using X.PagedList;
 
 namespace WebsiteBanHang.Areas.Admin.Controllers
 {
@@ -18,34 +18,106 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int? page, string searchName)
         {
-            // Sắp xếp lại danh sách theo ID giảm dần (mới nhất lên đầu)
-            var sortedCategories = _context.Brand.OrderByDescending(c => c.Id).ToList();
-            return View(sortedCategories);
+            var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
+            int pageSize = 5; // Số mục trên mỗi trang
+
+            var sortedBrands = _context.Brand.AsQueryable().OrderByDescending(b => b.Id);
+
+            if (!string.IsNullOrEmpty(searchName))
+            {
+                sortedBrands = (IOrderedQueryable<BrandModel>)sortedBrands.Where(p => p.TenHang.Contains(searchName));
+            }
+
+            var sortedProducts = sortedBrands.ToList();
+
+            if (searchName != null)
+            {
+                ViewBag.SearchName = searchName;
+            }
+            else
+            {
+                ViewBag.SearchName = ""; // Hoặc gán một giá trị mặc định khác nếu cần thiết
+            }
+
+
+            IPagedList<BrandModel> pagedBrands = sortedProducts.ToPagedList(pageNumber, pageSize);
+
+
+
+            if (TempData.ContainsKey("SuccessMessage"))
+            {
+                ViewBag.SuccessMessage = TempData["SuccessMessage"].ToString();
+            }
+
+            return View(pagedBrands);
         }
+
 
         public IActionResult Create()
         {
             return PartialView("_BrandCreate");
         }
+
+        [HttpGet]
+        public JsonResult IsTenHangExists(string tenHang)
+        {
+            bool isTenHangExists = _context.Brand.Any(b => b.TenHang == tenHang);
+            return Json(new { exists = isTenHangExists });
+        }
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult Create(BrandModel empobj)
         {
+            ModelState.Remove("MaHang");
+
+            // Kiểm tra xem tên hãng đã tồn tại chưa
+            bool isTenHangExists = _context.Brand.Any(b => b.TenHang == empobj.TenHang);
+
+            if (isTenHangExists)
+            {
+                ModelState.AddModelError("TenHang", "Tên hãng đã tồn tại.");
+                return RedirectToAction("Index"); // Chuyển đến action "Index"
+            }
+
             if (ModelState.IsValid)
             {
+                // Tạo mã hãng mới tự động và gán cho empobj.MaHang
+                empobj.MaHang = GenerateBrandCode(empobj);
+
                 _context.Brand.Add(empobj);
                 _context.SaveChanges();
 
-                // Sắp xếp lại danh sách theo ID giảm dần (mới nhất lên đầu)
-                var sortedCategories = _context.Brand.OrderByDescending(c => c.Id).ToList();
-
-                return View("Index", sortedCategories); // Trả về view "Index" với danh sách đã sắp xếp
+                return RedirectToAction("Index"); // Chuyển đến action "Index"
             }
 
-            return View(empobj);
+            // Nếu có lỗi, trả về view với model và hiển thị thông báo lỗi
+            return RedirectToAction("Index");
         }
+
+        private string GenerateBrandCode(BrandModel empobj)
+        {
+            // Get the latest brand code from the database
+            var latestBrand = _context.Brand
+                .OrderByDescending(brand => brand.MaHang)
+                .FirstOrDefault();
+
+            if (latestBrand != null)
+            {
+                // Extract the numeric part of the latest brand code
+                if (int.TryParse(latestBrand.MaHang.Substring(3), out int latestBrandNumber))
+                {
+                    // Increment the brand number and format it as VHxxxxx
+                    return "HSP" + (latestBrandNumber + 1).ToString("D5");
+                }
+            }
+
+            // If no existing brands, start from VH00001
+            return "HSP00001";
+        }
+
+
 
 
         [HttpGet]
@@ -60,8 +132,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(BrandModel empobj)
+        public IActionResult Edit([FromBody]BrandModel empobj)
         {
             if (ModelState.IsValid)
             {
@@ -81,23 +152,19 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            _context.Brand.Remove(deleterecord);
-            _context.SaveChanges();
-            return RedirectToAction("Index");
-        }
 
-        //Hàm Tìm Kiếm
-        public async Task<IActionResult> SearchBrands(string searchName)
-        {
-            IQueryable<BrandModel> brands = _context.Brand;
-
-            if (!string.IsNullOrEmpty(searchName))
+            try
             {
-                brands = brands.Where(b => b.TenHang.Contains(searchName));
+                _context.Brand.Remove(deleterecord);
+                _context.SaveChanges();
+                return Json(new { success = true });
             }
-
-            var filteredBrands = await brands.ToListAsync();
-            return View("Index", filteredBrands);
+            catch (Exception ex)
+            {
+                // Log lỗi hoặc xử lý nếu cần
+                return Json(new { success = false });
+            }
         }
     }
+
 }

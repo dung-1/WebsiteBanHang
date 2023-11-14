@@ -431,7 +431,7 @@ namespace WebsiteBanHang.Migrations
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.CustomerModel", "Customer")
                         .WithOne("CustomerDetail")
                         .HasForeignKey("WebsiteBanHang.Areas.Admin.Models.Customer_Details", "CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -442,13 +442,13 @@ namespace WebsiteBanHang.Migrations
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.CustomerModel", "Customer")
                         .WithMany("CustomerRole")
                         .HasForeignKey("Customer_ID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.RoleModel", "Role")
                         .WithMany("CustomerRole")
                         .HasForeignKey("Role_ID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -461,7 +461,7 @@ namespace WebsiteBanHang.Migrations
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.ProductModel", "product")
                         .WithMany("Inventory")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("product");
@@ -472,13 +472,13 @@ namespace WebsiteBanHang.Migrations
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.OrdersModel", "order")
                         .WithMany("ctdh")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.ProductModel", "product")
                         .WithMany("Order_Detai")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("order");
@@ -491,13 +491,13 @@ namespace WebsiteBanHang.Migrations
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.CustomerModel", "Customer")
                         .WithMany("Order")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.UserModel", "user")
                         .WithMany("Order")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -510,13 +510,13 @@ namespace WebsiteBanHang.Migrations
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.PermissionsModel", "Permission")
                         .WithMany("PermissionRole")
                         .HasForeignKey("Permission_ID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.RoleModel", "Role")
                         .WithMany("PermissionRole")
                         .HasForeignKey("Role_ID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Permission");
@@ -529,13 +529,13 @@ namespace WebsiteBanHang.Migrations
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.BrandModel", "Brand")
                         .WithMany("Prodcut")
                         .HasForeignKey("HangId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.CategoryModel", "Category")
                         .WithMany("Prodcut")
                         .HasForeignKey("LoaiId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Brand");
@@ -548,13 +548,13 @@ namespace WebsiteBanHang.Migrations
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.RoleModel", "Role")
                         .WithMany("UserRole")
                         .HasForeignKey("Role_ID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.UserModel", "User")
                         .WithMany("UserRole")
                         .HasForeignKey("User_ID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Role");
@@ -567,7 +567,7 @@ namespace WebsiteBanHang.Migrations
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.UserModel", "User")
                         .WithOne("userDetail")
                         .HasForeignKey("WebsiteBanHang.Areas.Admin.Models.Users_Details", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");

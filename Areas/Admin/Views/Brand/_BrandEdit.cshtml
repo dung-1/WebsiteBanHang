@@ -4,13 +4,13 @@
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
-    <form method="post" asp-area="Admin" asp-controller="Brand" asp-action="Edit">
+    <form  id="EditFormBrand">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" class="form-control mb-3" asp-for="Id">
 
         <div class="mb-3">
             <label asp-for="MaHang" class="control-label"></label>
-            <input asp-for="MaHang" class="form-control" />
+            <input asp-for="MaHang" class="form-control" readonly />
             <span asp-validation-for="MaHang" class="text-danger"></span>
         </div>
         <div class="mb-3">
@@ -30,7 +30,7 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-            <button type="submit" class="btn btn-primary">Lưu Thông Tin</button>
+            <button type="button" class="btn btn-primary" onclick="validateEditBrand()">Lưu Thông Tin</button>
         </div>
     </form>
 

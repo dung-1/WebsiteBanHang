@@ -54,7 +54,7 @@ namespace WebsiteBanHang.Controllers
                 })
                 .ToList();
 
-            int pageSize = 12; // Số sản phẩm trên mỗi trang
+            int pageSize = 9; // Số sản phẩm trên mỗi trang
             int pageNumber = page ?? 1; // Trang mặc định là 1
 
             var pagedProducts = productsInCategory.ToPagedList(pageNumber, pageSize);

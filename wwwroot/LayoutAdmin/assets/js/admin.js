@@ -108,9 +108,22 @@ $(document).on("click", ".create-user", function (e) {
 });
 
 function formatCurrency(input) {
+    // Lấy giá trị nhập vào và loại bỏ tất cả các ký tự không phải số
     var value = input.value.replace(/\D/g, '');
+
+    // Định dạng giá trị thành chuỗi số có dấu phân cách
     if (value) {
-        var formattedValue = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(parseInt(value));
+        var formattedValue = new Intl.NumberFormat('vi-VN').format(parseInt(value));
+
+        // Gán giá trị đã định dạng vào ô input
         input.value = formattedValue;
     }
 }
+function isNumberKey(evt) {
+    var charCode = (evt.which) ? evt.which : event.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+        return false;
+    }
+    return true;
+}
+

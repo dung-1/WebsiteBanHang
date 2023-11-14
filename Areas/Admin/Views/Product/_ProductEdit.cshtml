@@ -6,55 +6,56 @@
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
-    <form method="post" asp-area="Admin" asp-controller="Product" asp-action="Edit" enctype="multipart/form-data">
-        <input type="hidden" asp-for="Id" class="form-control" />
+    <form id="editFormProduct" enctype="multipart/form-data">
+        <input type="hidden" asp-for="Id" id="Id" class="form-control" />
 
         <div class="mb-3">
             <label asp-for="MaSanPham" class="control-label"> Mã Sản Phẩm</label>
-            <input asp-for="MaSanPham" class="form-control" readonly />
+            <input asp-for="MaSanPham" id="MaSanPham" class="form-control" readonly />
             <span asp-validation-for="MaSanPham" class="text-danger"></span>
         </div>
         <div class="mb-3">
             <label asp-for="TenSanPham" class="control-label">Tên Sản Phẩm</label>
-            <input asp-for="TenSanPham" class="form-control" />
+            <input asp-for="TenSanPham" name="TenSanPham" id="TenSanPham" class="form-control" />
             <span asp-validation-for="TenSanPham" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label asp-for="Brand" class="control-label">Hãng Sản Phẩm</label>
-            <select asp-for="Brand.Id" asp-items="ViewBag.hangProductList" name="HangId" class="form-control">
+            <label asp-for="HangId" class="control-label">Hãng Sản Phẩm</label>
+            <select asp-for="HangId" asp-items="ViewBag.hangProductList" id="HangId" class="form-control">
                 <option value="">Chọn hãng sản phẩm</option>
             </select>
         </div>
         <div class="mb-3">
-            <label asp-for="Category" class="control-label">Loại Sản Phẩm</label>
-            <select asp-for="Category.Id" asp-items="ViewBag.loaiProductList" name="LoaiId" class="form-control">
+            <label asp-for="LoaiId" class="control-label">Loại Sản Phẩm</label>
+            <select asp-for="LoaiId" asp-items="ViewBag.loaiProductList" id="LoaiId" class="form-control">
                 <option value="">Chọn loại sản phẩm</option>
             </select>
         </div>
         <div class="mb-3">
-            <label asp-for="Gia" class="control-label">Gía Sản Phẩm</label>
-            <input asp-for="Gia" class="form-control" value="@string.Format(new CultureInfo("vi-VN", false), "{0:c0}", Model.Gia)" />
+            <label asp-for="Gia" class="control-label">Giá Sản Phẩm</label>
+            <input asp-for="Gia" type="text" id="Gia" value="  @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", Model.Gia)" class="form-control" oninput="formatCurrency(this)" onkeypress="return isNumberKey(event)" />
             <span asp-validation-for="Gia" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="GiaGiam" class="control-label">Gía Giảm</label>
-            <input asp-for="GiaGiam" class="form-control" value="@string.Format(new CultureInfo("vi-VN", false), "{0:c0}", Model.GiaGiam)" />
+            <label asp-for="GiaGiam" class="control-label">Giá Giảm</label>
+            <input asp-for="GiaGiam" type="text" value="  @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", Model.GiaGiam)" id="GiaGiam" class="form-control" oninput="formatCurrency(this)" onkeypress="return isNumberKey(event)" />
             <span asp-validation-for="GiaGiam" class="text-danger"></span>
         </div>
+
         <div class="mb-3">
             <label asp-for="Image" class="control-label">Ảnh Sản Phẩm</label>
-            <input type="file" name="imageFile" asp-for="Image" class="form-control" />
+            <input type="file" name="imageFile" id="Image" class="form-control" />
             <span asp-validation-for="Image" class="text-danger"></span>
         </div>
         <div class="mb-3">
             <label asp-for="ThongTinSanPham" class="control-label">Thông Tin Sản Phẩm</label>
-            <input asp-for="ThongTinSanPham" class="form-control" />
+            <input asp-for="ThongTinSanPham" id="ThongTinSanPham" class="form-control" />
             <span asp-validation-for="ThongTinSanPham" class="text-danger"></span>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-            <button type="submit" class="btn btn-primary">Lưu Thông Tin</button>
+            <button type="button" onclick="validateAndEditProduct()" class="btn btn-primary">Lưu Thông Tin</button>
         </div>
     </form>
 </div>

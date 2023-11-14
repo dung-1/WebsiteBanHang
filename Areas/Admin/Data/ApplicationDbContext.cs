@@ -1,6 +1,7 @@
 ﻿using WebsiteBanHang.Areas.Admin.Models;
 using Microsoft.EntityFrameworkCore;
 using WebsiteBanHang.Models;
+using Microsoft.Extensions.Hosting;
 
 namespace WebsiteBanHang.Areas.Admin.Data
 {
@@ -32,91 +33,124 @@ namespace WebsiteBanHang.Areas.Admin.Data
                 .HasMany(e => e.Prodcut)
                 .WithOne(e => e.Brand)
                 .HasForeignKey(e => e.HangId)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ProductModel>()
+                  .HasOne(e => e.Brand)
+                  .WithMany(e => e.Prodcut)
+                  .HasForeignKey(e => e.HangId)
+                  .IsRequired()
+                  .OnDelete(DeleteBehavior.Restrict);
+
 
             modelBuilder.Entity<CategoryModel>()
                 .HasMany(e => e.Prodcut)
                 .WithOne(e => e.Category)
                 .HasForeignKey(e => e.LoaiId)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+            modelBuilder.Entity<ProductModel>()
+                 .HasOne(e => e.Category)
+                 .WithMany(e => e.Prodcut)
+                 .HasForeignKey(e => e.LoaiId)
+                 .IsRequired()
+                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<UserModel>()
                .HasMany(e => e.UserRole)
                .WithOne(e => e.User)
                .HasForeignKey(e => e.User_ID)
-               .IsRequired();
+               .IsRequired()
+               .OnDelete(DeleteBehavior.Restrict);
+
 
             modelBuilder.Entity<CustomerModel>()
               .HasMany(e => e.CustomerRole)
               .WithOne(e => e.Customer)
               .HasForeignKey(e => e.Customer_ID)
-              .IsRequired();
+              .IsRequired()
+              .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<RoleModel>()
                 .HasMany(e => e.UserRole)
                 .WithOne(e => e.Role)
                 .HasForeignKey(e => e.Role_ID)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<RoleModel>()
                 .HasMany(e => e.CustomerRole)
                 .WithOne(e => e.Role)
                 .HasForeignKey(e => e.Role_ID)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ProductModel>()
                 .HasMany(e => e.Order_Detai)
                 .WithOne(e => e.product)
                 .HasForeignKey(e => e.ProductId)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<OrdersModel>()
                .HasMany(e => e.ctdh)
                .WithOne(e => e.order)
                .HasForeignKey(e => e.OrderId)
-               .IsRequired();
+               .IsRequired()
+                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ProductModel>()
                   .HasMany(e => e.Inventory)
                   .WithOne(e => e.product)
                   .HasForeignKey(e => e.ProductId)
-                  .IsRequired();
+                  .IsRequired()
+                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<UserModel>()
                 .HasMany(e => e.Order)
                 .WithOne(e => e.user)
                 .HasForeignKey(e => e.UserID)
-                .IsRequired();
+                .IsRequired()
+                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<CustomerModel>()
                 .HasMany(e => e.Order)
                 .WithOne(e => e.Customer)
                 .HasForeignKey(e => e.UserID)
-                .IsRequired();
+                .IsRequired()
+                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<RoleModel>()
                 .HasMany(e => e.PermissionRole)
                 .WithOne(e => e.Role)
                 .HasForeignKey(e => e.Role_ID)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<PermissionsModel>()
                 .HasMany(e => e.PermissionRole)
                 .WithOne(e => e.Permission)
                 .HasForeignKey(e => e.Permission_ID)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<UserModel>()
-                .HasOne(e => e.userDetail)
-                .WithOne(e => e.User)
-                .HasForeignKey<Users_Details>(e => e.UserId)
-                .IsRequired();
+                 .HasOne(e => e.userDetail)
+                 .WithOne(e => e.User)
+                 .HasForeignKey<Users_Details>(e => e.UserId)
+                 .IsRequired()
+                 .OnDelete(DeleteBehavior.Restrict);
+
 
             modelBuilder.Entity<CustomerModel>()
                 .HasOne(e => e.CustomerDetail)
                 .WithOne(e => e.Customer)
                 .HasForeignKey<Customer_Details>(e => e.CustomerId)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<UserRoleModel>()
                 .HasKey(ur => new { ur.User_ID, ur.Role_ID });
@@ -129,6 +163,9 @@ namespace WebsiteBanHang.Areas.Admin.Data
 
             modelBuilder.Entity<OrdersModel>()
                 .Property(e => e.UserID)
+                .IsRequired(false);
+            modelBuilder.Entity<OrdersModel>()
+                .Property(e => e.CustomerID)
                 .IsRequired(false);
 
             modelBuilder.Entity<ProductModel>()

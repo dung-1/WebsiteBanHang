@@ -4,21 +4,16 @@
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
-    <form method="post" asp-area="Admin" asp-controller="Category" asp-action="Create">
-        <div class="mb-3">
-            <label asp-for="MaLoai">Mã Loại Sản Phẩm</label>
-            <input type="text" class="form-control mb-3" asp-for="MaLoai">
-            <span asp-validation-for="MaLoai" class=" alert-danger"></span>
-        </div>
+    <form  id="createFormCategory">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="mb-3">
             <label asp-for="TenLoai">Tên Loại Sản Phẩm</label>
-            <input type="text" class="form-control mb-3" asp-for="TenLoai">
-            <span asp-validation-for="TenLoai" class=" alert-danger"></span>
+            <input type="text" class="form-control mb-3" asp-for="TenLoai" id="TenLoai" name="TenLoai" oninvalid="setCustomValidity('Bạn phải nhập đầy đủ thông tin.')" oninput="setCustomValidity('')" required>
+            <span asp-validation-for="TenLoai" class="text-danger"></span>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-            <button type="submit" class="btn btn-primary">Lưu Thông Tin</button>
+            <button type="button" class="btn btn-primary" onclick="validateAndSubmitCategory()">Lưu Thông Tin</button>
         </div>
     </form>
 </div>
-

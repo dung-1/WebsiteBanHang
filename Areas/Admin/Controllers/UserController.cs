@@ -52,7 +52,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 ViewBag.SearchName = searchName;
             }
             else
-            {
+            {   
                 ViewBag.SearchName = ""; // Hoặc gán một giá trị mặc định khác nếu cần thiết
             }
 

@@ -6,16 +6,7 @@
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 @model X.PagedList.IPagedList<WebsiteBanHang.Areas.Admin.AdminDTO.ProductViewDTO>
-<style>
-    .table th, .table td {
-        vertical-align: middle;
-        font-size: 0.875rem;
-        line-height: 1;
-        white-space: nowrap;
-        padding: 0rem;
-        padding-bottom: 1rem;
-    }
-</style>
+
 <div class="main-panel">
     <div class="content-wrapper">
         <div class="page-header ">
@@ -96,7 +87,9 @@
                                         @if (User.IsInRole("Admin"))
                                         {
                                             <td>
-                                                <a asp-area="Admin" asp-controller="Product" asp-action="Delete" asp-route-id="@item.Id" data-id="@item.Id" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i><i class="fa-solid fa-trash-can"></i> Xóa </a>
+                                                <a onclick="deleteProduct(@item.Id)" class="btn btn-sm btn-danger">
+                                                    <i class="bi bi-trash-fill"></i><i class="fa-solid fa-trash-can"></i> Xóa
+                                                </a>
                                             </td>
                                         }
                                     </tr>
@@ -119,10 +112,8 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
-
         </div>
     </div>
     <!-- content-wrapper ends -->

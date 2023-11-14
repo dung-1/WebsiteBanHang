@@ -1,35 +1,35 @@
 ﻿@model WebsiteBanHang.Areas.Admin.Models.BrandModel
+
 <div class="modal-header">
     <h1 class="modal-title fs-5" id="exampleModalLabel">Thêm Hãng sản phẩm</h1>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<div class="modal-body">
-<form method="post" asp-area="Admin" asp-controller="Brand" asp-action="Create">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-  <div class="mb-3">
-        <label asp-for="MaHang" class="control-label"></label>
-        <input asp-for="MaHang" class="form-control" />
-        <span asp-validation-for="MaHang" class="text-danger"></span>
-    </div>
-  <div class="mb-3">
-        <label asp-for="TenHang" class="control-label"></label>
-        <input asp-for="TenHang" class="form-control" />
-        <span asp-validation-for="TenHang" class="text-danger"></span>
-    </div>
-  <div class="mb-3">
-        <label asp-for="XuatXu" class="control-label"></label>
-        <input asp-for="XuatXu" class="form-control" />
-        <span asp-validation-for="XuatXu" class="text-danger"></span>
-    </div>
-  <div class="mb-3">
-        <label asp-for="NgaySanXuat" class="control-label"></label>
-        <input asp-for="NgaySanXuat" class="form-control" />
-        <span asp-validation-for="NgaySanXuat" class="text-danger"></span>
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-        <button type="submit" class="btn btn-primary">Lưu Thông Tin</button>
-    </div>
-</form>
 
+<div class="modal-body">
+    <form asp-action="Create" id="createFormBrand">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="TenHang" class="control-label"></label>
+            <input asp-for="TenHang" class="form-control" id="TenHang" name="TenHang" required />
+            <span asp-validation-for="TenHang" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="XuatXu" class="control-label"></label>
+            <input asp-for="XuatXu" class="form-control" required />
+            <span asp-validation-for="XuatXu" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="NgaySanXuat" class="control-label"></label>
+            <input asp-for="NgaySanXuat" class="form-control" required />
+            <span asp-validation-for="NgaySanXuat" class="text-danger"></span>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="button" class="btn btn-primary" onclick="validateAndSubmitBrand()">Lưu Thông Tin</button>
+        </div>
+    </form>
 </div>

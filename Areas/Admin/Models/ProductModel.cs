@@ -18,14 +18,12 @@ namespace WebsiteBanHang.Areas.Admin.Models
         [Required]
 
         public int? HangId { get; set; } // Required foreign key property
-        public BrandModel Brand { get; set; } = null!;
+        public BrandModel ? Brand { get; set; } = null!;
 
         [Required]
 
         public int? LoaiId { get; set; } // Required foreign key property
-        public CategoryModel Category { get; set; } = null!;
-
-        [Required]
+        public CategoryModel? Category { get; set; } = null!;
         public decimal Gia { get; set; }
         public decimal GiaGiam { get; set; }
         [StringLength(255)]

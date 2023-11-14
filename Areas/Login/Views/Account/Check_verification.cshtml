@@ -3,7 +3,7 @@
     Layout = "~/Areas/Login/Shared/_LayoutLogin.cshtml";
 }
 <div class="form-body">
-    <h4 class="card-title mb-4">Chào bạn <span class="fs-5 text-white text-uppercase">@ViewBag.Fullname </span>, bạn hãy vào email của bạn để lấy mã xác thực để kích hoạt tài khoản !!! </h4>
+    <h4 class="card-title mb-4">Chào bạn <span class="fs-5 text-dark text-uppercase">@ViewBag.Fullname </span>, bạn hãy vào email của bạn để lấy mã xác thực để kích hoạt tài khoản !!! </h4>
     <form asp-area="Login" asp-controller="Account" asp-action="formCheck_Verification" method="post" class="the-form">
         <label for="inputUsernamecheck" class="form-label">Nhập Mã Xác Minh Của Bạn </label>
         <input type="text" class="form-control" id="inputCode" name="code">
