@@ -129,7 +129,7 @@ namespace WebsiteBanHang.Controllers
                 var CustomerDetails = new Customer_Details
                 {
                     HoTen = HttpContext.Session.GetString("fullname"),
-                    SoDienThoai = int.Parse(HttpContext.Session.GetString("phoneNumber")),
+                    SoDienThoai = HttpContext.Session.GetString("phoneNumber"),
                     DiaChi = HttpContext.Session.GetString("address")
                 };
 

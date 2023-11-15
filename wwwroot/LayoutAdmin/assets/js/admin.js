@@ -106,7 +106,34 @@ $(document).on("click", ".create-user", function (e) {
         }
     })
 });
+// Modal Edit User
+$(document).on("click", ".edit-user", function (e) {
 
+    let id = $(this).data("id")
+    $.ajax({
+        url: "/Admin/User/Edit?id=" + id,// Đường dẫn đến API của bạn
+        type: "GET",
+        dataType: "html", // Đặt kiểu dữ liệu trả về
+        success: function (data) {
+            $('#edit-user-modal').find('.modal-content').html(data)
+            $('#edit-user-modal').modal('show');
+        }
+    })
+});
+// Modal Edit Customer
+$(document).on("click", ".edit-customer", function (e) {
+
+    let id = $(this).data("id")
+    $.ajax({
+        url: "/Admin/Customer/Edit?id=" + id,// Đường dẫn đến API của bạn
+        type: "GET",
+        dataType: "html", // Đặt kiểu dữ liệu trả về
+        success: function (data) {
+            $('#edit-customer-modal').find('.modal-content').html(data)
+            $('#edit-customer-modal').modal('show');
+        }
+    })
+});
 function formatCurrency(input) {
     // Lấy giá trị nhập vào và loại bỏ tất cả các ký tự không phải số
     var value = input.value.replace(/\D/g, '');

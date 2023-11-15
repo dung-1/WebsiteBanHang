@@ -1,5 +1,81 @@
 ﻿
 
+
+//delete Customer
+function deleteCustomer(id) {
+    Swal.fire({
+        title: 'Bạn có chắc chắn muốn xóa?',
+        text: 'Hành động này không thể hoàn tác!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Xóa'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Gọi controller để xóa khi người dùng xác nhận
+            $.ajax({
+                type: 'POST',
+                url: '/Admin/Customer/Delete/' + id,
+                success: function (response) {
+                    if (response.success) {
+                        // Hiển thị thông báo thành công
+                        Swal.fire('Xóa thành công!', '', 'success')
+                            .then(() => {
+                                // Chuyển đến trang Index sau khi xóa
+                                location.href = '/Admin/Customer/Index';
+                            });
+                    } else {
+                        // Hiển thị thông báo lỗi
+                        Swal.fire('Không thể xóa Khách Hàng này !', '', 'error');
+                    }
+                },
+                error: function () {
+                    // Xử lý lỗi nếu cần
+                    Swal.fire('Có lỗi xảy ra!', '', 'error');
+                }
+            });
+        }
+    });
+}
+//delete User
+function deleteUser(id) {
+    Swal.fire({
+        title: 'Bạn có chắc chắn muốn xóa?',
+        text: 'Hành động này không thể hoàn tác!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Xóa'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Gọi controller để xóa khi người dùng xác nhận
+            $.ajax({
+                type: 'POST',
+                url: '/Admin/User/Delete/' + id,
+                success: function (response) {
+                    if (response.success) {
+                        // Hiển thị thông báo thành công
+                        Swal.fire('Xóa thành công!', '', 'success')
+                            .then(() => {
+                                // Chuyển đến trang Index sau khi xóa
+                                location.href = '/Admin/User/Index';
+                            });
+                    } else {
+                        // Hiển thị thông báo lỗi
+                        Swal.fire('Không thể xóa người dùng này !', '', 'error');
+                    }
+                },
+                error: function () {
+                    // Xử lý lỗi nếu cần
+                    Swal.fire('Có lỗi xảy ra!', '', 'error');
+                }
+            });
+        }
+    });
+}
+
 //delete Product
 function deleteProduct(id) {
     Swal.fire({
@@ -115,6 +191,346 @@ function deleteBrand(id) {
         }
     });
 }
+
+
+
+//uuuuuuuuuuu
+function validateAndSubmitUser() {
+    var form = document.getElementById('createFormUser');
+    var emailInput = form.elements['Email'];
+    var matKhauInput = form.elements['MatKhau'];
+    var hoTenInput = form.elements['HoTen'];
+    var soDienThoaiInput = form.elements['SoDienThoai'];
+    var diaChiInput = form.elements['DiaChi'];
+
+    var emailValidationError = document.querySelector('[data-valmsg-for="Email"]');
+    var matKhauValidationError = document.querySelector('[data-valmsg-for="MatKhau"]');
+    var hoTenValidationError = document.querySelector('[data-valmsg-for="HoTen"]');
+    var soDienThoaiValidationError = document.querySelector('[data-valmsg-for="SoDienThoai"]');
+    var diaChiValidationError = document.querySelector('[data-valmsg-for="DiaChi"]');
+
+    // Kiểm tra trường "Email"
+    if (!emailInput.value) {
+        showValidationError(emailValidationError, "Vui lòng nhập địa chỉ email.");
+        return;
+    } else if (!isValidEmail(emailInput.value)) {
+        showValidationError(emailValidationError, "Địa chỉ email không hợp lệ.");
+        return;
+    } else {
+        hideValidationError(emailValidationError);
+    }
+
+    // Kiểm tra trùng email
+    $.ajax({
+        type: "GET",
+        url: "/Admin/User/IsEmailExists",
+        data: { Email: emailInput.value },
+        success: function (result) {
+            if (result.exists) {
+                showValidationError(emailValidationError, "Địa chỉ email đã tồn tại. Vui lòng chọn email khác.");
+            } else {
+                hideValidationError(emailValidationError);
+
+                // Tiếp tục kiểm tra các trường khác nếu email không trùng
+
+                // Kiểm tra trường "Mật khẩu"
+                if (!matKhauInput.value) {
+                    showValidationError(matKhauValidationError, "Vui lòng nhập mật khẩu.");
+                    return;
+                } else if (matKhauInput.value.length < 6 || !hasSpecialCharacter(matKhauInput.value)) {
+                    showValidationError(matKhauValidationError, "Mật khẩu phải có ít nhất 6 ký tự và chứa ít nhất một ký tự đặc biệt.");
+                    return;
+                } else {
+                    hideValidationError(matKhauValidationError);
+                }
+
+                // Kiểm tra trường "Họ tên"
+                if (!hoTenInput.value) {
+                    showValidationError(hoTenValidationError, "Vui lòng nhập họ tên.");
+                    return;
+                } else if (hoTenInput.value.length < 8) {
+                    showValidationError(hoTenValidationError, "Họ tên phải có ít nhất 8 ký tự.");
+                    return;
+                } else {
+                    hideValidationError(hoTenValidationError);
+                }
+
+                // Kiểm tra trường "Số điện thoại"
+                if (!soDienThoaiInput.value) {
+                    showValidationError(soDienThoaiValidationError, "Vui lòng nhập số điện thoại.");
+                    return;
+                } else if (!isValidPhoneNumber(soDienThoaiInput.value)) {
+                    showValidationError(soDienThoaiValidationError, "Số điện thoại không hợp lệ.");
+                    return;
+                } else {
+                    hideValidationError(soDienThoaiValidationError);
+                }
+
+                // Kiểm tra trường "Địa chỉ"
+                if (!diaChiInput.value) {
+                    showValidationError(diaChiValidationError, "Vui lòng nhập địa chỉ.");
+                    return;
+                } else {
+                    hideValidationError(diaChiValidationError);
+                }
+
+                // Nếu mọi thứ hợp lệ, tiếp tục gửi dữ liệu lên server và thực hiện các bước xử lý khác
+                var formData = new FormData(form);
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Admin/User/Create",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        console.log("Thêm người dùng thành công");
+
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: "top-end",
+                            showConfirmButton: false,
+                            timer: 1800,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.onmouseenter = Swal.stopTimer;
+                                toast.onmouseleave = Swal.resumeTimer;
+                            }
+                        });
+
+                        Toast.fire({
+                            icon: "success",
+                            title: "Thêm người dùng thành công"
+                        });
+
+                        new Promise(resolve => setTimeout(resolve, 1800))
+                            .then(() => {
+                                window.location.href = "/Admin/User/Index";
+                            });
+                    },
+
+                    error: function (error) {
+                        console.log("Lỗi khi thêm người dùng", error);
+                    }
+                });
+            }
+        },
+        error: function () {
+            alert("Đã xảy ra lỗi khi kiểm tra địa chỉ email.");
+        }
+    });
+}
+
+// Hàm kiểm tra định dạng email
+function isValidEmail(email) {
+    // Bạn có thể thay đổi biểu thức chính quy để kiểm tra theo định dạng cụ thể
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+// Hàm kiểm tra mật khẩu có ít nhất 6 ký tự và chứa ít nhất một ký tự đặc biệt
+function hasSpecialCharacter(password) {
+    var specialCharacterRegex = /[!@#$%^&*(),.?":{}|<>]/;
+    return password.length >= 6 && specialCharacterRegex.test(password);
+}
+
+// Hàm kiểm tra số điện thoại có đúng định dạng không (10 số và bắt đầu từ 032-039)
+function isValidPhoneNumber(phoneNumber) {
+    var phoneRegex = /^(032|033|034|035|036|037|038|039)\d{7}$/;
+    return phoneRegex.test(phoneNumber);
+}
+
+
+function validateAndEditUser() {
+    var form = document.getElementById('EditFormUser');
+    var emailInput = form.elements['Email'];
+    var hoTenInput = form.elements['HoTen'];
+    var soDienThoaiInput = form.elements['SoDienThoai'];
+    var diaChiInput = form.elements['DiaChi'];
+
+    var emailValidationError = document.querySelector('[data-valmsg-for="Email"]');
+    var hoTenValidationError = document.querySelector('[data-valmsg-for="HoTen"]');
+    var soDienThoaiValidationError = document.querySelector('[data-valmsg-for="SoDienThoai"]');
+    var diaChiValidationError = document.querySelector('[data-valmsg-for="DiaChi"]');
+
+    // Kiểm tra trường "Email"
+    if (!emailInput.value) {
+        showValidationError(emailValidationError, "Vui lòng nhập địa chỉ email.");
+        return;
+    } else if (!isValidEmail(emailInput.value)) {
+        showValidationError(emailValidationError, "Địa chỉ email không hợp lệ.");
+        return;
+    } else {
+        hideValidationError(emailValidationError);
+    }
+    // Kiểm tra trường "Họ tên"
+    if (!hoTenInput.value) {
+        showValidationError(hoTenValidationError, "Vui lòng nhập họ tên.");
+        return;
+    } else if (hoTenInput.value.length < 8) {
+        showValidationError(hoTenValidationError, "Họ tên phải có ít nhất 8 ký tự.");
+        return;
+    } else {
+        hideValidationError(hoTenValidationError);
+    }
+
+    // Kiểm tra trường "Số điện thoại"
+    if (!soDienThoaiInput.value) {
+        showValidationError(soDienThoaiValidationError, "Vui lòng nhập số điện thoại.");
+        return;
+    } else if (!isValidPhoneNumber(soDienThoaiInput.value)) {
+        showValidationError(soDienThoaiValidationError, "Số điện thoại không hợp lệ.");
+        return;
+    } else {
+        hideValidationError(soDienThoaiValidationError);
+    }
+
+    // Kiểm tra trường "Địa chỉ"
+    if (!diaChiInput.value) {
+        showValidationError(diaChiValidationError, "Vui lòng nhập địa chỉ.");
+        return;
+    } else {
+        hideValidationError(diaChiValidationError);
+    }
+    // Lấy dữ liệu từ form và chuyển đổi thành đối tượng JSON
+    var formData = new FormData(form);
+    var jsonObject = {};
+    formData.forEach((value, key) => {
+        jsonObject[key] = value;
+    });
+
+    // Thực hiện AJAX để chỉnh sửa brand
+    $.ajax({
+        type: 'POST',
+        url: '/Admin/User/Edit',
+        data: JSON.stringify(jsonObject),
+        contentType: 'application/json',
+        success: function (response) {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 1800,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            Toast.fire({
+                icon: 'success',
+                title: 'Chỉnh sửa Người dùng thành công'
+            });
+
+            new Promise(resolve => setTimeout(resolve, 1800))
+                .then(() => {
+                    window.location.href = '/Admin/User/Index';
+                });
+        },
+        error: function (error) {
+            // Xử lý lỗi
+            console.log('Lỗi khi chỉnh sửa brand', error);
+        }
+    });
+}
+
+//uuuuuuuuuuuuuuuuuuu
+function validateAndEditCustomer() {
+    var form = document.getElementById('EditFormCustomer');
+    var emailInput = form.elements['Email'];
+    var hoTenInput = form.elements['HoTen'];
+    var soDienThoaiInput = form.elements['SoDienThoai'];
+    var diaChiInput = form.elements['DiaChi'];
+
+    var emailValidationError = document.querySelector('[data-valmsg-for="Email"]');
+    var hoTenValidationError = document.querySelector('[data-valmsg-for="HoTen"]');
+    var soDienThoaiValidationError = document.querySelector('[data-valmsg-for="SoDienThoai"]');
+    var diaChiValidationError = document.querySelector('[data-valmsg-for="DiaChi"]');
+
+    // Kiểm tra trường "Email"
+    if (!emailInput.value) {
+        showValidationError(emailValidationError, "Vui lòng nhập địa chỉ email.");
+        return;
+    } else if (!isValidEmail(emailInput.value)) {
+        showValidationError(emailValidationError, "Địa chỉ email không hợp lệ.");
+        return;
+    } else {
+        hideValidationError(emailValidationError);
+    }
+    // Kiểm tra trường "Họ tên"
+    if (!hoTenInput.value) {
+        showValidationError(hoTenValidationError, "Vui lòng nhập họ tên.");
+        return;
+    } else if (hoTenInput.value.length < 8) {
+        showValidationError(hoTenValidationError, "Họ tên phải có ít nhất 8 ký tự.");
+        return;
+    } else {
+        hideValidationError(hoTenValidationError);
+    }
+    // Kiểm tra trường "Số điện thoại"
+    if (!soDienThoaiInput.value) {
+        showValidationError(soDienThoaiValidationError, "Vui lòng nhập số điện thoại.");
+        return;
+    } else if (!isValidPhoneNumber(soDienThoaiInput.value)) {
+        showValidationError(soDienThoaiValidationError, "Số điện thoại không hợp lệ.");
+        return;
+    } else {
+        hideValidationError(soDienThoaiValidationError);
+    }
+
+    // Kiểm tra trường "Địa chỉ"
+    if (!diaChiInput.value) {
+        showValidationError(diaChiValidationError, "Vui lòng nhập địa chỉ.");
+        return;
+    } else {
+        hideValidationError(diaChiValidationError);
+    }
+    // Lấy dữ liệu từ form và chuyển đổi thành đối tượng JSON
+    var formData = new FormData(form);
+    var jsonObject = {};
+    formData.forEach((value, key) => {
+        jsonObject[key] = value;
+    });
+
+    // Thực hiện AJAX để chỉnh sửa brand
+    $.ajax({
+        type: 'POST',
+        url: '/Admin/Customer/Edit',
+        data: JSON.stringify(jsonObject),
+        contentType: 'application/json',
+        success: function (response) {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 1800,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            Toast.fire({
+                icon: 'success',
+                title: 'Chỉnh sửa khách hàng thành công'
+            });
+
+            new Promise(resolve => setTimeout(resolve, 1800))
+                .then(() => {
+                    window.location.href = '/Admin/Customer/Index';
+                });
+        },
+        error: function (error) {
+            // Xử lý lỗi
+            console.log('Lỗi khi chỉnh sửa brand', error);
+        }
+    });
+}
+
+
+
 function validateAndSubmitCategory() {
     var form = document.getElementById('createFormCategory');
     var inputElement = form.elements['TenLoai'];

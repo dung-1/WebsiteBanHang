@@ -9,7 +9,8 @@ namespace WebsiteBanHang.Areas.Admin.Models
         public int CustomerId { get; set; }
         [StringLength(64)]
         public string? HoTen { get; set; }
-        public int SoDienThoai { get; set; }
+        [StringLength(10)]
+        public string? SoDienThoai { get; set; }
         [StringLength(64)]
         public string DiaChi { get; set; }
         [ForeignKey("CustomerId")] // Đây là thuộc tính làm khóa ngoại
