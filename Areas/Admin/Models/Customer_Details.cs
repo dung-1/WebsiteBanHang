@@ -12,9 +12,9 @@ namespace WebsiteBanHang.Areas.Admin.Models
         [StringLength(10)]
         public string? SoDienThoai { get; set; }
         [StringLength(64)]
-        public string DiaChi { get; set; }
+        public string? DiaChi { get; set; }
         [ForeignKey("CustomerId")] // Đây là thuộc tính làm khóa ngoại
-        public CustomerModel Customer { get; set; } // Required reference navigation to principal
+        public CustomerModel? Customer { get; set; } // Required reference navigation to principal
 
     }
 }

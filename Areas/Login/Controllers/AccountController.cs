@@ -179,7 +179,7 @@ namespace WebsiteBanHang.Controllers
         [Route("Login")]
         public async Task<IActionResult> Login(UserModel loginModel)
         {
-            var hashedPassword = GetMd5Hash(loginModel.MatKhau);
+                var hashedPassword = GetMd5Hash(loginModel.MatKhau);
 
             // Check in the User table
             var user = _context.User

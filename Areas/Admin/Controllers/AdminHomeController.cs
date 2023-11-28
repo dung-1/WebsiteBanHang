@@ -16,7 +16,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
     {
         private readonly ApplicationDbContext _context;
-        public AdminHomeController(ApplicationDbContext context)
+        public AdminHomeController(ApplicationDbContext context)    
         {
             _context = context;
         }

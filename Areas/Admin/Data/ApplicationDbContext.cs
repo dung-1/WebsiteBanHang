@@ -100,7 +100,7 @@ namespace WebsiteBanHang.Areas.Admin.Data
                .WithOne(e => e.order)
                .HasForeignKey(e => e.OrderId)
                .IsRequired()
-                 .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ProductModel>()
                   .HasMany(e => e.Inventory)
@@ -109,19 +109,17 @@ namespace WebsiteBanHang.Areas.Admin.Data
                   .IsRequired()
                  .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<UserModel>()
-                .HasMany(e => e.Order)
-                .WithOne(e => e.user)
-                .HasForeignKey(e => e.UserID)
-                .IsRequired()
+            modelBuilder.Entity<OrdersModel>()
+                 .HasOne(o => o.user)
+                 .WithMany(u => u.Order)
+                 .HasForeignKey(o => o.UserID)
                  .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<CustomerModel>()
-                .HasMany(e => e.Order)
-                .WithOne(e => e.Customer)
-                .HasForeignKey(e => e.UserID)
-                .IsRequired()
-                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<OrdersModel>()
+                .HasOne(o => o.Customer)
+                .WithMany(c => c.Order)
+                .HasForeignKey(o => o.CustomerID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<RoleModel>()
                 .HasMany(e => e.PermissionRole)
@@ -143,7 +141,6 @@ namespace WebsiteBanHang.Areas.Admin.Data
                  .HasForeignKey<Users_Details>(e => e.UserId)
                  .IsRequired()
                  .OnDelete(DeleteBehavior.Restrict);
-
 
             modelBuilder.Entity<CustomerModel>()
                 .HasOne(e => e.CustomerDetail)

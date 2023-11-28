@@ -38,7 +38,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
             if (!string.IsNullOrEmpty(searchName))
             {
-                productsQuery = (IOrderedQueryable<ProductModel>)productsQuery.Where(p => p.TenSanPham.Contains(searchName));
+                productsQuery = (IOrderedQueryable<ProductModel>)productsQuery.Where(p => p.TenSanPham.Contains(searchName) || p.Brand.TenHang.Contains(searchName) || p.Category.TenLoai.Contains(searchName));
             }
 
             var sortedProducts = productsQuery.ToList();
@@ -158,6 +158,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         }
 
 
+
         [HttpGet]
         public IActionResult Edit(int id)
         {
@@ -175,9 +176,27 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             return PartialView("_ProductEdit", category);
         }
 
-        [HttpPost]
-        public IActionResult Edit([FromBody]ProductModel updatedProduct, IFormFile imageFile)
+
+
+
+        [HttpGet]
+        public JsonResult IsTenSanPhamExist(string tenSanPham, int currentProductId)
         {
+            bool isTenSanPhamExists = _context.Product.Any(p => p.TenSanPham == tenSanPham && p.Id != currentProductId);
+            return Json(new { exists = isTenSanPhamExists });
+        }
+
+
+        [HttpPost]
+        public IActionResult Edit(ProductModel updatedProduct, IFormFile imageFile)
+        {
+            bool isTenSanPhamExists = _context.Product.Any(p => p.TenSanPham == updatedProduct.TenSanPham && p.Id != updatedProduct.Id);
+
+            if (isTenSanPhamExists)
+            {
+                ModelState.AddModelError("TenSanPham", "Tên sản phẩm đã tồn tại.");
+                return View(updatedProduct);
+            }
 
             var brand = _context.Brand.Find(updatedProduct.HangId);
             var category = _context.Category.Find(updatedProduct.LoaiId);
@@ -185,7 +204,8 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
             if (existingProduct != null)
             {
-                if (imageFile != null)
+                if (imageFile != null && imageFile.Length > 0)
+
                 {
                     // Nếu có tệp ảnh mới được tải lên, cập nhật ảnh
                     var imagePath = "images/";

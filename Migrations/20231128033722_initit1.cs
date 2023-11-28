@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WebsiteBanHang.Migrations
 {
-    public partial class initial : Migration
+    public partial class initit1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -140,8 +140,8 @@ namespace WebsiteBanHang.Migrations
                 {
                     CustomerId = table.Column<int>(type: "int", nullable: false),
                     HoTen = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
-                    SoDienThoai = table.Column<int>(type: "int", nullable: false),
-                    DiaChi = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
+                    SoDienThoai = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    DiaChi = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -220,8 +220,8 @@ namespace WebsiteBanHang.Migrations
                 {
                     table.PrimaryKey("PK_Order", x => x.id);
                     table.ForeignKey(
-                        name: "FK_Order_Customer_UserID",
-                        column: x => x.UserID,
+                        name: "FK_Order_Customer_CustomerID",
+                        column: x => x.CustomerID,
                         principalTable: "Customer",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -263,7 +263,7 @@ namespace WebsiteBanHang.Migrations
                 {
                     UserId = table.Column<int>(type: "int", nullable: false),
                     HoTen = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
-                    SoDienThoai = table.Column<int>(type: "int", nullable: false),
+                    SoDienThoai = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
                     DiaChi = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
                 },
                 constraints: table =>
@@ -336,6 +336,11 @@ namespace WebsiteBanHang.Migrations
                 name: "IX_Inventory_ProductId",
                 table: "Inventory",
                 column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Order_CustomerID",
+                table: "Order",
+                column: "CustomerID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Order_UserID",

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using WebsiteBanHang.Areas.Admin.AdminDTO;
 using WebsiteBanHang.Models;
 
 namespace WebsiteBanHang.Areas.Admin.Models
@@ -15,5 +16,7 @@ namespace WebsiteBanHang.Areas.Admin.Models
         public ProductModel product { get; set; } = null!;
         public int soLuong { get; set; }
         public float gia { get; set; }
+
+        
     }
 }

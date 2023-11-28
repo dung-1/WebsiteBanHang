@@ -1,7 +1,4 @@
-﻿
-using System.ComponentModel.DataAnnotations;
-using System.Reflection.Metadata;
-using WebsiteBanHang.Models;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace WebsiteBanHang.Areas.Admin.Models
 {
@@ -23,7 +20,6 @@ namespace WebsiteBanHang.Areas.Admin.Models
         public ICollection<UserRoleModel> UserRole { get; } = new List<UserRoleModel>(); // Collection navigation containing dependents
         public ICollection<OrdersModel> Order { get; } = new List<OrdersModel>(); // Collection navigation containing dependents
         public Users_Details? userDetail { get; set; } = new Users_Details(); // Khởi tạo giá trị mặc định
-
 
     }
 }

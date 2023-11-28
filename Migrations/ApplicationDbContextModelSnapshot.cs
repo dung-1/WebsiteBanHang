@@ -82,7 +82,6 @@ namespace WebsiteBanHang.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("DiaChi")
-                        .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
 
@@ -237,6 +236,8 @@ namespace WebsiteBanHang.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.HasKey("id");
+
+                    b.HasIndex("CustomerID");
 
                     b.HasIndex("UserID");
 
@@ -492,15 +493,13 @@ namespace WebsiteBanHang.Migrations
                 {
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.CustomerModel", "Customer")
                         .WithMany("Order")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("CustomerID")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.UserModel", "user")
                         .WithMany("Order")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Customer");
 

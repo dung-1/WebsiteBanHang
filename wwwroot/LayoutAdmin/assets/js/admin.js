@@ -1,4 +1,18 @@
-﻿
+﻿// Modal View Order
+$(document).on("click", ".View-Order", function (e) {
+
+    let id = $(this).data("id")
+    $.ajax({
+        url: "/Admin/Order/View?id=" + id,// Đường dẫn đến API của bạn
+        type: "GET",
+        dataType: "html", // Đặt kiểu dữ liệu trả về
+        success: function (data) {
+            $('#View_Order').find('.modal-content').html(data)
+            $('#View_Order').modal('show');
+        }
+    })
+});
+// Modal create Brand
 $(document).on("click", ".edit-OderDetail", function (e) {
 
     let id = $(this).data("id")

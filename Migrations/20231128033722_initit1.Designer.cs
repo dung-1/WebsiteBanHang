@@ -12,8 +12,8 @@ using WebsiteBanHang.Areas.Admin.Data;
 namespace WebsiteBanHang.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231115043229_update19")]
-    partial class update19
+    [Migration("20231128033722_initit1")]
+    partial class initit1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -84,7 +84,6 @@ namespace WebsiteBanHang.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("DiaChi")
-                        .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
 
@@ -239,6 +238,8 @@ namespace WebsiteBanHang.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.HasKey("id");
+
+                    b.HasIndex("CustomerID");
 
                     b.HasIndex("UserID");
 
@@ -494,15 +495,13 @@ namespace WebsiteBanHang.Migrations
                 {
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.CustomerModel", "Customer")
                         .WithMany("Order")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("CustomerID")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.UserModel", "user")
                         .WithMany("Order")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Customer");
 

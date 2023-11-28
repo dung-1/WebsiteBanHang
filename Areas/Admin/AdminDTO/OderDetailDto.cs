@@ -1,7 +1,7 @@
 ﻿namespace WebsiteBanHang.Areas.Admin.AdminDTO
 {
     public class OderDetailDto
-    {
+    {   
         public int Id { get; set; }
         public string MaHoaDon { get; set; }
         public string TenSanPham { get; set; }

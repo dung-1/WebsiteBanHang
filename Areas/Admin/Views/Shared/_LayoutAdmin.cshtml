@@ -220,7 +220,7 @@
                             <i class="menu-icon  fa-solid fa-users"></i>
                         </a>
                     </li>
-                    <li class="nav-item">
+                    @* <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="collapse" href="#general-pages" aria-expanded="false" aria-controls="general-pages">
                             <span class="menu-title">Quản Lý Hóa Đơn</span>
                             <i class="menu-arrow"></i>
@@ -233,6 +233,12 @@
                                 <li class="nav-item"> <a class="nav-link" href="@Url.Action("Index","OrderDetail")"> Chi Tiết Hóa Đơn </a></li>
                             </ul>
                         </div>
+                    </li> *@
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index","Order")">
+                            <span class="menu-title">Quản Lý Hóa Đơn</span>
+                            <i class="mdi mdi-table-large menu-icon"></i>
+                        </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">
