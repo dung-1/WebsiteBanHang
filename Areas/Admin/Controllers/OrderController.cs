@@ -2,11 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using WebsiteBanHang.Areas.Admin.AdminDTO;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using WebsiteBanHang.Areas.Admin.Data;
-using WebsiteBanHang.Areas.Admin.Models;
 using X.PagedList;
-using System.Linq;
 
 namespace WebsiteBanHang.Areas.Admin.Controllers
 {

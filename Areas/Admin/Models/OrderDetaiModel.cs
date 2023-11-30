@@ -11,7 +11,6 @@ namespace WebsiteBanHang.Areas.Admin.Models
         [Required]
         public int OrderId { get; set; } // Required foreign key property
         public OrdersModel order { get; set; } = null!;
-
         public int ProductId { get; set; } // Required foreign key property
         public ProductModel product { get; set; } = null!;
         public int soLuong { get; set; }
