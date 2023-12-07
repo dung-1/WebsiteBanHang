@@ -1,6 +1,7 @@
 ﻿@using System.Globalization;
 ﻿@using X.PagedList.Mvc.Core;
 @using X.PagedList.Web.Common;
+@inject LanguageService language
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -65,12 +66,12 @@
     <!-- Add more Razor code and content as needed -->
 </div>
 <section class="section-content mb-5">
-  
-        <header class="section-heading py-2 text-light text-uppercase my-3 d-flex justify-content-between bg-primary">
+
+    <header class="section-heading py-2 text-light text-uppercase my-3 d-flex justify-content-between bg-primary">
         <h3 class="section-title container d-flex justify-content-between  ">Danh Sách Sản phẩm</h3>
-            @*             <a class="btn btn-secondary" href="#" role="button" style="height: fit-content;">Xem tất cả</a>
-            *@
-        </header> <!-- section-heading.// -->
+        @*             <a class="btn btn-secondary" href="#" role="button" style="height: fit-content;">Xem tất cả</a>
+        *@
+    </header> <!-- section-heading.// -->
     <div class="container">
         <div class="row item-grid">
             @foreach (var product in Model)
@@ -85,7 +86,7 @@
                                 {
                                     var phanTramGiam = ((product.Gia - product.GiaGiam) / product.Gia) * 100;
                                     @("-" + phanTramGiam.ToString("0"))
-                                 }%
+                                }%
 
                             </span>
                         </span>
@@ -96,10 +97,10 @@
                             <a href="#" class="title text-capitalize">@product.TenSanPham</a>
                             <div class="row">
                                 <div class="col-6 price mt-1 fw-bold text-danger">
-                                    @string.Format(new CultureInfo("vi-VN", false), "{0:c0}",@product.GiaGiam)
+                                    @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @product.GiaGiam)
                                 </div>
                                 <div class="col-6 price mt-1  " style="padding-top: 5px;font-size: 14px;color:#a29c9cd7;text-decoration: line-through;font-style: normal;">
-                                    @string.Format(new CultureInfo("vi-VN", false), "{0:c0}",@product.Gia)
+                                    @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @product.Gia)
                                 </div>
 
                                 <div class="row">
@@ -107,7 +108,7 @@
                                 </div> *@
                                     <div class="col-12 price  fw-bold text-danger">
                                         <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@product.Id" class="btn btn-primary" id="addToCartButton">
-                                            <i class="fa-solid fa-cart-plus"></i> Mua Ngay
+                                            <i class="fa-solid fa-cart-plus"></i>   @language.GetKey("Buy Now")
                                         </a>
                                     </div>
                                 </div>
@@ -122,7 +123,7 @@
                 <ul class="pagination">
                     <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
                         <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1, searchName = ViewBag.SearchName })" aria-label="Previous">
-                            <span aria-hidden="true">&laquo; Trang trước</span>
+                            <span aria-hidden="true">&laquo;   @language.GetKey("Previous")</span>
                         </a>
                     </li>
 
@@ -138,14 +139,12 @@
 
                     <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
                         <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1, searchName = ViewBag.SearchName })" aria-label="Next">
-                            <span aria-hidden="true">Trang sau &raquo;</span>
+                            <span aria-hidden="true">  @language.GetKey("Next") &raquo;</span>
                         </a>
                     </li>
                 </ul>
             </nav>
         </div>
-
-
         <!-- row.// -->
     </div> <!-- container.// -->
 </section> 

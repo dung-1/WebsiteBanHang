@@ -1,4 +1,11 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Options
+@inject LanguageService language
+
+
+<!DOCTYPE html>
 <html lang="vi">
 
 <head>
@@ -54,25 +61,37 @@
                             <li>
                                 <a href="#" class="nav-link text-body">
                                     <i class="bi bi-person d-block text-center fs-3"></i>
-                                    Tài khoản
+                                    @language.GetKey("Accout")
+
                                 </a>
                             </li>
                             <li>
                                 <a href="#" class="nav-link text-body">
                                     <i class="bi bi-list-check d-block text-center fs-3"></i>
-                                    Đơn hàng
+                                    @language.GetKey("Bill")
+
+
+
                                 </a>
                             </li>
                             <li>
                                 <a asp-controller="Cart" asp-action="Index" class="nav-link text-body position-relative">
                                     <i class="bi bi-cart d-block text-center fs-3" style="margin-right:auto;"></i>
-                                    Giỏ hàng
+                                    @language.GetKey("Cart")
                                     <span class="position-absolute top-0  badge rounded-pill bg-danger" style="    margin-left: -10px;" id="cartItemCount">0</span>
                                 </a>
                             </li>
 
-
                         </ul>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Ngôn Ngữ
+                            </button>
+                            <ul class="dropdown-menu">
+                                <a class="dropdown-item" asp-controller="Home" asp-action="changeLanguage" asp-route-language="vi-VN">Việt Nam</a>
+                                <a class="dropdown-item" asp-controller="Home" asp-action="changeLanguage" asp-route-language="en-US">Tiếng Anh</a>
+                            </ul>
+                        </div>
                     </div> <!-- col.// -->
                 </div> <!-- row.// -->
             </div> <!-- container.// -->
@@ -111,7 +130,7 @@
                 @if (User.Identity.IsAuthenticated)
                 {
                     <!-- Hiển thị nút đăng xuất -->
-                    <a class="btn btn-danger"  asp-controller="Home" asp-action="Logout" role="button"><i class="fa-solid fa-left-long"></i> Đăng xuất</a>
+                    <a class="btn btn-danger" asp-controller="Home" asp-action="Logout" role="button"><i class="fa-solid fa-left-long"></i> Đăng xuất</a>
                 }
                 else
                 {
@@ -123,7 +142,7 @@
             </div>
         </div> <!-- container.// -->
     </nav> <!-- navbar-main.// -->
-  
+
 
     <section class="section-content mb-2">
 
@@ -221,94 +240,96 @@
                 <!-- end_list_tintuc -->
             </div>
         </div>
-      <div class="footer-link">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-3 col-md-6">
-                    <ul class="list-unstyled">
-                        <h6>
-                            <b>
-                                CÔNG TY TNHH TIN HỌC CÔNG NGHỆ AZ VIỆT NAM
-                            </b>
-                        </h6>
-                        <li>Địa chỉ: Số 18, ngõ 121, Thái Hà, Đống Đa, Hà Nội</li>
-                        <li>Hotline: 0825 233 233</li>
-                        <li>Email: hotrolaptopaz@gmail.com</li>
-                        <li class="share mt-2">
-                            <a href="https://www.facebook.com/laptopaz.vn" target="_blank" ><i class="bi bi-facebook"></i></a>
-                            <a href="https://www.youtube.com/c/LAPTOPAZREVIEW" target="_blank"><i class="bi bi-youtube"></i></a>
+        <div class="footer-link">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6">
+                        <ul class="list-unstyled">
+                            <h6>
+                                <b>
+                                    CÔNG TY TNHH TIN HỌC CÔNG NGHỆ AZ VIỆT NAM
+                                </b>
+                            </h6>
+                            <li>Địa chỉ: Số 18, ngõ 121, Thái Hà, Đống Đa, Hà Nội</li>
+                            <li>Hotline: 0825 233 233</li>
+                            <li>Email: hotrolaptopaz@gmail.com</li>
+                            <li class="share mt-2">
+                                <a href="https://www.facebook.com/laptopaz.vn" target="_blank"><i class="bi bi-facebook"></i></a>
+                                <a href="https://www.youtube.com/c/LAPTOPAZREVIEW" target="_blank"><i class="bi bi-youtube"></i></a>
                                 <a href="https://www.tiktok.com/laptopaz" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <ul class="list-unstyled">
-                        <h6>
-                            <b>
-                                THÔNG TIN CÔNG TY
-                            </b>
-                        </h6>
-                        <li>Giới thiệu công ty</li>
-                        <li>Tuyển dụng</li>
-                        <li>Gửi góp ý, khiếu nại</li>
-                        <li class="baohanh-item mt-3">
-                            <a href="http://www.online.gov.vn/Home/WebDetails/76577?AspxAutoDetectCookieSupport=1" class="thongbaobct">
-                                <img src="~/img/footer-icon.png"></a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <ul class="list-unstyled">
-                        <h6>
-                            <b>
-                                CHÍNH SÁCH CÔNG TY
-                            </b>
-                        </h6>
-                        <li>Chính sách chất lượng</li>
-                        <li>Chính sách bảo hành</li>
-                        <li>Chính sách đổi trả </li>
-                        <li>Chính sách bảo mật thông tin</li>
-                        <li>Chính sách vận chuyển</li>
-                        <li>Hướng dẫn mua hàng- thanh toán</li>
-                    </ul>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <ul class="list-unstyled">
-                        <h6>
-                            <b>
-                                HỆ THỐNG CỬA HÀNG LAPTOPAZ
-                            </b>
-                        </h6>
-                        <li>Số 18, ngõ 121, Thái Hà, Đống Đa, Hà Nội</li>
-                        <li>Bán hàng: Từ 8h30 - 21h30</li>
-                        <li>Kỹ thuật: Từ 8h30 - 12h & 13h30 - 17h30</li>
-                        <li class="mt-3">
-                            <div class="items">
-                                <div class="icon--phone">
-                                    <i class="bi bi-telephone"></i>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <ul class="list-unstyled">
+                            <h6>
+                                <b>
+                                    THÔNG TIN CÔNG TY
+                                </b>
+                            </h6>
+                            <li>Giới thiệu công ty</li>
+                            <li>Tuyển dụng</li>
+                            <li>Gửi góp ý, khiếu nại</li>
+                            <li class="baohanh-item mt-3">
+                                <a href="http://www.online.gov.vn/Home/WebDetails/76577?AspxAutoDetectCookieSupport=1" class="thongbaobct">
+                                    <img src="~/img/footer-icon.png">
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <ul class="list-unstyled">
+                            <h6>
+                                <b>
+                                    CHÍNH SÁCH CÔNG TY
+                                </b>
+                            </h6>
+                            <li>Chính sách chất lượng</li>
+                            <li>Chính sách bảo hành</li>
+                            <li>Chính sách đổi trả </li>
+                            <li>Chính sách bảo mật thông tin</li>
+                            <li>Chính sách vận chuyển</li>
+                            <li>Hướng dẫn mua hàng- thanh toán</li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <ul class="list-unstyled">
+                            <h6>
+                                <b>
+                                    HỆ THỐNG CỬA HÀNG LAPTOPAZ
+                                </b>
+                            </h6>
+                            <li>Số 18, ngõ 121, Thái Hà, Đống Đa, Hà Nội</li>
+                            <li>Bán hàng: Từ 8h30 - 21h30</li>
+                            <li>Kỹ thuật: Từ 8h30 - 12h & 13h30 - 17h30</li>
+                            <li class="mt-3">
+                                <div class="items">
+                                    <div class="icon--phone">
+                                        <i class="bi bi-telephone"></i>
+                                    </div>
+                                    <div class="content--support">
+                                        <span>HOTLINE</span>
+                                        <a href="tel:0825233233">
+                                            <span>0825 233 233</span>
+                                        </a>
+                                    </div>
                                 </div>
-                                <div class="content--support">
-                                    <span>HOTLINE</span>
-                                    <a href="tel:0825233233">
-                                        <span>0825 233 233</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
+                <!-- end_row -->
+                <div class="h_line"></div>
             </div>
-            <!-- end_row -->
-            <div class="h_line"></div>
-        </div>
 
-    </div>
-    <!-- end_footer_link -->
-    <div class="footer-bottom">
-        <p>Công ty TNHH Tin học Công nghệ AZ Việt Nam. MST số 0108956087 cấp ngày 23/10/2019  Laptopaz. All Rights
-            Reserved
-        </p>
-    </div>
+        </div>
+        <!-- end_footer_link -->
+        <div class="footer-bottom">
+            <p>
+                Công ty TNHH Tin học Công nghệ AZ Việt Nam. MST số 0108956087 cấp ngày 23/10/2019  Laptopaz. All Rights
+                Reserved
+            </p>
+        </div>
     </footer>
 
     <a href="#" id="back-to-top" title="Back to top"> <i class="fa-sharp fa-solid fa-circle-up"></i> </a>
@@ -354,7 +375,7 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <!-- Bao gồm SweetAlert2 từ CDN -->
     <script src="~/js/Cart.js"></script>
-   
+
 
 </body>
 

@@ -1,4 +1,5 @@
 ﻿@using System.Globalization;
+@inject LanguageService language
 @model List<WebsiteBanHang.Models.CartItemModel>
 
 @{
@@ -11,7 +12,8 @@
 
     <section class="section-pagetop bg-light">
         <div class="container">
-            <h2 class="title-page">Giỏ hàng</h2>
+            <h2 class="title-page">
+                @language.GetKey("Cart")</h2>
         </div> <!-- container.// -->
     </section> <!-- section-pagetop.// -->
     <div class="modal fade" id="Create_checkout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -152,7 +154,7 @@ else
                 <p class="css-8uyn92 text-red-5 px-16 md:px-0 text-danger fs-5">Chưa có sản phẩm nào trong giỏ hàng</p>
                 <div class="cart-status_btn m-b-32 cart-empty_cart-status_btn__yWtjL">
                     <a href="/" class="btn btn-danger border-2" style="border-radius:10%">
-                        <span>Mua hàng</span>
+                        <span>  @language.GetKey("Buy Now")</span>
                     </a>
                 </div>
             </div>

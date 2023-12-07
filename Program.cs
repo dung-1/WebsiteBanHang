@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using WebsiteBanHang.Areas.Admin.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.Extensions.Options;
+using WebsiteBanHang.Models;
+using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace WebsiteBanHang
 {
@@ -42,6 +46,32 @@ namespace WebsiteBanHang
                 options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
                 options.AddPolicy("EmployeeOnly", policy => policy.RequireRole("Employee"));
             });
+            builder.Services.AddControllersWithViews().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+            builder.Services.AddSingleton<LanguageService>();
+            builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+            builder.Services.AddMvc()
+            .AddViewLocalization()
+            .AddDataAnnotationsLocalization(options =>
+            {
+                options.DataAnnotationLocalizerProvider = (type, factory) =>
+                {
+                    var assemblyName = new AssemblyName(type.GetTypeInfo().Assembly.FullName);
+                    return factory.Create("SharedResource", assemblyName.Name);
+                };
+            });
+
+         
+            builder.Services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new[] { "vi-VN", "en-US" };
+                options.SetDefaultCulture(supportedCultures[1])
+                    .AddSupportedCultures(supportedCultures)
+                    .AddSupportedUICultures(supportedCultures);
+                var questStringCultureProvider = options.RequestCultureProviders[0];
+                options.RequestCultureProviders.RemoveAt(0);
+                options.RequestCultureProviders.Insert(1, questStringCultureProvider);
+                //Add services to the container.
+            });
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())
@@ -49,6 +79,7 @@ namespace WebsiteBanHang
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+            app.UseRequestLocalization();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

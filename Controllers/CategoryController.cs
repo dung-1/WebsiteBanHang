@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Drawing.Printing;
 using WebsiteBanHang.Areas.Admin.AdminDTO;
@@ -62,12 +63,6 @@ namespace WebsiteBanHang.Controllers
 
             return View(pagedProducts);
         }
-
-
-
-
-
-
 
     }
 }

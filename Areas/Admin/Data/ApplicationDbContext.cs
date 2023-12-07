@@ -11,6 +11,7 @@ namespace WebsiteBanHang.Areas.Admin.Data
         {
         }
 
+
         public DbSet<BrandModel> Brand { get; set; }
         public DbSet<CategoryModel> Category { get; set; }
         public DbSet<ProductModel> Product { get; set; }
@@ -26,7 +27,7 @@ namespace WebsiteBanHang.Areas.Admin.Data
         public DbSet<InventoriesModel> Inventory { get; set; }
         public DbSet<PermissionRoleModel> PermissionRole { get; set; }
         public DbSet<PermissionsModel> Permissions { get; set; }
-
+    
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<BrandModel>()

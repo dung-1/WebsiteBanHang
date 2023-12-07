@@ -7,6 +7,8 @@ using X.PagedList;
 using Microsoft.EntityFrameworkCore;
 using WebsiteBanHang.Areas.Admin.AdminDTO;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Localization;
+using Microsoft.AspNetCore.Localization;
 
 namespace WebsiteBanHang.Controllers
 {
@@ -14,11 +16,13 @@ namespace WebsiteBanHang.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IStringLocalizer<HomeController> _localizer;
 
-        public HomeController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
+        public HomeController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor, IStringLocalizer<HomeController> localizer)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
+            _localizer = localizer;
         }
         public async Task<IActionResult> Index(int? page, string searchName, string selectedCategory)
         {
@@ -33,10 +37,8 @@ namespace WebsiteBanHang.Controllers
             }
             var pagedProducts = products.ToList();
 
-
             IPagedList<ProductModel> pagedProductsList = pagedProducts.ToPagedList(pageNumber, pageSize);
             ViewBag.SearchName = searchName;
-
 
             return View(pagedProductsList);
         }
@@ -85,6 +87,17 @@ namespace WebsiteBanHang.Controllers
         {
             var categories = _context.Category.ToList();
             return Json(categories);
+        }
+        public IActionResult changeLanguage(String language)
+        {
+            Response.Cookies.Append(CookieRequestCultureProvider.DefaultCookieName,
+                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(language)),
+                new CookieOptions()
+                {
+                    Expires = DateTimeOffset.UtcNow.AddYears(1)
+                });
+
+            return Redirect(Request.Headers["Referer"].ToString());
         }
 
     }
