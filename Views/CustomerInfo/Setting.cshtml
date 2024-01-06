@@ -1,0 +1,65 @@
+﻿
+<section class="section-pagetop bg-light">
+    <div class="container">
+        <h2 class="title-page">Thiết đặt</h2>
+    </div> <!-- container.// -->
+</section> <!-- section-pagetop.// -->
+
+<section class="section-content padding-y">
+    <div class="container">
+        <div class="row">
+
+            <aside class="col-md-3 mb-md-0 mb-3">
+                <nav class="list-group">
+                    <a class="list-group-item" asp-controller="CustomerInfo" asp-action="AccountInfo"> Tài khoản </a>
+                    <a class="list-group-item" asp-controller="CustomerInfo" asp-action="Changepassword"> Đổi mật khẩu </a>
+                    <a class="list-group-item active" asp-controller="CustomerInfo" asp-action="Setting"> Thiết đặt </a>
+                    <a class="list-group-item" href="#"> Đăng xuất </a>
+                </nav>
+            </aside> <!-- col.// -->
+
+            <main class="col-md-9">
+                <article class="card">
+                    <div class="card-body">
+                        <div class="col-lg-9">
+                            <form>
+                                <div class="mb-3">
+                                    <label for="inputUsername" class="form-label">Tên đăng nhập</label>
+                                    <input type="text" class="form-control" id="inputUsername">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="inputName" class="form-label">Họ tên</label>
+                                    <input type="text" class="form-control" id="inputName">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="inputEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="inputEmail">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="inputPhoneNumber" class="form-label">Số điện thoại</label>
+                                    <input type="number" class="form-control" id="inputPhoneNumber">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="inputAddress" class="form-label" style="display:flex;">Địa chỉ</label>
+                                    <select id="city" >
+                                        <option value="" selected>Chọn tỉnh thành</option>
+                                    </select>
+                                    <select id="district">
+                                        <option value="" selected>Chọn quận huyện</option>
+                                    </select>
+
+                                    <select id="ward">
+                                        <option value="" selected>Chọn phường xã</option>
+                                    </select>
+                              
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Cập nhật thông tin mới</button>
+                            </form>
+                        </div>
+                    </div> <!-- card-body.// -->
+                </article>
+            </main> <!-- col.// -->
+
+        </div> <!-- row.// -->
+    </div> <!-- container.// -->
+</section> <!-- section-content.// -->

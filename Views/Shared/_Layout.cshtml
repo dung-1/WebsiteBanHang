@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Localization
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Microsoft.Extensions.Options
+@using System.Security.Claims
 @inject LanguageService language
 
 
@@ -59,39 +60,34 @@
                     <div class="col-lg-5 col-xl-4">
                         <ul class="nav col-12 col-lg-auto my-2 my-lg-0 justify-content-center justify-content-lg-end text-small">
                             <li>
-                                <a href="#" class="nav-link text-body">
+                                <a href="javascript:void(0);" class="nav-link text-body position-relative checkLoginAndNavigateToAccout">
                                     <i class="bi bi-person d-block text-center fs-3"></i>
-                                    @language.GetKey("Accout")
-
+                                    @if (User.Identity.IsAuthenticated)
+                                    {
+                                        @string.Join(", ", User.Claims.Where(c => c.Type == ClaimTypes.Email).Select(c => c.Value))
+                                    }
+                                    else
+                                    {
+                                        @language.GetKey("Accout")
+                                    }
                                 </a>
                             </li>
                             <li>
-                                <a href="#" class="nav-link text-body">
+                                <a href="javascript:void(0);" class="nav-link text-body position-relative checkLoginAndNavigateToBill">
                                     <i class="bi bi-list-check d-block text-center fs-3"></i>
                                     @language.GetKey("Bill")
-
-
-
                                 </a>
                             </li>
                             <li>
-                                <a asp-controller="Cart" asp-action="Index" class="nav-link text-body position-relative">
+                                <a href="javascript:void(0);" class="nav-link text-body position-relative checkLoginAndNavigateToCart">
                                     <i class="bi bi-cart d-block text-center fs-3" style="margin-right:auto;"></i>
                                     @language.GetKey("Cart")
-                                    <span class="position-absolute top-0  badge rounded-pill bg-danger" style="    margin-left: -10px;" id="cartItemCount">0</span>
+                                    <span class="position-absolute top-0  badge rounded-pill bg-danger" style="margin-left: -10px;" id="cartItemCount">0</span>
                                 </a>
                             </li>
 
+
                         </ul>
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Ngôn Ngữ
-                            </button>
-                            <ul class="dropdown-menu">
-                                <a class="dropdown-item" asp-controller="Home" asp-action="changeLanguage" asp-route-language="vi-VN">Việt Nam</a>
-                                <a class="dropdown-item" asp-controller="Home" asp-action="changeLanguage" asp-route-language="en-US">Tiếng Anh</a>
-                            </ul>
-                        </div>
                     </div> <!-- col.// -->
                 </div> <!-- row.// -->
             </div> <!-- container.// -->
@@ -303,16 +299,14 @@
                             <li>Bán hàng: Từ 8h30 - 21h30</li>
                             <li>Kỹ thuật: Từ 8h30 - 12h & 13h30 - 17h30</li>
                             <li class="mt-3">
-                                <div class="items">
-                                    <div class="icon--phone">
-                                        <i class="bi bi-telephone"></i>
-                                    </div>
-                                    <div class="content--support">
-                                        <span>HOTLINE</span>
-                                        <a href="tel:0825233233">
-                                            <span>0825 233 233</span>
-                                        </a>
-                                    </div>
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <img src="~/img/world1.png" /> Ngôn Ngữ
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <a class="dropdown-item" asp-controller="Home" asp-action="changeLanguage" asp-route-language="vi-VN"><img src="~/img/vietnam.png" /> Việt Nam</a>
+                                        <a class="dropdown-item" asp-controller="Home" asp-action="changeLanguage" asp-route-language="en-US"><img src="~/img/united-kingdom.png" /> Tiếng Anh</a>
+                                    </ul>
                                 </div>
                             </li>
                         </ul>
@@ -370,12 +364,12 @@
     <!-- Sử dụng CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <!-- jQuery UI -->
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <!-- Bao gồm SweetAlert2 từ CDN -->
     <script src="~/js/Cart.js"></script>
-
+    <script src="~/js/apiaddress.js"></script>
 
 </body>
 

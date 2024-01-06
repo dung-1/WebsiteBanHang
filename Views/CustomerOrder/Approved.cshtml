@@ -1,0 +1,59 @@
+﻿<section class="section-pagetop bg-light">
+    <div class="container">
+        <h2 class="title-page">Đơn hàng</h2>
+    </div> <!-- container.// -->
+</section> <!-- section-pagetop.// -->
+
+<section class="section-content padding-y">
+    <div class="container">
+        <div class="row">
+
+            <aside class="col-md-3 mb-md-0 mb-3">
+                <nav class="list-group">
+                    <a class="list-group-item" asp-controller="CustomerOrder" asp-action="Index"> Đang chờ xử lý</a>
+                    <a class="list-group-item active" asp-controller="CustomerOrder" asp-action="Approved"> Đã duyệt </a>
+                    <a class="list-group-item" asp-controller="CustomerOrder" asp-action="Transport"> Đang giao hàng </a>
+                    <a class="list-group-item" asp-controller="CustomerOrder" asp-action="Complete"> Hoàn Thành</a>
+                </nav>
+            </aside> <!-- col.// -->
+
+            <main class="col-md-9">
+
+                <div class="table-responsive-xxl">
+                    <table class="table table-bordered table-striped table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th scope="col" style="min-width: 125px;">Mã đơn hàng</th>
+                                <th scope="col" style="min-width: 100px;">Ngày mua</th>
+                                <th scope="col" style="min-width: 300px;">Sản phẩm</th>
+                                <th scope="col" style="min-width: 100px;">Tổng tiền</th>
+                                <th scope="col" style="min-width: 175px;">Trạng thái đơn hàng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">1</th>
+                                <td>10/12/@DateTime.Now.Year</td>
+                                <td>Tiếng Việt lớp 2 ...và 1 sản phẩm khác</td>
+                                <td>60.000₫</td>
+                                <td><span class="badge bg-primary">Đã duyệt</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <nav class="mt-4">
+                    <ul class="pagination">
+                        <li class="page-item disabled"><a class="page-link" href="#">Trang trước</a></li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">Trang sau</a></li>
+                    </ul>
+                </nav>
+
+            </main> <!-- col.// -->
+
+        </div> <!-- row.// -->
+    </div> <!-- container.// -->
+</section> <!-- section-content.// -->

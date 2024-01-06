@@ -133,20 +133,22 @@
                             <i class="menu-icon  fa-solid fa-users"></i>
                         </a>
                     </li>
-                    @* <li class="nav-item">
+                    <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="collapse" href="#general-pages" aria-expanded="false" aria-controls="general-pages">
-                            <span class="menu-title">Quản Lý Hóa Đơn</span>
+                            <span class="menu-title">Quản Lý Đơn Hàng</span>
                             <i class="menu-arrow"></i>
                             <i class="mdi mdi-table-large menu-icon"></i>
 
                         </a>
                         <div class="collapse" id="general-pages">
                             <ul class="nav flex-column sub-menu">
-                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("Index","Order")"> Hóa Đơn </a></li>
-                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("Index","OrderDetail")"> Chi Tiết Hóa Đơn </a></li>
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("Index","Billorder")"> Đang Chờ Xử Lý </a></li>
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("Approved","Billorder")"> Đã Duyệt  </a></li>
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("Transport","Billorder")"> Đang Giao Hàng </a></li>
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("Complete","Billorder")"> Đã Hoàn Thành </a></li>
                             </ul>
                         </div>
-                    </li> *@
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="@Url.Action("Index","Order")">
                             <span class="menu-title">Quản Lý Hóa Đơn</span>

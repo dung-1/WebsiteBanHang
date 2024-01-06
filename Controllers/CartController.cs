@@ -1,5 +1,6 @@
 ﻿using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -17,6 +18,7 @@ using WebsiteBanHang.Models;
 
 namespace WebsiteBanHang.Controllers
 {
+    [Authorize(Roles = "Customer")]
     public class CartController : Controller
     {
         private readonly IConfiguration _configuration;
@@ -31,13 +33,21 @@ namespace WebsiteBanHang.Controllers
             _httpContextAccessor = httpContextAccessor;
             _configuration = configuration;
         }
-
+        private List<CartItemModel> GetCartItems()
+        {
+            var cart = _cache.Get("cart");
+            if (cart != null)
+            {
+                return JsonConvert.DeserializeObject<List<CartItemModel>>(cart.ToString());
+            }
+            return new List<CartItemModel>();
+        }
+        
         public IActionResult Index()
         {
             var cart = GetCartItems();
             return View(cart);
         }
-
         public IActionResult AddToCart(int id)
         {
             var product = _context.Product
@@ -96,15 +106,7 @@ namespace WebsiteBanHang.Controllers
             return RedirectToAction("Index");
         }
 
-        private List<CartItemModel> GetCartItems()
-        {
-            var cart = _cache.Get("cart");
-            if (cart != null)
-            {
-                return JsonConvert.DeserializeObject<List<CartItemModel>>(cart.ToString());
-            }
-            return new List<CartItemModel>();
-        }
+       
 
         private void SaveCartItems(List<CartItemModel> cart)
         {

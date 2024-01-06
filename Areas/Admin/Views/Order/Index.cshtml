@@ -57,11 +57,6 @@
                                     <th> Loại Hóa Đơn  </th>
                                     <th> Trạng Thái  </th>
                                     <th> Chi Tiết </th>
-                                    <th> Chỉnh Sửa </th>
-                                    @if (User.IsInRole("Admin"))
-                                    {
-                                        <th> Xóa </th>
-                                    }
                                 </tr>
                             </thead>
                             <tbody>
@@ -86,17 +81,6 @@
                                                 <i class="bi bi-pencil-square"></i><i class="fa-solid fa-pen-to-square"></i> Xem
                                             </a>
                                         </td>
-                                        <td>
-                                            <a data-id="@item.Id" class="btn btn-sm btn-warning edit-OderDetail">
-                                                <i class="bi bi-pencil-square"></i><i class="fa-solid fa-pen-to-square"></i>  Sửa
-                                            </a>
-                                        </td>
-                                        @if (User.IsInRole("Admin"))
-                                        {
-                                            <td>
-                                                <a asp-area="Admin" asp-controller="Order" asp-action="Delete" asp-route-id="@item.Id" data-id="@item.Id" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i><i class="fa-solid fa-trash-can"></i> Xóa </a>
-                                            </td>
-                                        }
                                     </tr>
                                 }
 
@@ -126,7 +110,7 @@
         <!-- partial:../../partials/_footer.html -->
         <footer class="footer">
             <div class="container-fluid d-flex justify-content-between">
-                <span class="text-muted d-block text-center text-sm-start d-sm-inline-block">Copyright © bootstrapdash.com 2021</span>
+                <span class="text-muted d-block text-center text-sm-start d-sm-inline-block">Copyright © bootstrapdash.com @DateTime.Now.Year</span>
                 <span class="float-none float-sm-end mt-1 mt-sm-0 text-end"> Free <a href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin template</a> from Bootstrapdash.com</span>
             </div>
         </footer>

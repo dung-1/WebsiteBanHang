@@ -10,22 +10,6 @@ function carouselNext() {
 }
 
 setInterval(carouselNext, interval);
-function addToCart(id) {
-    $.ajax({
-        type: "POST",
-        url: "/Cart/AddToCart/" + id,
-        success: function (response) {
-            // Xử lý kết quả trả về nếu cần thiết
-            // Ví dụ: cập nhật giao diện người dùng
-
-            // Chuyển đến trang giỏ hàng
-            window.location.href = "/Cart/Index";
-        },
-        error: function (xhr, status, error) {
-            // Xử lý lỗi nếu có
-        }
-    });
-}
 $(document).ready(function () {
     $(".updatecartitem").click(function () {
         var productId = $(this).data("productid");
@@ -61,10 +45,6 @@ $(document).ready(function () {
         });
     });
 });
-
-
-
-
 
 $(".delete-item").on("click", function (e) {
     e.preventDefault(); // Ngăn chặn hành động mặc định của liên kết
@@ -171,4 +151,96 @@ function redirectToCategoryPage(categoryId) {
 loadCategories();
 
 
+$(document).ready(function () {
+    $(".addToCartButton").click(function () {
+        var productId = $(this).data("product-id");
 
+        $.ajax({
+            type: "POST",
+            url: "/Cart/AddToCart",
+            data: { id: productId },
+            success: function (result) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                Toast.fire({
+                    icon: "success",
+                    title: "Thêm sản phẩm vào giỏ hàng thành công!"
+                }).then(function () {
+                    location.reload();
+                });
+            },
+            error: function () {
+                // Xử lý lỗi nếu có
+                Swal.fire("Lỗi", "Bạn cần phải đăng nhập .", "warning").then(function () {
+                    window.location.href = "/Login/account/Login";
+                });
+            }
+        });
+    });
+});
+
+$(document).ready(function () {
+    $(".checkLoginAndNavigateToCart").click(function () {
+        $.ajax({
+            type: "GET",
+            url: "/Cart/Index", // Đặt URL kiểm tra đăng nhập tại đây
+            success: function (isLoggedIn) {
+                if (isLoggedIn) {
+                    window.location.href = "/Cart/Index";
+                } 
+            },
+            error: function () {
+                // Người dùng chưa đăng nhập, hiển thị thông báo và chuyển hướng đến trang đăng nhập
+                Swal.fire("Thông báo", "Bạn cần phải đăng nhập .", "warning").then(function () {
+                    window.location.href = "/Login/account/Login";
+                });
+            }
+        });
+    });
+});
+$(document).ready(function () {
+    $(".checkLoginAndNavigateToAccout").click(function () {
+        $.ajax({
+            type: "GET",
+            url: "/CustomerInfo/AccountInfo", // Đặt URL kiểm tra đăng nhập tại đây
+            success: function (isLoggedIn) {
+                if (isLoggedIn) {
+                    window.location.href = "/CustomerInfo/AccountInfo";
+                }
+            },
+            error: function () {
+                // Người dùng chưa đăng nhập, hiển thị thông báo và chuyển hướng đến trang đăng nhập
+                Swal.fire("Thông báo", "Bạn cần phải đăng nhập ", "warning").then(function () {
+                    window.location.href = "/Login/account/Login";
+                });
+            }
+        });
+    });
+}); $(document).ready(function () {
+    $(".checkLoginAndNavigateToBill").click(function () {
+        $.ajax({
+            type: "GET",
+            url: "/CustomerOrder/Index", // Đặt URL kiểm tra đăng nhập tại đây
+            success: function (isLoggedIn) {
+                if (isLoggedIn) {
+                    window.location.href = "/CustomerOrder/Index";
+                }
+            },
+            error: function () {
+                // Người dùng chưa đăng nhập, hiển thị thông báo và chuyển hướng đến trang đăng nhập
+                Swal.fire("Thông báo", "Bạn cần phải đăng nhập.", "warning").then(function () {
+                    window.location.href = "/Login/account/Login";
+                });
+            }
+        });
+    });
+});

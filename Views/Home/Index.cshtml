@@ -88,7 +88,7 @@
                                     @("-" + phanTramGiam.ToString("0"))
                                 }%
 
-                            </span>
+                            </span> 
                         </span>
                         <a href="#" class="img-wrap text-center">
                             <img class="img-fluid" src="@product.Image">
@@ -106,9 +106,9 @@
                                 <div class="row">
                                     @* <div class="col-4 price mt-1  " style="padding-top: 5px;font-size: 14px;color:#a29c9cd7;text-decoration: line-through;font-style: normal;">
                                 </div> *@
-                                    <div class="col-12 price  fw-bold text-danger">
-                                        <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@product.Id" class="btn btn-primary" id="addToCartButton">
-                                            <i class="fa-solid fa-cart-plus"></i>   @language.GetKey("Buy Now")
+                                    <div class="col-12 price fw-bold text-danger">
+                                        <a href="javascript:void(0);" data-product-id="@product.Id" class="btn btn-primary addToCartButton">
+                                            <i class="fa-solid fa-cart-plus"></i>@language.GetKey("Buy Now")
                                         </a>
                                     </div>
                                 </div>
@@ -148,3 +148,4 @@
         <!-- row.// -->
     </div> <!-- container.// -->
 </section> 
+

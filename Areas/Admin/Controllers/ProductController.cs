@@ -31,7 +31,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             var pageNumber = page ?? 1;
             int pageSize = 5;
 
-            var productsQuery = _context.Product
+            var productsQuery =  _context.Product
                 .Include(p => p.Brand)
                 .Include(p => p.Category)
                 .OrderByDescending(p => p.Id);

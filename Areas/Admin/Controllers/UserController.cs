@@ -13,7 +13,7 @@ using static WebsiteBanHang.Areas.Admin.Data.ApplicationDbContext;
 namespace WebsiteBanHang.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin,Employee")]
+    [Authorize(Roles = "Admin")]
 
     public class UserController : Controller
     {
