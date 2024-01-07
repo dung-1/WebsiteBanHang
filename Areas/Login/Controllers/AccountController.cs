@@ -112,7 +112,7 @@ namespace WebsiteBanHang.Controllers
         public IActionResult formCheck_Verification(int code)
         {
             int? verificationCode = HttpContext.Session.GetInt32("VerificationCode");
-            string? customerCodeString = HttpContext.Session.GetString("iserCode"); 
+            string? customerCodeString = HttpContext.Session.GetString("iserCode");
 
             if (verificationCode.HasValue && code == verificationCode.Value)
             {
@@ -179,7 +179,7 @@ namespace WebsiteBanHang.Controllers
         [Route("Login")]
         public async Task<IActionResult> Login(UserModel loginModel)
         {
-                var hashedPassword = GetMd5Hash(loginModel.MatKhau);
+            var hashedPassword = GetMd5Hash(loginModel.MatKhau);
 
             // Check in the User table
             var user = _context.User
@@ -204,7 +204,11 @@ namespace WebsiteBanHang.Controllers
                     var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, customer.Email),
-                new Claim(ClaimTypes.Email, customer.CustomerDetail?.HoTen) // Assuming CustomerDetail is a navigation property
+                new Claim(ClaimTypes.Email, customer.CustomerDetail?.HoTen),
+                new Claim(ClaimTypes.StreetAddress, customer.CustomerDetail?.DiaChi),
+                new Claim(ClaimTypes.MobilePhone, customer.CustomerDetail?.SoDienThoai)
+
+
             };
 
                     foreach (var role in customerRoles)
@@ -279,6 +283,6 @@ namespace WebsiteBanHang.Controllers
                 return builder.ToString();
             }
         }
-      
+
     }
 }

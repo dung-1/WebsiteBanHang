@@ -184,7 +184,7 @@ $(document).ready(function () {
                     window.location.href = "/Login/account/Login";
                 });
             }
-        });
+        }); 
     });
 });
 
@@ -244,3 +244,4 @@ $(document).ready(function () {
         });
     });
 });
+

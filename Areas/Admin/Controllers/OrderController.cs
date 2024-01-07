@@ -121,38 +121,43 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult View(int id)
         {
-            var orderQuery = from order in _context.Order
-                             join customerDetail in _context.Customer_Details
-                             on order.CustomerID equals customerDetail.CustomerId into orderCustomerDetails
-                             from customer in orderCustomerDetails.DefaultIfEmpty()
-                             join userDetail in _context.Users_Details
-                             on order.UserID equals userDetail.UserId into orderUserDetails
-                             from user in orderUserDetails.DefaultIfEmpty()
-                             join orderDetail in _context.Order_Detai // Corrected table name to Order_Details
-                             on order.id equals orderDetail.OrderId into orderDetails
-                             from details in orderDetails.DefaultIfEmpty()
-                             join product in _context.Product
-                             on details.ProductId equals product.Id into orderProductDetails
-                             from orderProduct in orderProductDetails.DefaultIfEmpty()
-                             where order.id == id
-                             orderby order.id descending
-                             select new
-                             {
-                                 Order = order,
-                                 UserDetail = user,
-                                 CustomerDetail = customer,
-                                 OrderDetails = details,
-                                 Product = orderProduct
-                             };
+            var orderDetailsQuery = from order in _context.Order
+                                    join customerDetail in _context.Customer_Details
+                                    on order.CustomerID equals customerDetail.CustomerId into orderCustomerDetails
+                                    from customer in orderCustomerDetails.DefaultIfEmpty()
+                                    join userDetail in _context.Users_Details
+                                    on order.UserID equals userDetail.UserId into orderUserDetails
+                                    from user in orderUserDetails.DefaultIfEmpty()
+                                    join orderDetail in _context.Order_Detai
+                                    on order.id equals orderDetail.OrderId into orderDetails
+                                    from details in orderDetails.DefaultIfEmpty()
+                                    join product in _context.Product
+                                    on details.ProductId equals product.Id into orderProductDetails
+                                    from orderProduct in orderProductDetails.DefaultIfEmpty()
+                                    where order.id == id
+                                    orderby order.id descending
+                                    select new
+                                    {
+                                        Order = order,
+                                        UserDetail = user,
+                                        CustomerDetail = customer,
+                                        OrderDetails = details,
+                                        Product = orderProduct
+                                    };
 
-            var orderInfo = orderQuery.FirstOrDefault();
+            var orderDetailsList = orderDetailsQuery.ToList();
 
-            if (orderInfo == null)
+            if (orderDetailsList.Count == 0)
             {
                 return NotFound();
             }
 
-            var orderDto = new OrderDto
+            var distinctOrders = orderDetailsList
+                .GroupBy(o => o.Order.id)
+                .Select(group => group.First())
+                .ToList();
+
+            var orderDtos = distinctOrders.Select(orderInfo => new OrderDto
             {
                 Id = orderInfo.Order.id,
                 MaHoaDon = orderInfo.Order.MaHoaDon,
@@ -163,24 +168,20 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 NgayBan = orderInfo.Order.ngayBan,
                 TrangThai = orderInfo.Order.trangThai,
                 LoaiHoaDon = orderInfo.Order.LoaiHoaDon,
-                ChiTietHoaDon = orderInfo.OrderDetails != null
-        ? new List<ChiTietHoaDonDto>
-            {
-                new ChiTietHoaDonDto
-                {
-                    img = orderInfo.OrderDetails.product.Image,
-                     TenSanPham = orderInfo.OrderDetails.product.TenSanPham,
-                     SoLuong = orderInfo.OrderDetails.soLuong,
-                     Gia = (decimal)orderInfo.OrderDetails.gia,
-                }
-            }
-        : new List<ChiTietHoaDonDto>(),
+                ChiTietHoaDon = orderDetailsList
+                    .Where(o => o.Order.id == orderInfo.Order.id)
+                    .Select(o => new ChiTietHoaDonDto
+                    {
+                        img = o.OrderDetails.product.Image,
+                        TenSanPham = o.OrderDetails.product.TenSanPham,
+                        SoLuong = o.OrderDetails.soLuong,
+                        Gia = (decimal)o.OrderDetails.gia,
+                    }).ToList(),
                 TongCong = orderInfo.Order.ctdh != null
                     ? (decimal)orderInfo.Order.ctdh.Sum(ct => ct.gia * ct.soLuong)
                     : 0
-            };
+            }).ToList();
 
-            var orderDtos = new List<OrderDto> { orderDto };
             return PartialView("_OrderView", orderDtos);
         }
 

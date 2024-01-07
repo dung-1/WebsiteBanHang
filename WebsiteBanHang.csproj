@@ -47,6 +47,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Areas\Login\Models\" />
+	  <Folder Include="Dto\" />
 	  <Folder Include="wwwroot\Images\" />
 	</ItemGroup>
 

@@ -1,4 +1,7 @@
-﻿<section class="section-pagetop bg-light">
+﻿@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@model X.PagedList.IPagedList<WebsiteBanHang.Areas.Admin.AdminDTO.OrderDto>
+<section class="section-pagetop bg-light">
     <div class="container">
         <h2 class="title-page">Đơn hàng</h2>
     </div> <!-- container.// -->
@@ -25,23 +28,23 @@
                             <tr>
                                 <th scope="col" style="min-width: 125px;">Mã đơn hàng</th>
                                 <th scope="col" style="min-width: 100px;">Ngày mua</th>
-                                <th scope="col" style="min-width: 300px;">Sản phẩm</th>
-                                <th scope="col" style="min-width: 100px;">Tổng tiền</th>
                                 <th scope="col" style="min-width: 175px;">Trạng thái đơn hàng</th>
-                                <th scope="col">Thao tác</th>
+                                <th scope="col" style=" display: flex;justify-content: center;">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>10/12/@DateTime.Now.Year</td>
-                                <td>Tiếng Việt lớp 2 ...và 1 sản phẩm khác</td>
-                                <td>60.000₫</td>
-                                <td><span class="badge bg-danger">Đang chờ xử lý</span></td>
-                                <td class="text-center text-nowrap">
-                                    <a class="btn btn-primary me-2" asp-controller="CustomerOrder" asp-action="OrderDetail" role="button">Xem đơn hàng</a>
-                                </td>
-                            </tr>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <th scope="row">@item.MaHoaDon</th>
+                                    <td>@item.NgayBan</td>
+                                    <td><span class="badge bg-danger">@item.TrangThai</span></td>
+                                    <td class="text-center text-nowrap">
+                                        <a class="btn btn-primary me-2" asp-controller="CustomerOrder" asp-action="OrderDetail" asp-route-id="@item.Id" role="button">Xem đơn hàng</a>
+                                        <a class="btn btn-danger me-2" href="#" role="button">Hủy đơn hàng</a>
+                                    </td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>
