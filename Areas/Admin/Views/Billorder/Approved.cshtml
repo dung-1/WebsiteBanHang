@@ -46,10 +46,10 @@
                                         </td>
                                         <td>
                                             <a data-id="@item.Id" class="btn btn-sm btn-primary View-Order ">
-                                                <i class="bi bi-pencil-square"></i><i class="fa-solid fa-pen-to-square"></i> Xem chi tiết
+                                                <i class="fa-solid fa-eye"></i> Xem chi tiết
                                             </a>
-                                            <a href="#" class="btn btn-sm btn-warning View-CustomerOrder">
-                                                <i class="bi bi-pencil-square"></i><i class="fa-solid fa-pen-to-square"></i> Giao Hàng
+                                            <a asp-area="Admin" asp-controller="Billorder" asp-action="DeliverOrder" asp-route-Id="@item.Id" class="btn btn-sm btn-warning ">
+                                                <i class="fa-solid fa-car-side"></i> Giao Hàng
                                             </a>
                                         </td>
                                     </tr>

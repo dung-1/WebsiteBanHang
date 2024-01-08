@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing.Drawing2D;
 using System.Reflection.Metadata;
+using WebsiteBanHang.Models;
 
 namespace WebsiteBanHang.Areas.Admin.Models
 {
@@ -36,6 +37,7 @@ namespace WebsiteBanHang.Areas.Admin.Models
         public ICollection<OrderDetaiModel> Order_Detai { get; } = new List<OrderDetaiModel>(); // Collection navigation containing dependents
 
         public ICollection<InventoriesModel> Inventory { get; } = new List<InventoriesModel>(); // Collection navigation containing dependents
+        public ICollection<Cart_Item> CartItems { get; } = new List<Cart_Item>();
 
     }
 }

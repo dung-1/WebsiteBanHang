@@ -15,11 +15,11 @@
 
             <aside class="col-md-3 mb-md-0 mb-3">
                 <nav class="list-group">
-                    <a class="list-group-item active" asp-controller="CustomerOrder" asp-action="Index"> Đang chờ xử lý</a>
+                    <a class="list-group-item " asp-controller="CustomerOrder" asp-action="Index"> Đang chờ xử lý</a>
                     <a class="list-group-item " asp-controller="CustomerOrder" asp-action="Approved"> Đã duyệt </a>
                     <a class="list-group-item" asp-controller="CustomerOrder" asp-action="Transport"> Đang giao hàng </a>
                     <a class="list-group-item" asp-controller="CustomerOrder" asp-action="Complete"> Hoàn Thành</a>
-                    <a class="list-group-item " asp-controller="CustomerOrder" asp-action="CancelOrders"> Đơn Hủy</a>
+                    <a class="list-group-item active " asp-controller="CustomerOrder" asp-action="CancelOrders"> Đơn Hủy</a>
 
                 </nav>
             </aside> <!-- col.// -->
@@ -46,7 +46,6 @@
                                         <td><span class="badge bg-danger">@item.TrangThai</span></td>
                                         <td class="text-center text-nowrap">
                                             <a class="btn btn-primary me-2" asp-controller="CustomerOrder" asp-action="OrderDetail" asp-route-id="@item.Id" role="button">Xem đơn hàng</a>
-                                            <a class="btn btn-danger me-2" asp-controller="CustomerOrder" asp-action="CancelOrder" asp-route-id="@item.Id" role="button">Hủy đơn hàng</a>
                                         </td>
                                     </tr>
                                 }

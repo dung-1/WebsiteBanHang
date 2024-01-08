@@ -1,5 +1,7 @@
 ﻿@using X.PagedList.Mvc.Core
 @using X.PagedList.Web.Common
+@using System.Globalization;
+@inject LanguageService language
 @model X.PagedList.IPagedList<WebsiteBanHang.Areas.Admin.AdminDTO.OrderDto>
 <section class="section-pagetop bg-light">
     <div class="container">
@@ -17,50 +19,68 @@
                     <a class="list-group-item " asp-controller="CustomerOrder" asp-action="Approved"> Đã duyệt </a>
                     <a class="list-group-item active" asp-controller="CustomerOrder" asp-action="Transport"> Đang giao hàng </a>
                     <a class="list-group-item" asp-controller="CustomerOrder" asp-action="Complete"> Hoàn Thành</a>
+                    <a class="list-group-item " asp-controller="CustomerOrder" asp-action="CancelOrders"> Đơn Hủy</a>
+
                 </nav>
             </aside> <!-- col.// -->
-
             <main class="col-md-9">
 
                 <div class="table-responsive-xxl">
-                    <table class="table table-bordered table-striped table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th scope="col" style="min-width: 125px;">Mã đơn hàng</th>
-                                <th scope="col" style="min-width: 100px;">Ngày mua</th>
-                                <th scope="col" style="min-width: 175px;">Trạng thái đơn hàng</th>
-                                <th scope="col" style="display: flex;justify-content: center;">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
+                    @if (Model.Count > 0)
+                    {
+                        <table class="table table-bordered table-striped table-hover align-middle">
+                            <thead>
                                 <tr>
-                                    <th scope="row">@item.MaHoaDon</th>
-                                    <td>@item.NgayBan</td>
-                                    <td><span class="badge bg-warning">@item.TrangThai</span></td>
-                                    <td class="text-center text-nowrap">
-                                        <a class="btn btn-primary me-2" asp-controller="CustomerOrder" asp-action="OrderDetail" asp-route-id="@item.Id" role="button">Xem đơn hàng</a>
-                                        <a class="btn btn-success me-2" href="#" role="button">Đã Nhận Hàng</a>
-                                    </td>
+                                    <th scope="col" style="min-width: 125px;">Mã đơn hàng</th>
+                                    <th scope="col" style="min-width: 100px;">Ngày mua</th>
+                                    <th scope="col" style="min-width: 175px;">Trạng thái đơn hàng</th>
+                                    <th scope="col" style=" display: flex;justify-content: center;">Thao tác</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <th scope="row">@item.MaHoaDon</th>
+                                        <td>@item.NgayBan</td>
+                                        <td><span class="badge bg-danger">@item.TrangThai</span></td>
+                                        <td class="text-center text-nowrap">
+                                            <a class="btn btn-primary me-2" asp-controller="CustomerOrder" asp-action="OrderDetail" asp-route-id="@item.Id" role="button">Xem đơn hàng</a>
+                                            <a class="btn btn-success me-2" asp-controller="CustomerOrder" asp-action="ConfirmOrder" asp-route-id="@item.Id" role="button">Xác nhận đơn hàng</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+
+                        <div class="m-b-16 m-b-sm-12 align-items-center " style="display: grid;
+                                                                        justify-content: center;
+                                                                        justify-items: center;
+                                                                        align-items: center;
+                                                                        background:#fff;max-width: 600px;
+                                                                        padding: 28px 0 16px;
+                                                                        background: #fff;
+                                                                        border-radius: 12px;
+                                                                        margin: 32px auto 0;">
+                            <img src="~/img/empty-cart.png" width="296" />
+                            <p class="css-8uyn92 text-red-5 px-16 md:px-0 text-danger fs-5">Chưa có sản phẩm </p>
+                            <div class="cart-status_btn m-b-32 cart-empty_cart-status_btn__yWtjL">
+                                <a href="/" class="btn btn-danger border-2" style="border-radius:10%">
+                                    <span>  @language.GetKey("Buy Now")</span>
+                                </a>
+                            </div>
+                        </div>
+
+
+
+                    }
                 </div>
 
-                <nav class="mt-4">
-                    <ul class="pagination">
-                        <li class="page-item disabled"><a class="page-link" href="#">Trang trước</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Trang sau</a></li>
-                    </ul>
-                </nav>
 
             </main> <!-- col.// -->
-
         </div> <!-- row.// -->
     </div> <!-- container.// -->
 </section> <!-- section-content.// -->

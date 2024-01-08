@@ -9,7 +9,7 @@
 <div class="main-panel">
     <div class="content-wrapper">
         <div class="page-header">
-            <h3 class="page-title fs-3"> Đang Giao Hàng</h3>
+            <h3 class="page-title fs-3"> Đơn Hàng Hủy</h3>
         </div>
         <div class="modal fade" id="View_Order" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -28,7 +28,6 @@
                                     <th> Ngày Đặt </th>
                                     <th> Trạng Thái</th>
                                     <th> Thao Tác </th>
-
                                 </tr>
                             </thead>
                             <tbody>
@@ -42,15 +41,14 @@
                                             @item.NgayBan
                                         </td>
 
-                                        <td >
-                                            <span class=" badge bg-warning">@item.TrangThai</span>
+                                        <td>
+                                            <span class=" badge bg-dark text-white">@item.TrangThai</span>
                                         </td>
                                         <td>
                                             <a data-id="@item.Id" class="btn btn-sm btn-primary View-Order ">
                                                 <i class="fa-solid fa-eye"></i> Xem chi tiết
                                             </a>
                                         </td>
-
                                     </tr>
                                 }
 

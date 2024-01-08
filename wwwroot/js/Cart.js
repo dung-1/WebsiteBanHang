@@ -27,7 +27,7 @@ $(document).ready(function () {
 
         // Gọi AJAX để cập nhật số lượng
         $.ajax({
-            url: "/Cart/UpdateCartItem",
+            url: "/Cart/UpdateCartItemQuantity",
             method: "POST",
             data: { productId: productId, quantity: quantity },
             success: function (data) {
@@ -54,7 +54,7 @@ $(".delete-item").on("click", function (e) {
     Swal.fire({
         title: "Xác nhận xóa sản phẩm?",
         text: "Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?",
-        icon: "error",
+        icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Xóa",
         cancelButtonText: "Hủy",
@@ -65,12 +65,17 @@ $(".delete-item").on("click", function (e) {
                 url: link,
                 method: "POST",
                 success: function (data) {
-                    // Hiển thị thông báo xóa thành công
-                    Swal.fire("Xóa thành công", "", "success").then(function () {
-                        // Sau khi người dùng đóng thông báo, làm điều gì đó (nếu cần)
-                        // Ví dụ: Reload lại trang giỏ hàng
-                        location.reload();
-                    });
+                    if (data.success) {
+                        // Hiển thị thông báo xóa thành công
+                        Swal.fire("Xóa thành công", "", "success").then(function () {
+                            // Sau khi người dùng đóng thông báo, làm điều gì đó (nếu cần)
+                            // Ví dụ: Reload lại trang giỏ hàng
+                            location.reload();
+                        });
+                    } else {
+                        // Hiển thị thông báo lỗi nếu xóa không thành công
+                        Swal.fire("Lỗi", data.message, "error");
+                    }
                 },
                 error: function () {
                     // Xử lý lỗi nếu có
@@ -80,6 +85,7 @@ $(".delete-item").on("click", function (e) {
         }
     });
 });
+
 $(document).on("click", ".create-checkout", function (e) {
 
     $.ajax({

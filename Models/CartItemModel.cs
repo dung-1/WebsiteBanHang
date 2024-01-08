@@ -1,13 +1,13 @@
-﻿using WebsiteBanHang.Areas.Admin.Models;
+﻿//using WebsiteBanHang.Areas.Admin.Models;
 
-namespace WebsiteBanHang.Models
-{
-    public class CartItemModel
-    {
-        public int ProductId { get; set; }
-        public string ?ProductName { get; set; }
+//namespace WebsiteBanHang.Models
+//{
+//    public class CartItemModel
+//    {
+//        public int ProductId { get; set; }
+//        public string? ProductName { get; set; }
 
-        public int Soluong { set; get; }
-        public ProductModel Product { set; get; }
-    }
-}
+//        public int Soluong { set; get; }
+//        public ProductModel Product { set; get; }
+//    }
+//}

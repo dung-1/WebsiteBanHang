@@ -27,9 +27,31 @@ namespace WebsiteBanHang.Areas.Admin.Data
         public DbSet<InventoriesModel> Inventory { get; set; }
         public DbSet<PermissionRoleModel> PermissionRole { get; set; }
         public DbSet<PermissionsModel> Permissions { get; set; }
-    
+        public DbSet<Cart_Item> Cart_Item { get; set; }
+        public DbSet<CartModel> CartModel { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<CustomerModel>()
+               .HasMany(e => e.Carts)
+               .WithOne(e => e.Customer)
+               .HasForeignKey(e => e.CustomerId)
+               .IsRequired()
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CartModel>()
+      .HasMany(c => c.CartItems)
+      .WithOne(ci => ci.Cart)
+      .OnDelete(DeleteBehavior.Cascade);
+
+
+            modelBuilder.Entity<ProductModel>()
+                .HasMany(e => e.CartItems)
+                .WithOne(e => e.Product)
+                .HasForeignKey(e => e.ProductId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<BrandModel>()
                 .HasMany(e => e.Prodcut)
                 .WithOne(e => e.Brand)

@@ -81,11 +81,20 @@
                             <li>
                                 <a href="javascript:void(0);" class="nav-link text-body position-relative checkLoginAndNavigateToCart">
                                     <i class="bi bi-cart d-block text-center fs-3" style="margin-right:auto;"></i>
-                                    @language.GetKey("Cart")
-                                    <span class="position-absolute top-0  badge rounded-pill bg-danger" style="margin-left: -10px;" id="cartItemCount">0</span>
+                                    @if (User.Identity.IsAuthenticated)
+                                    {
+                                        @language.GetKey("Cart")
+                                        <span class="position-absolute top-0  badge rounded-pill bg-danger" style="margin-left: -10px;" id="cartItemCount">0</span>
+                                    }
+                                    else
+
+                                    {
+                                        @language.GetKey("Cart")
+                                        <span class="position-absolute top-0  badge rounded-pill bg-danger" style="margin-left: -10px;" id="cartItemCount">0</span>
+
+                                    }
                                 </a>
                             </li>
-
 
                         </ul>
                     </div> <!-- col.// -->

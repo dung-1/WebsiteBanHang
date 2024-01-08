@@ -28,7 +28,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             try
             {
                 var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
-                int pageSize = 5; // Số mục trên mỗi trang
+                int pageSize = 10; // Số mục trên mỗi trang
 
                 // Lấy danh sách đơn hàng kèm thông tin người dùng tương ứng
                 var productsQuery = from order in _context.Order
@@ -87,7 +87,11 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             var pagedCategories = GetOrdersByStatus("Hoàn thành", page, searchName);
             return View(pagedCategories);
         }
-
+        public IActionResult Failorder(int? page, string searchName)
+        {
+            var pagedCategories = GetOrdersByStatus("Đã hủy", page, searchName);
+            return View(pagedCategories);
+        }
         [HttpGet]
         public IActionResult View(int id)
         {
@@ -133,8 +137,8 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 MaHoaDon = orderInfo.Order.MaHoaDon,
                 TenKhachHang = orderInfo.CustomerDetail?.HoTen,
                 TenNhanVien = orderInfo.UserDetail?.HoTen,
-                SoDienThoai = orderInfo.UserDetail?.SoDienThoai,
-                DiaChi = orderInfo.UserDetail?.DiaChi,
+                SoDienThoai = orderInfo.CustomerDetail?.SoDienThoai,
+                DiaChi = orderInfo.CustomerDetail?.DiaChi,
                 NgayBan = orderInfo.Order.ngayBan,
                 TrangThai = orderInfo.Order.trangThai,
                 LoaiHoaDon = orderInfo.Order.LoaiHoaDon,
@@ -154,6 +158,94 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
             return PartialView("_OrderView", orderDtos);
         }
+        //Duyệt Đơn Hàng
+        public IActionResult ApproveOrder(int Id)
+        {
+            var order = _context.Order.Find(Id);
+
+            if (order != null)
+            {
+                // Kiểm tra quyền truy cập của người dùng, ví dụ chỉ cho phép admin duyệt đơn
+                if (User.IsInRole("Admin"))
+                {
+                    // Cập nhật trạng thái đơn hàng là đã duyệt
+                    order.trangThai = "Đã duyệt";
+                    _context.SaveChanges();
+
+                    TempData["SuccessMessage"] = "Đã duyệt đơn hàng thành công.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Bạn không có quyền duyệt đơn hàng.";
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Không tìm thấy đơn hàng.";
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        //Giao Đơn Hàng
+        public IActionResult DeliverOrder(int Id)
+        {
+            var order = _context.Order.Find(Id);
+
+            if (order != null)
+            {
+                // Kiểm tra quyền truy cập của người dùng, ví dụ chỉ cho phép admin giao hàng
+                if (User.IsInRole("Admin"))
+                {
+                    // Cập nhật trạng thái đơn hàng là đã giao hàng
+                    order.trangThai = "Đang giao hàng";
+                    _context.SaveChanges();
+
+                    TempData["SuccessMessage"] = "Đã giao hàng thành công.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Bạn không có quyền giao hàng.";
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Không tìm thấy đơn hàng.";
+            }
+
+            return RedirectToAction("Approved"); // Chuyển hướng về trang danh sách đơn hàng
+        }
+
+        //Hủy Đơn Hàng
+        public IActionResult CancelOrder(int Id)
+        {
+            var order = _context.Order.Find(Id);
+
+            if (order != null)
+            {
+                // Kiểm tra quyền truy cập của người dùng, ví dụ chỉ cho phép khách hàng hủy đơn
+                if (User.IsInRole("Admin"))
+                {
+                    // Cập nhật trạng thái đơn hàng là đã hủy
+                    order.trangThai = "Đã hủy";
+                    _context.SaveChanges();
+
+                    TempData["SuccessMessage"] = "Đã hủy đơn hàng thành công.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Bạn không có quyền hủy đơn hàng.";
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Không tìm thấy đơn hàng.";
+            }
+
+            return RedirectToAction("Failorder"); // Chuyển hướng về trang danh sách đơn hàng
+        }
+
+
 
     }
 }

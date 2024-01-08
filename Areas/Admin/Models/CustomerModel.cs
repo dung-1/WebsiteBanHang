@@ -20,6 +20,7 @@ namespace WebsiteBanHang.Areas.Admin.Models
         public ICollection<CustomerRoleModel> CustomerRole { get; } = new List<CustomerRoleModel>(); // Collection navigation containing dependents
         public ICollection<OrdersModel> Order { get; } = new List<OrdersModel>(); // Collection navigation containing dependents
         public Customer_Details? CustomerDetail { get; set; } = new Customer_Details(); // Khởi tạo giá trị mặc định
+        public ICollection<CartModel> Carts { get; } = new List<CartModel>();
 
     }
 }

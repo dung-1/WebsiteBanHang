@@ -39,6 +39,10 @@ namespace WebsiteBanHang.Controllers
         {
             return GetOrdersByStatus(page, searchName, "Hoàn thành");
         }
+        public IActionResult CancelOrders(int? page, string searchName)
+        {
+            return GetOrdersByStatus(page, searchName, "Đã hủy");
+        }
         public IActionResult OrderDetail(int id)
         {
             var orderDetailsQuery = from order in _context.Order
@@ -83,8 +87,8 @@ namespace WebsiteBanHang.Controllers
                 MaHoaDon = orderInfo.Order.MaHoaDon,
                 TenKhachHang = orderInfo.CustomerDetail?.HoTen,
                 TenNhanVien = orderInfo.UserDetail?.HoTen,
-                SoDienThoai = orderInfo.UserDetail?.SoDienThoai,
-                DiaChi = orderInfo.UserDetail?.DiaChi,
+                SoDienThoai = orderInfo.CustomerDetail?.SoDienThoai,
+                DiaChi = orderInfo.CustomerDetail?.DiaChi,
                 NgayBan = orderInfo.Order.ngayBan,
                 TrangThai = orderInfo.Order.trangThai,
                 LoaiHoaDon = orderInfo.Order.LoaiHoaDon,
@@ -173,6 +177,64 @@ namespace WebsiteBanHang.Controllers
                 return View();
             }
         }
+        //Hủy Đơn Hàng
+
+        public IActionResult CancelOrder(int Id)
+        {
+            var order = _context.Order.Find(Id);
+
+            if (order != null)
+            {
+                // Kiểm tra quyền truy cập của người dùng, ví dụ chỉ cho phép khách hàng hủy đơn
+                if (User.IsInRole("Customer"))
+                {
+                    // Cập nhật trạng thái đơn hàng là đã hủy
+                    order.trangThai = "Đã hủy";
+                    _context.SaveChanges();
+
+                    TempData["SuccessMessage"] = "Đã hủy đơn hàng thành công.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Bạn không có quyền hủy đơn hàng.";
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Không tìm thấy đơn hàng.";
+            }
+
+            return RedirectToAction("CancelOrders"); // Chuyển hướng về trang danh sách đơn hàng
+        }
+        //Xác nhận Đơn Hàng
+
+        public IActionResult ConfirmOrder(int Id)
+        {
+            var order = _context.Order.Find(Id);
+
+            if (order != null)
+            {
+                // Kiểm tra quyền truy cập của người dùng, ví dụ chỉ cho phép khách hàng xác nhận đơn hàng
+                if (User.IsInRole("Customer"))
+                {
+                    order.trangThai = "Hoàn thành";
+                    _context.SaveChanges();
+
+                    TempData["SuccessMessage"] = "Xác nhận và hoàn thành đơn hàng thành công.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Bạn không có quyền xác nhận đơn hàng.";
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Không tìm thấy đơn hàng.";
+            }
+
+            return RedirectToAction("Complete"); // Chuyển hướng về trang danh sách đơn hàng
+        }
+
 
     }
 }

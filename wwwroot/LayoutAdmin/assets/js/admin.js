@@ -3,7 +3,7 @@ $(document).on("click", ".View-Order", function (e) {
 
     let id = $(this).data("id")
     $.ajax({
-        url: "/Admin/Order/View?id=" + id,// Đường dẫn đến API của bạn
+        url: "/Admin/Billorder/View?id=" + id,// Đường dẫn đến API của bạn
         type: "GET",
         dataType: "html", // Đặt kiểu dữ liệu trả về
         success: function (data) {
