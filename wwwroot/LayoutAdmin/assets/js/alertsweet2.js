@@ -72,7 +72,43 @@ function deleteUser(id) {
         }
     });
 }
-
+//delete Inventory
+function deleteInventory(id) {
+    Swal.fire({
+        title: 'Bạn có chắc chắn muốn xóa?',
+        text: 'Hành động này không thể hoàn tác!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Xóa'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Gọi controller để xóa khi người dùng xác nhận
+            $.ajax({
+                type: 'POST',
+                url: '/Admin/Inventory/Delete/' + id,
+                success: function (response) {
+                    if (response.success) {
+                        // Hiển thị thông báo thành công
+                        Swal.fire('Xóa thành công!', '', 'success')
+                            .then(() => {
+                                // Chuyển đến trang Index sau khi xóa
+                                location.href = '/Admin/Inventory/Index';
+                            });
+                    } else {
+                        // Hiển thị thông báo lỗi
+                        Swal.fire('Không thể xóa loại sản phẩm này !', '', 'error');
+                    }
+                },
+                error: function () {
+                    // Xử lý lỗi nếu cần
+                    Swal.fire('Có lỗi xảy ra!', '', 'error');
+                }
+            });
+        }
+    });
+}
 //delete Product
 function deleteProduct(id) {
     Swal.fire({
@@ -797,6 +833,146 @@ function validateAndSubmitBrand() {
         },
         error: function () {
             alert("Đã xảy ra lỗi khi kiểm tra tên hãng.");
+        }
+    });
+}
+
+
+
+function validateAndSubmitInventori() {
+    var form = document.getElementById('createFormInventory');
+    var productIdSelect = form.elements['ProductId'];
+    var ngayNhapInput = form.elements['NgayNhap'];
+    var soLuongInput = form.elements['SoLuong'];
+    var ngayNhapValidationError = document.querySelector('[data-valmsg-for="NgayNhap"]');
+    var soLuongValidationError = document.querySelector('[data-valmsg-for="SoLuong"]');
+
+
+    // Kiểm tra trường "Ngày Nhập"
+    var currentDate = new Date();
+    var selectedDate = new Date(ngayNhapInput.value);
+    if (!ngayNhapInput.value || selectedDate > currentDate) {
+        showValidationError(ngayNhapValidationError, "Vui lòng chọn ngày nhập hợp lệ.");
+        return;
+    } else {
+        hideValidationError(ngayNhapValidationError);
+    }
+
+    // Kiểm tra trường "Số Lượng"
+    if (!soLuongInput.value || isNaN(soLuongInput.value) || parseInt(soLuongInput.value) <= 0) {
+        showValidationError(soLuongValidationError, "Vui lòng nhập số lượng hợp lệ.");
+        return;
+    } else {
+        hideValidationError(soLuongValidationError);
+    }
+
+    // Gọi Ajax để thêm mới thông tin kho
+    $.ajax({
+        type: 'POST',
+        url: '/Admin/Inventory/Create',
+        data: {
+            ProductId: productIdSelect.value,
+            NgayNhap: ngayNhapInput.value,
+            SoLuong: soLuongInput.value
+        },
+        success: function (response) {
+            console.log("Thêm thông tin kho thành công");
+
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 1800,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            Toast.fire({
+                icon: "success",
+                title: "Thêm thông tin kho thành công"
+            });
+
+            new Promise(resolve => setTimeout(resolve, 1800))
+                .then(() => {
+                    window.location.href = "/Admin/Inventory/Index";
+                });
+        },
+        error: function () {
+            // Xử lý lỗi nếu cần
+            handleAjaxError('Có lỗi xảy ra khi thêm thông tin kho.', ngayNhapValidationError, ngayNhapInput);
+        }
+    });
+}
+
+
+function validateEditInventori() {
+    var form = document.getElementById('EditFormInventory');
+    var productIdSelect = form.elements['ProductId'];
+    var ngayNhapInput = form.elements['NgayNhap'];
+    var soLuongInput = form.elements['SoLuong'];
+    var ngayNhapValidationError = document.querySelector('[data-valmsg-for="NgayNhap"]');
+    var soLuongValidationError = document.querySelector('[data-valmsg-for="SoLuong"]');
+
+
+    // Kiểm tra trường "Ngày Nhập"
+    var currentDate = new Date();
+    var selectedDate = new Date(ngayNhapInput.value);
+    if (!ngayNhapInput.value || selectedDate > currentDate) {
+        showValidationError(ngayNhapValidationError, "Vui lòng chọn ngày nhập hợp lệ.");
+        return;
+    } else {
+        hideValidationError(ngayNhapValidationError);
+    }
+
+    // Kiểm tra trường "Số Lượng"
+    if (!soLuongInput.value || isNaN(soLuongInput.value) || parseInt(soLuongInput.value) <= 0) {
+        showValidationError(soLuongValidationError, "Vui lòng nhập số lượng hợp lệ.");
+        return;
+    } else {
+        hideValidationError(soLuongValidationError);
+    }
+    // Lấy dữ liệu từ form và chuyển đổi thành đối tượng JSON
+    var formData = new FormData(form);
+    var jsonObject = {};
+    formData.forEach((value, key) => {
+        jsonObject[key] = value;
+    });
+
+    // Thực hiện AJAX để chỉnh sửa brand
+    $.ajax({
+        type: 'POST',
+        url: '/Admin/Inventory/Edit',
+        data: JSON.stringify(jsonObject),
+        contentType: 'application/json',
+        success: function (response) {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 1800,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            Toast.fire({
+                icon: 'success',
+                title: 'Chỉnh sửa Loại sản  phẩm thành công'
+            });
+
+            new Promise(resolve => setTimeout(resolve, 1800))
+                .then(() => {
+                    window.location.href = '/Admin/Inventory/Index';
+                });
+        },
+        error: function (error) {
+            // Xử lý lỗi
+            console.log('Lỗi khi chỉnh sửa brand', error);
         }
     });
 }

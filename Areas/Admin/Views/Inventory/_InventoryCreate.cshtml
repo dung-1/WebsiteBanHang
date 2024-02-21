@@ -1,0 +1,33 @@
+﻿@model WebsiteBanHang.Areas.Admin.Models.InventoriesModel
+
+<div class="modal-header">
+    <h1 class="modal-title fs-5" id="exampleModalLabel">Thêm Số Lượng Sản Phẩm</h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <form asp-action="Create" id="createFormInventory">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="mb-3">
+            <label asp-for="ProductId" class="control-label">Tên Sản Phẩm</label>
+            <select asp-for="ProductId" asp-items="ViewBag.loaiProductList" id="ProductId" class="form-control">
+                <option value="">Chọn Tên sản phẩm</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label asp-for="NgayNhap" class="control-label"></label>
+            <input asp-for="NgayNhap" class="form-control" required />
+            <span asp-validation-for="NgayNhap" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="SoLuong" class="control-label"></label>
+            <input asp-for="SoLuong" class="form-control" required />
+            <span asp-validation-for="SoLuong" class="text-danger"></span>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="button" onclick="validateAndSubmitInventori()" class="btn btn-primary">Lưu Thông Tin</button>
+        </div>
+    </form>
+</div>
+
+

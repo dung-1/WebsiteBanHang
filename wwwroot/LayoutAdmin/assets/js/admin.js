@@ -12,7 +12,22 @@ $(document).on("click", ".View-Order", function (e) {
         }
     })
 });
-// Modal create Brand
+// Modal Edit Inventory
+$(document).on("click", ".edit-inventory", function (e) {
+
+    let id = $(this).data("id")
+    $.ajax({
+        url: "/Admin/Inventory/Edit?id=" + id,// Đường dẫn đến API của bạn
+        type: "GET",
+        dataType: "html", // Đặt kiểu dữ liệu trả về
+        success: function (data) {
+            $('#edit-inventory-modal').find('.modal-content').html(data)
+            $('#edit-inventory-modal').modal('show');
+        }
+    })
+});
+
+// Modal create Order
 $(document).on("click", ".edit-OderDetail", function (e) {
 
     let id = $(this).data("id")
@@ -23,6 +38,19 @@ $(document).on("click", ".edit-OderDetail", function (e) {
         success: function (data) {
             $('#edit-Order-modal').find('.modal-content').html(data)
             $('#edit-Order-modal').modal('show');
+        }
+    })
+});
+// Modal create inventory
+$(document).on("click", ".inventory_create", function (e) {
+
+    $.ajax({
+        url: "/Admin/Inventory/Create",// Đường dẫn đến API của bạn
+        type: "GET",
+        dataType: "html", // Đặt kiểu dữ liệu trả về
+        success: function (data) {
+            $('#Inventory_Create').find('.modal-content').html(data)
+            $('#Inventory_Create').modal('show');
         }
     })
 });
