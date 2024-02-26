@@ -7,7 +7,8 @@
         public string? TenSanPham { get; set; }
         public string? HangTen { get; set; } // Tên của Brand
         public string? LoaiTen { get; set; }
-        public decimal Gia { get; set; }
+        public decimal GiaNhap { get; set; }
+        public decimal GiaBan { get; set; }
         public decimal GiaGiam { get; set; }
         public string? Image { get; set; }
         public string? ThongTinSanPham { get; set; }

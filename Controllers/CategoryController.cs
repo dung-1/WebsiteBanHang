@@ -43,7 +43,7 @@ namespace WebsiteBanHang.Controllers
                 .Select(p => new ProductViewDTO
                 {
                     Id = p.Id,
-                    Gia = p.Gia,
+                    GiaNhap = p.GiaNhap,
                     LoaiTen = p.Category.TenLoai,
                     Image = p.Image,
                     MaSanPham = p.MaSanPham,

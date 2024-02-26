@@ -977,17 +977,19 @@ function validateEditInventori() {
     });
 }
 
-
+// Thêm sản phẩm
 function validateAndSubmitProduct() {
     var form = document.getElementById('createFormProduct');
     var tenSanPhamInput = form.elements['TenSanPham'];
-    var giaInput = form.elements['Gia'];
+    var giaNhapInput = form.elements['GiaNhap'];
+    var giaBanInput = form.elements['GiaBan'];
     var giaGiamInput = form.elements['GiaGiam'];
     var imageInput = form.elements['imageFile'];
     var thongTinSanPhamInput = form.elements['ThongTinSanPham'];
 
     var tenSanPhamValidationError = document.querySelector('[data-valmsg-for="TenSanPham"]');
-    var giaValidationError = document.querySelector('[data-valmsg-for="Gia"]');
+    var giaNhapValidationError = document.querySelector('[data-valmsg-for="GiaNhap"]');
+    var giaBanValidationError = document.querySelector('[data-valmsg-for="GiaBan"]');
     var giaGiamValidationError = document.querySelector('[data-valmsg-for="GiaGiam"]');
     var imageValidationError = document.querySelector('[data-valmsg-for="Image"]');
     var thongTinSanPhamValidationError = document.querySelector('[data-valmsg-for="ThongTinSanPham"]');
@@ -1012,20 +1014,25 @@ function validateAndSubmitProduct() {
                 hideValidationError(tenSanPhamValidationError);
 
                 // Tiếp tục kiểm tra các trường khác nếu tên sản phẩm không trùng
-                // Kiểm tra trường "Giá"
-                if (!giaInput.value) {
-                    showValidationError(giaValidationError, "Vui lòng nhập giá sản phẩm.");
+                // Kiểm tra trường "Giá Nhập"
+                if (!giaNhapInput.value) {
+                    showValidationError(giaNhapValidationError, "Vui lòng nhập giá nhập sản phẩm.");
                     return;
                 } else {
-                    hideValidationError(giaValidationError);
+                    hideValidationError(giaNhapValidationError);
                 }
 
-                // Kiểm tra trường "Giá giảm"
-                if (!giaGiamInput.value) {
-                    showValidationError(giaGiamValidationError, "Vui lòng nhập giá giảm sản phẩm.");
+                // Kiểm tra trường "Giá Bán"
+                if (!giaBanInput.value) {
+                    showValidationError(giaBanValidationError, "Vui lòng nhập giá bán sản phẩm.");
                     return;
-                } else if (parseFloat(giaGiamInput.value) >= parseFloat(giaInput.value)) {
-                    showValidationError(giaGiamValidationError, "Giá giảm phải nhỏ hơn giá gốc.");
+                } else {
+                    hideValidationError(giaBanValidationError);
+                }
+
+                // Kiểm tra trường "Giá Giảm"
+                 if (isNaN(giaGiamInput.value) || giaGiamInput.value < 0 || giaGiamInput.value > 100) {
+                    showValidationError(giaGiamValidationError, "Vui lòng nhập một số từ 0 đến 100.");
                     return;
                 } else {
                     hideValidationError(giaGiamValidationError);
@@ -1048,18 +1055,18 @@ function validateAndSubmitProduct() {
                 }
 
                 // Nếu mọi thứ hợp lệ, tiếp tục gửi dữ liệu lên server và thực hiện các bước xử lý khác
-                var giaDecimal = parseFloat(giaInput.value.replace(/\D/g, ''));
-                var giaGiamDecimal = parseFloat(giaGiamInput.value.replace(/\D/g, ''));
+                var giaNhapDecimal = parseFloat(giaNhapInput.value.replace(/\D/g, ''));
+                var giaBanDecimal = parseFloat(giaBanInput.value.replace(/\D/g, ''));
 
-                if (isNaN(giaDecimal) || isNaN(giaGiamDecimal)) {
+                if (isNaN(giaNhapDecimal) || isNaN(giaBanDecimal)) {
                     // Hiển thị lỗi và ngăn chặn việc gửi dữ liệu nếu có lỗi
-                    showValidationError(giaValidationError, "Giá hoặc giảm giá không hợp lệ.");
+                    showValidationError(giaBanValidationError, "Giá hoặc giảm giá không hợp lệ.");
                     return;
                 }
 
                 var formData = new FormData(form);
-                formData.set("Gia", giaDecimal.toString());
-                formData.set("GiaGiam", giaGiamDecimal.toString());
+                formData.set("GiaNhap", giaNhapDecimal.toString());
+                formData.set("GiaBan", giaBanDecimal.toString());
 
                 $.ajax({
                     type: "POST",
@@ -1110,13 +1117,14 @@ function validateAndSubmitProduct() {
 function validateAndEditProduct() {
     var form = document.getElementById('editFormProduct');
     var formData = new FormData(form);
-
     // Additional data
-    var giaInput = form.elements['Gia'];
+    var giaBanInput = form.elements['GiaBan'];
+    var giaNhapInput = form.elements['GiaNhap'];
     var giaGiamInput = form.elements['GiaGiam'];
     var tenSanPhamInput = form.elements['TenSanPham'];
 
-    var giaValidationError = document.querySelector('[data-valmsg-for="Gia"]');
+    var giaBanValidationError = document.querySelector('[data-valmsg-for="GiaBan"]');
+    var giaNhapValidationError = document.querySelector('[data-valmsg-for="GiaNhap"]');
     var giaGiamValidationError = document.querySelector('[data-valmsg-for="GiaGiam"]');
     var tenSanPhamValidationError = document.querySelector('[data-valmsg-for="TenSanPham"]');
 
@@ -1142,38 +1150,38 @@ function validateAndEditProduct() {
                 hideValidationError(tenSanPhamValidationError);
 
                 // Tiếp tục kiểm tra các trường khác nếu tên sản phẩm không trùng
-                // Kiểm tra trường "Giá"
-                if (!giaInput.value) {
-                    showValidationError(giaValidationError, "Vui lòng nhập giá sản phẩm.");
+                // Kiểm tra trường "Giá bán"
+                if (!giaBanInput.value) {
+                    showValidationError(giaBanValidationError, "Vui lòng nhập giá bán sản phẩm.");
                     return;
                 } else {
-                    hideValidationError(giaValidationError);
+                    hideValidationError(giaBanValidationError);
                 }
 
+                // Kiểm tra trường "Giá nhập"
+                if (!giaNhapInput.value) {
+                    showValidationError(giaNhapValidationError, "Vui lòng nhập giá nhập sản phẩm.");
+                    return;
+                }
                 // Kiểm tra trường "Giá giảm"
-                if (!giaGiamInput.value) {
-                    showValidationError(giaGiamValidationError, "Vui lòng nhập giá giảm sản phẩm.");
-                    return;
-                }
 
-                // Validate if giaGiam is less than gia
-                var giaDecimal = parseFloat(giaInput.value.replace(/\D/g, ''));
-                var giaGiamDecimal = parseFloat(giaGiamInput.value.replace(/\D/g, ''));
-                    
-                if (isNaN(giaDecimal) || isNaN(giaGiamDecimal)) {
-                    showValidationError(giaValidationError, 'Giá hoặc giảm giá không hợp lệ.');
-                    return;
-                }
-
-                if (giaGiamDecimal >= giaDecimal) {
-                    showValidationError(giaGiamValidationError, 'Giá giảm phải nhỏ hơn giá gốc.');
+                if (isNaN(giaGiamInput.value) || giaGiamInput.value < 0 || giaGiamInput.value > 100) {
+                    showValidationError(giaGiamValidationError, "Vui lòng nhập một số từ 0 đến 100.");
                     return;
                 } else {
                     hideValidationError(giaGiamValidationError);
                 }
 
-                formData.set('Gia', giaDecimal.toString());
-                formData.set('GiaGiam', giaGiamDecimal.toString());
+                // Validate if giaGiam is less than gia
+                var giaNhapDecimal = parseFloat(giaNhapInput.value.replace(/\D/g, ''));
+                var giaBanDecimal = parseFloat(giaBanInput.value.replace(/\D/g, ''));
+                    
+                if (isNaN(giaNhapDecimal) || isNaN(giaBanDecimal)) {
+                    showValidationError(giaBanValidationError, 'Giá hoặc giảm giá không hợp lệ.');
+                    return;
+                }
+                formData.set("GiaNhap", giaNhapDecimal.toString());
+                formData.set("GiaBan", giaBanDecimal.toString());
 
                 // Thực hiện AJAX để chỉnh sửa sản phẩm
                 $.ajax({

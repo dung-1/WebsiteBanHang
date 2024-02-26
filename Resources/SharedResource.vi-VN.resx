@@ -123,7 +123,13 @@
   <data name="Bill" xml:space="preserve">
     <value>Hóa Đơn</value>
   </data>
+  <data name="Buy Now" xml:space="preserve">
+    <value>Mua Ngay</value>
+  </data>
   <data name="Cart" xml:space="preserve">
     <value>Giỏ Hàng</value>
+  </data>
+  <data name="Sold out" xml:space="preserve">
+    <value>Đã Hết</value>
   </data>
 </root>

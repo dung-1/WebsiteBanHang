@@ -33,13 +33,18 @@
             </select>
         </div>
         <div class="mb-3">
-            <label asp-for="Gia" class="control-label">Giá Sản Phẩm</label>
-            <input asp-for="Gia" type="text" id="Gia" value="  @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", Model.Gia)" class="form-control" oninput="formatCurrency(this)" onkeypress="return isNumberKey(event)" />
-            <span asp-validation-for="Gia" class="text-danger"></span>
+            <label asp-for="GiaNhap" class="control-label">Giá Nhập</label>
+            <input asp-for="GiaNhap" type="text" id="GiaNhap" value="  @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", Model.GiaNhap)" class="form-control" oninput="formatCurrency(this)" onkeypress="return isNumberKey(event)" />
+            <span asp-validation-for="GiaNhap" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="GiaGiam" class="control-label">Giá Giảm</label>
-            <input asp-for="GiaGiam" type="text" value="  @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", Model.GiaGiam)" id="GiaGiam" class="form-control" oninput="formatCurrency(this)" onkeypress="return isNumberKey(event)" />
+            <label asp-for="GiaBan" class="control-label">Giá Bán</label>
+            <input asp-for="GiaBan" type="text" id="GiaBan" value="  @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", Model.GiaBan)" class="form-control" oninput="formatCurrency(this)" onkeypress="return isNumberKey(event)" />
+            <span asp-validation-for="GiaBan" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="GiaGiam" class="control-label">Giảm (%)</label>
+            <input asp-for="GiaGiam" type="number" value="@string.Format("{0:0.##}",Model.GiaGiam)" id="GiaGiam" class="form-control" onkeypress="return isNumberKey(event)" />
             <span asp-validation-for="GiaGiam" class="text-danger"></span>
         </div>
 

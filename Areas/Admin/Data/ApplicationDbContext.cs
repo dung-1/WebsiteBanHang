@@ -192,7 +192,10 @@ namespace WebsiteBanHang.Areas.Admin.Data
                 .Property(p => p.GiaGiam)
                 .HasColumnType("decimal(18,2)");
             modelBuilder.Entity<ProductModel>()
-                .Property(p => p.Gia)
+                .Property(p => p.GiaBan)
+                .HasColumnType("decimal(18,2)");
+            modelBuilder.Entity<ProductModel>()
+                .Property(p => p.GiaGiam)
                 .HasColumnType("decimal(18,2)");
         }
     }

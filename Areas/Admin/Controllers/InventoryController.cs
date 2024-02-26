@@ -68,10 +68,20 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
         public IActionResult Create()
         {
-            var loaiProductList = _context.Product.ToList();
-            ViewBag.LoaiProductList = new SelectList(loaiProductList, "Id", "TenSanPham");
+            // Truy vấn danh sách sản phẩm chưa được thêm vào kho
+            var chuaThemVaoKhoList = _context.Product.Where(p => p.Inventory.All(i => i.SoLuong == 0)).ToList();
+
+            // Truy vấn danh sách loại sản phẩm
+            var loaiProductList = chuaThemVaoKhoList.Select(p => new SelectListItem
+            {
+                Value = p.Id.ToString(),
+                Text = p.TenSanPham
+            }).ToList();
+
+            ViewBag.LoaiProductList = loaiProductList;
             return PartialView("_InventoryCreate");
         }
+
         [HttpPost]
         public IActionResult Create(InventoriesModel empobj)
         {
@@ -114,16 +124,25 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var category = _context.Inventory.Find(id);
-            var loaiProductList = _context.Product.ToList();
+            // Truy vấn thông tin chi tiết của sản phẩm cần chỉnh sửa
+            var inventory = _context.Inventory.Include(i => i.product).FirstOrDefault(i => i.Id == id);
 
-            ViewBag.LoaiProductList = new SelectList(loaiProductList, "Id", "TenSanPham");
-
-            if (category == null)
+            if (inventory == null)
             {
                 return NotFound();
             }
-            return PartialView("_InventoryEdit", category);
+
+            // Tạo một SelectListItem với thông tin sản phẩm cần chỉnh sửa
+            var selectedItem = new SelectListItem
+            {
+                Value = inventory.ProductId.ToString(),
+                Text = inventory.product.TenSanPham // Lấy tên sản phẩm từ navigation property Product
+            };
+
+            // Gán selectedItem vào ViewBag.LoaiProductList
+            ViewBag.LoaiProductList = new SelectList(new List<SelectListItem> { selectedItem }, "Value", "Text");
+
+            return PartialView("_InventoryEdit", inventory);
         }
 
         [HttpPost]

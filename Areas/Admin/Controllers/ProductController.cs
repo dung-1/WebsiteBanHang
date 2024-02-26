@@ -56,7 +56,9 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 .Select(e => new ProductViewDTO
                 {
                     Id = e.Id,
-                    Gia = e.Gia,
+                    GiaNhap = e.GiaNhap,
+                    GiaBan = e.GiaBan,
+                    GiaGiam = e.GiaGiam,
                     HangTen = e.Brand.TenHang,
                     Image = e.Image,
                     MaSanPham = e.MaSanPham,
@@ -224,7 +226,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 existingProduct.MaSanPham = updatedProduct.MaSanPham;
                 existingProduct.TenSanPham = updatedProduct.TenSanPham;
                 existingProduct.ThongTinSanPham = updatedProduct.ThongTinSanPham;
-                existingProduct.Gia = updatedProduct.Gia;
+                existingProduct.GiaNhap = updatedProduct.GiaNhap;
                 existingProduct.GiaGiam = updatedProduct.GiaGiam;
                 existingProduct.HangId = updatedProduct.HangId;
                 existingProduct.LoaiId = updatedProduct.LoaiId;

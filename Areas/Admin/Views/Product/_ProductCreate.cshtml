@@ -26,13 +26,18 @@
             </select>
         </div>
         <div class="mb-3">
-            <label asp-for="Gia" class="control-label">Giá Sản Phẩm</label>
-            <input asp-for="Gia" type="text" id="Gia" class="form-control" oninput="formatCurrency(this)" onkeypress="return isNumberKey(event)" />
-            <span asp-validation-for="Gia" class="text-danger"></span>
+            <label asp-for="GiaNhap" class="control-label">Giá Nhập </label>
+            <input asp-for="GiaNhap" type="text" id="GiaNhap" class="form-control" oninput="formatCurrency(this)" onkeypress="return isNumberKey(event)" />
+            <span asp-validation-for="GiaNhap" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="GiaGiam" class="control-label">Giá Giảm</label>
-            <input asp-for="GiaGiam" type="text" id="GiaGiam" class="form-control" oninput="formatCurrency(this)" onkeypress="return isNumberKey(event)" />
+            <label asp-for="GiaBan" class="control-label">Giá Bán </label>
+            <input asp-for="GiaBan" type="text" id="GiaBan" class="form-control" oninput="formatCurrency(this)" onkeypress="return isNumberKey(event)" />
+            <span asp-validation-for="GiaBan" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="GiaGiam" class="control-label">Giảm(%)</label>
+            <input asp-for="GiaGiam" type="number" id="GiaGiam" class="form-control"/>
             <span asp-validation-for="GiaGiam" class="text-danger"></span>
         </div>
 

@@ -26,8 +26,24 @@ namespace WebsiteBanHang.Controllers
             var pageNumber = page ?? 1;
             int pageSize = 8;
 
-            IQueryable<ProductModel> products = _context.Product;
-
+            var products = _context.Product
+                              .Select(p => new ProductModel
+                              {
+                                  Id = p.Id,
+                                  MaSanPham = p.MaSanPham,
+                                  TenSanPham = p.TenSanPham,
+                                  HangId = p.HangId,
+                                  Brand = p.Brand,
+                                  LoaiId = p.LoaiId,
+                                  Category = p.Category,
+                                  GiaNhap = p.GiaNhap,
+                                  GiaBan = p.GiaBan,
+                                  GiaGiam = p.GiaGiam,
+                                  Image = p.Image,
+                                  ThongTinSanPham = p.ThongTinSanPham,
+                                  // Include Inventories navigation property
+                                  Inventory = p.Inventory.ToList()
+                              });
             if (!string.IsNullOrEmpty(searchName))
             {
                 products = products.Where(p => p.TenSanPham.Contains(searchName));
@@ -71,7 +87,7 @@ namespace WebsiteBanHang.Controllers
             var productView = new ProductViewDTO
             {
                 Id = product.Id,
-                Gia = product.Gia,
+                GiaNhap = product.GiaNhap,
                 HangTen = product.Brand.TenHang,
                 LoaiTen = product.Category.TenLoai,
                 Image = product.Image,

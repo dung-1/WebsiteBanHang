@@ -111,7 +111,7 @@
                                     <span class="percent" style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); line-height: 40px; color: #fff; font-weight: 600;">
                                         @if (product.GiaGiam > 0)
                                         {
-                                            var phanTramGiam = ((product.Gia - product.GiaGiam) / product.Gia) * 100;
+                                            var phanTramGiam = ((product.GiaNhap - product.GiaGiam) / product.GiaNhap) * 100;
                                             @("-" + phanTramGiam.ToString("0"))
                                         }%
 
@@ -127,7 +127,7 @@
                                             @string.Format(new CultureInfo("vi-VN", false), "{0:c0}",@product.GiaGiam)
                                         </div>
                                         <div class="col-6 price mt-1  " style="padding-top: 5px;font-size: 14px;color:#a29c9cd7;text-decoration: line-through;font-style: normal;">
-                                            @string.Format(new CultureInfo("vi-VN", false), "{0:c0}",@product.Gia)
+                                            @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @product.GiaNhap)
                                         </div>
 
                                         <div class="row">

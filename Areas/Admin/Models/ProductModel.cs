@@ -25,7 +25,8 @@ namespace WebsiteBanHang.Areas.Admin.Models
 
         public int? LoaiId { get; set; } // Required foreign key property
         public CategoryModel? Category { get; set; } = null!;
-        public decimal Gia { get; set; }
+        public decimal GiaNhap { get; set; }
+        public decimal GiaBan{ get; set; }
         public decimal GiaGiam { get; set; }
         [StringLength(255)]
         public string? Image { get; set; }
@@ -36,7 +37,7 @@ namespace WebsiteBanHang.Areas.Admin.Models
 
         public ICollection<OrderDetaiModel> Order_Detai { get; } = new List<OrderDetaiModel>(); // Collection navigation containing dependents
 
-        public ICollection<InventoriesModel> Inventory { get; } = new List<InventoriesModel>(); // Collection navigation containing dependents
+        public ICollection<InventoriesModel> Inventory { get; set; } = new List<InventoriesModel>(); // Collection navigation containing dependents
         public ICollection<Cart_Item> CartItems { get; } = new List<Cart_Item>();
 
     }
