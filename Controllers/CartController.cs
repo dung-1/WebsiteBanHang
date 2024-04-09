@@ -229,12 +229,6 @@ namespace WebsiteBanHang.Controllers
                 return Json(new { success = false, message = "Đã xảy ra lỗi khi xóa sản phẩm khỏi giỏ hàng." });
             }
         }
-
-        //[Route("CheckOut")]
-        //public IActionResult CheckOut()
-        //{
-        //    return View();
-        //}
         [Route("CheckOut")]
         public IActionResult Checkout()
         {

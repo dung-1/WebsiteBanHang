@@ -1,7 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MailKit.Security;
+using MailKit.Net.Smtp;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using MimeKit.Text;
+using MimeKit;
+using System.Globalization;
 using WebsiteBanHang.Areas.Admin.AdminDTO;
 using WebsiteBanHang.Areas.Admin.Data;
 using WebsiteBanHang.Areas.Admin.Models;
@@ -13,14 +18,17 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
     [Authorize(Roles = "Admin,Employee")]
     public class BillorderController : Controller
     {
+        private readonly IConfiguration _configuration;
+
 
         private readonly ILogger<BillorderController> _logger;
 
         private readonly ApplicationDbContext _context;
-        public BillorderController(ApplicationDbContext context, ILogger<BillorderController> logger)
+        public BillorderController(ApplicationDbContext context, ILogger<BillorderController> logger, IConfiguration configuration)
         {
             _context = context;
             _logger = logger;
+            _configuration = configuration;
         }
 
         private IPagedList<OrderDto> GetOrdersByStatus(string status, int? page, string searchName)
@@ -161,7 +169,9 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         //Duyệt Đơn Hàng
         public IActionResult ApproveOrder(int Id)
         {
-            var order = _context.Order.Find(Id);
+            var order = _context.Order
+                .Include(o => o.Customer)
+                .FirstOrDefault(o => o.id == Id);
 
             if (order != null)
             {
@@ -170,9 +180,23 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 {
                     // Cập nhật trạng thái đơn hàng là đã duyệt
                     order.trangThai = "Đã duyệt";
+
+                    // Lấy email của khách hàng
+                    var customerEmail = order.Customer?.Email;
+
                     _context.SaveChanges();
 
                     TempData["SuccessMessage"] = "Đã duyệt đơn hàng thành công.";
+
+                    // Gửi hóa đơn qua email
+                    if (!string.IsNullOrEmpty(customerEmail))
+                    {
+                        SendInvoiceByEmail(customerEmail, order);
+                    }
+                    else
+                    {
+                        // Xử lý trường hợp không tìm thấy email của khách hàng
+                    }
                 }
                 else
                 {
@@ -186,6 +210,82 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
             return RedirectToAction("Index");
         }
+
+
+
+        //sendmail
+        private void SendInvoiceByEmail(string recipientEmail, OrdersModel order)
+        {
+            var emailMessage = new MimeMessage();
+
+            emailMessage.From.Add(new MailboxAddress("Nguyễn Văn Dụng", _configuration["EmailSettings:Email"]));
+            emailMessage.To.Add(new MailboxAddress("Người Nhận", recipientEmail));
+            emailMessage.Subject = "Hóa Đơn Mua Hàng";
+
+            var builder = new BodyBuilder();
+
+            // Bắt đầu tạo nội dung email
+            builder.HtmlBody = "<div style='font-family: Arial, sans-serif; padding: 20px;'>";
+            builder.HtmlBody += "<h1 style=\"color: #007bff; font-weight: bold; text-transform: uppercase;\">" +
+                                "vifiretek <span style=\"font-size: 1.25rem; color: #dc3545;\">.VN</span></h1>";
+
+            // Thêm tiêu đề hóa đơn
+            builder.HtmlBody += "<h3 style='text-align: center; font-weight: bold;'>HÓA ĐƠN CỦA BẠN</h3>";
+
+            // Thêm thông tin hóa đơn
+            builder.HtmlBody += "<p style=\"font-family: Arial, sans-serif; font-size: 16px;\">" +
+                     $"<span style=\"float: left; width: 50%;\">Mã Hóa Đơn: {order.MaHoaDon}</span>" +
+                     $"<span style=\"float: right; width: 50%; text-align: right;\">Ngày Mua: {order.ngayBan.ToString("dd/MM/yyyy HH:mm:ss")}</span>" +
+                     $"<div style=\"clear: both;\"></div>" +
+                     $"</p>";
+
+            // Thêm bảng chi tiết đơn hàng
+            builder.HtmlBody += "<table style='width:100%; border-collapse: collapse;'>";
+            builder.HtmlBody += "<tr><th style='border: 1px solid #ddd; padding: 8px;'>STT</th><th style='border: 1px solid #ddd; padding: 8px;'>Sản phẩm</th><th style='border: 1px solid #ddd; padding: 8px;'>Số lượng</th><th style='border: 1px solid #ddd; padding: 8px;'>Đơn giá</th><th style='border: 1px solid #ddd; padding: 8px;'>Thành tiền</th></tr>";
+
+            // Thêm chi tiết đơn hàng
+            int stt = 1;
+            decimal tongCong = 0;
+            foreach (var orderDetail in order.ctdh)
+            {
+                // Sử dụng orderDetail để lấy thông tin sản phẩm từ đơn hàng
+                var product = orderDetail.product;
+
+                // Tính tổng tiền cho sản phẩm này
+                decimal thanhTien = (decimal)(orderDetail.soLuong * orderDetail.gia);
+
+                builder.HtmlBody += $"<tr><td style='border: 1px solid #ddd; padding: 8px;text-align:center;'>{stt}</td><td style='border: 1px solid #ddd; padding: 8px;text-align:center;'>{product?.TenSanPham}</td><td style='border: 1px solid #ddd; padding: 8px;text-align:center;'>{orderDetail.soLuong}</td><td style='border: 1px solid #ddd; padding: 8px;text-align:center;'>{orderDetail.gia.ToString("C0", new CultureInfo("vi-VN"))}</td><td style='border: 1px solid #ddd; padding: 8px;text-align:end;'>{thanhTien.ToString("C0", new CultureInfo("vi-VN"))}</td></tr>";
+
+                tongCong += thanhTien;
+                stt++;
+            }
+
+            // Kết thúc bảng
+            builder.HtmlBody += "</table>";
+
+            // Thêm tổng cộng
+            builder.HtmlBody += $"<p style='text-align: right; font-weight: bold;font-site:18px;'>Tổng cộng: {tongCong.ToString("C0", new CultureInfo("vi-VN"))}</p>";
+
+            // Thêm dòng chân trang và cảm ơn
+            builder.HtmlBody += "<hr>";
+            builder.HtmlBody += "<p style='text-align: center; font-weight: bold;'>Cảm ơn quý khách đã mua hàng của chúng tôi !!!</p>";
+
+            // Kết thúc nội dung email
+            builder.HtmlBody += "</div>";
+
+            emailMessage.Body = new TextPart(TextFormat.Html)
+            {
+                Text = builder.HtmlBody
+            };
+
+            using var smtp = new SmtpClient();
+            smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+            smtp.Authenticate(_configuration["EmailSettings:Email"], _configuration["EmailSettings:Password"]);
+            smtp.Send(emailMessage);
+            smtp.Disconnect(true);
+        }
+
+
 
         //Giao Đơn Hàng
         public IActionResult DeliverOrder(int Id)

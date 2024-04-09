@@ -245,7 +245,5 @@ namespace WebsiteBanHang.Controllers
 
             return RedirectToAction("Complete"); // Chuyển hướng về trang danh sách đơn hàng
         }
-
-
     }
 }

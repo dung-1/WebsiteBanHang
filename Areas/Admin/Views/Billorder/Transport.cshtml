@@ -21,41 +21,62 @@
             <div class="row grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th> Mã Hóa Đơn</th>
-                                    <th> Ngày Đặt </th>
-                                    <th> Trạng Thái</th>
-                                    <th> Thao Tác </th>
-
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model)
-                                {
+                        @if (Model.Count > 0)
+                        {
+                            <table class="table table-striped">
+                                <thead>
                                     <tr>
-                                        <td>
-                                            @item.MaHoaDon
-                                        </td>
-                                        <td>
-                                            @item.NgayBan
-                                        </td>
-
-                                        <td >
-                                            <span class=" badge bg-warning">@item.TrangThai</span>
-                                        </td>
-                                        <td>
-                                            <a data-id="@item.Id" class="btn btn-sm btn-primary View-Order ">
-                                                <i class="fa-solid fa-eye"></i> Xem chi tiết
-                                            </a>
-                                        </td>
+                                        <th> Mã Hóa Đơn</th>
+                                        <th> Ngày Đặt </th>
+                                        <th> Trạng Thái</th>
+                                        <th> Thao Tác </th>
 
                                     </tr>
-                                }
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @item.MaHoaDon
+                                            </td>
+                                            <td>
+                                                @item.NgayBan
+                                            </td>
 
-                            </tbody>
-                        </table>
+                                            <td>
+                                                <span class=" badge bg-warning">@item.TrangThai</span>
+                                            </td>
+                                            <td>
+                                                <a data-id="@item.Id" class="btn btn-sm btn-primary View-Order ">
+                                                    <i class="fa-solid fa-eye"></i> Xem chi tiết
+                                                </a>
+                                            </td>
+
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+
+                            <div class="m-b-16 m-b-sm-12 align-items-center " style="display: grid;
+                                                 justify-content: center;
+                                                 justify-items: center;
+                                                 align-items: center;
+                                                 height:auto;
+                                                 background:#fff;
+                                                 padding: 28px 0 16px;
+                                                 background: #fff;">
+                                <img src="~/img/null_order.png" width="100px" />
+                                <p class="css-8uyn92 text-red-5 px-16 md:px-0 text-danger fs-5">Chưa có đơn hàng </p>
+                            </div>
+
+
+
+                        }
                     </div>
                     <div class="row">
                         <div class="col-lg-12 grid-margin stretch-card">
