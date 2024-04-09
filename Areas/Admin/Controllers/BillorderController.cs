@@ -219,13 +219,21 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         //Hủy Đơn Hàng
         public IActionResult CancelOrder(int Id)
         {
-            var order = _context.Order.Find(Id);
+            var order = _context.Order.Include(o => o.ctdh).FirstOrDefault(o => o.id == Id);
 
             if (order != null)
             {
                 // Kiểm tra quyền truy cập của người dùng, ví dụ chỉ cho phép khách hàng hủy đơn
                 if (User.IsInRole("Admin"))
                 {
+                    foreach (var orderDetail in order.ctdh)
+                    {
+                        var inventoryItem = _context.Inventory.FirstOrDefault(i => i.ProductId == orderDetail.ProductId);
+                        if (inventoryItem != null)
+                        {
+                            inventoryItem.SoLuong += orderDetail.soLuong;
+                        }
+                    }
                     // Cập nhật trạng thái đơn hàng là đã hủy
                     order.trangThai = "Đã hủy";
                     _context.SaveChanges();

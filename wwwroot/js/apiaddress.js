@@ -1,36 +1,40 @@
-﻿const host = "https://provinces.open-api.vn/api/";
-var callAPI = (api) => {
-    return axios.get(api)
-        .then((response) => {
-            renderData(response.data, "city");
-        });
-}
-callAPI('https://provinces.open-api.vn/api/?depth=1');
-var callApiDistrict = (api) => {
-    return axios.get(api)
-        .then((response) => {
-            renderData(response.data.districts, "district");
-        });
-}
-var callApiWard = (api) => {
-    return axios.get(api)
-        .then((response) => {
-            renderData(response.data.wards, "ward");
-        });
-}
-
-var renderData = (array, select) => {
-    let row = ' <option disable value="">Chọn</option>';
-    array.forEach(element => {
-        row += `<option data-id="${element.code}" value="${element.name}">${element.name}</option>`
-    });
-    document.querySelector("#" + select).innerHTML = row
-}
-
-$("#city").change(() => {
-    callApiDistrict(host + "p/" + $("#city").find(':selected').data('id') + "?depth=2");
+﻿var citis = document.getElementById("city");
+var districts = document.getElementById("district");
+var wards = document.getElementById("ward");
+var Parameter = {
+    url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
+    method: "GET",
+    responseType: "application/json",
+};
+var promise = axios(Parameter);
+promise.then(function (result) {
+    renderCity(result.data);
 });
-$("#district").change(() => {
-    callApiWard(host + "d/" + $("#district").find(':selected').data('id') + "?depth=2");
-});
-$("#ward").change(() => { })
+
+function renderCity(data) {
+    for (const x of data) {
+        citis.options[citis.options.length] = new Option(x.Name, x.Id);
+    }
+    citis.onchange = function () {
+        district.length = 1;
+        ward.length = 1;
+        if (this.value != "") {
+            const result = data.filter(n => n.Id === this.value);
+
+            for (const k of result[0].Districts) {
+                district.options[district.options.length] = new Option(k.Name, k.Id);
+            }
+        }
+    };
+    district.onchange = function () {
+        ward.length = 1;
+        const dataCity = data.filter((n) => n.Id === citis.value);
+        if (this.value != "") {
+            const dataWards = dataCity[0].Districts.filter(n => n.Id === this.value)[0].Wards;
+
+            for (const w of dataWards) {
+                wards.options[wards.options.length] = new Option(w.Name, w.Id);
+            }
+        }
+    };
+}

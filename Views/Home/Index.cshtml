@@ -79,6 +79,7 @@
                 @if (product.GiaGiam != 0)
                 {
                     var giamgia = product.GiaBan - ((product.GiaBan * product.GiaGiam) / 100);
+                    var inventoryItem = product.Inventory.FirstOrDefault(i => i.ProductId == product.Id);
 
                     <div class="col-lg-3 col-md-6">
                         <div class="card p-3 mb-4 hvr-float">
@@ -101,9 +102,8 @@
                                     <div class="col-6 price mt-1  " style="padding-top: 5px;font-size: 14px;color:#a29c9cd7;text-decoration: line-through;font-style: normal;">
                                         @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @product.GiaBan)
                                     </div>
-                                    @if (product.Inventory.Any(i => i.ProductId == product.Id))
+                                    @if (inventoryItem.SoLuong >0)
                                     {
-                                        var inventoryItem = product.Inventory.FirstOrDefault(i => i.ProductId == product.Id);
                                         <div class="row">
                                             <div class="col-8 price fw-bold text-danger">
                                                 <a href="javascript:void(0);" data-product-id="@product.Id" class="btn btn-primary addToCartButton">
@@ -135,6 +135,8 @@
                 }
                 else
                 {
+                    var inventoryItem = product.Inventory.FirstOrDefault(i => i.ProductId == product.Id);
+
                     <div class="col-lg-3 col-md-6">
                         <div class="card p-3 mb-4 hvr-float">
                             <a href="#" class="img-wrap text-center">
@@ -147,9 +149,8 @@
                                         @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @product.GiaBan)
                                     </div>
 
-                                    @if (product.Inventory.Any(i => i.ProductId == product.Id))
+                                    @if (inventoryItem.SoLuong > 0)
                                     {
-                                        var inventoryItem = product.Inventory.FirstOrDefault(i => i.ProductId == product.Id);
                                         <div class="row">
                                             <div class="col-8 price fw-bold text-danger">
                                                 <a href="javascript:void(0);" data-product-id="@product.Id" class="btn btn-primary addToCartButton">

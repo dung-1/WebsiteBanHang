@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Web.Helpers;
 using WebsiteBanHang.Areas.Admin.Data;
 using WebsiteBanHang.Areas.Admin.Models;
+using WebsiteBanHang.Models;
 
 
 
@@ -25,45 +26,55 @@ namespace WebsiteBanHang.Controllers
         }
 
 
+        private (CustomerModel loggedInCustomer, CartModel cart) GetLoggedInCustomerAndCart()
+        {
+            var loggedInCustomerClaim = HttpContext.User.FindFirst(ClaimTypes.Name);
+            if (loggedInCustomerClaim != null)
+            {
+                string loggedInCustomerEmail = loggedInCustomerClaim.Value;
+
+                // Tìm khách hàng theo email
+                var loggedInCustomer = _context.Customer
+                    .Include(c => c.CustomerDetail)
+                    .FirstOrDefault(c => c.Email == loggedInCustomerEmail);
+
+                if (loggedInCustomer != null)
+                {
+                    int customerId = loggedInCustomer.Id;
+
+                    // Lấy giỏ hàng của khách hàng
+                    var cart = _context.CartModel
+                        .Include(c => c.CartItems)
+                        .ThenInclude(ci => ci.Product)
+                        .FirstOrDefault(c => c.CustomerId == customerId);
+
+                    if (cart != null)
+                    {
+                        return (loggedInCustomer, cart);
+                    }
+                }
+            }
+
+            return (null, null);
+        }
+
         public IActionResult Index()
         {
             try
             {
-                // Lấy thông tin khách hàng đang đăng nhập từ HttpContext
-                var loggedInCustomerClaim = HttpContext.User.FindFirst(ClaimTypes.Name);
-                if (loggedInCustomerClaim != null)
+                var (loggedInCustomer, cart) = GetLoggedInCustomerAndCart();
+
+                if (cart != null)
                 {
-                    string loggedInCustomerEmail = loggedInCustomerClaim.Value;
-
-                    // Tìm khách hàng theo email
-                    var loggedInCustomer = _context.Customer
-                        .Include(c => c.CustomerDetail)
-                        .FirstOrDefault(c => c.Email == loggedInCustomerEmail);
-
-                    if (loggedInCustomer != null)
-                    {
-                        int customerId = loggedInCustomer.Id;
-
-                        // Lấy giỏ hàng của khách hàng
-                        var cart = _context.CartModel
-                            .Include(c => c.CartItems)
-                            .ThenInclude(ci => ci.Product)
-                            .FirstOrDefault(c => c.CustomerId == customerId);
-
-                        if (cart != null)
-                        {
-                            return View(cart.CartItems);
-                        }
-                    }
+                    return View(cart.CartItems);
                 }
 
-                // Xử lý khi không tìm thấy thông tin đăng nhập hoặc thông tin khách hàng (nếu cần)
-                return View(new List<Cart_Item>()); // Trả về view với danh sách rỗng nếu không có thông tin đăng nhập hoặc giỏ hàng
+                return View(new List<Cart_Item>());
             }
             catch (Exception ex)
             {
                 // Xử lý ngoại lệ (nếu cần)
-                return RedirectToAction("Error"); // Chẳng hạn, chuyển hướng đến trang lỗi nếu có lỗi xảy ra
+                return RedirectToAction("Error");
             }
         }
 
@@ -71,37 +82,14 @@ namespace WebsiteBanHang.Controllers
         {
             try
             {
-                // Lấy thông tin khách hàng đang đăng nhập từ HttpContext
-                var loggedInCustomerClaim = HttpContext.User.FindFirst(ClaimTypes.Name);
-                if (loggedInCustomerClaim != null)
+                var (_, cart) = GetLoggedInCustomerAndCart();
+
+                if (cart != null)
                 {
-                    string loggedInCustomerEmail = loggedInCustomerClaim.Value;
-
-                    // Tìm khách hàng theo email
-                    var loggedInCustomer = _context.Customer
-                        .Include(c => c.CustomerDetail)
-                        .FirstOrDefault(c => c.Email == loggedInCustomerEmail);
-
-                    if (loggedInCustomer != null)
-                    {
-                        int customerId = loggedInCustomer.Id;
-
-                        // Lấy giỏ hàng của khách hàng
-                        var cart = _context.CartModel
-                            .Include(c => c.CartItems)
-                            .FirstOrDefault(c => c.CustomerId == customerId);
-
-                        if (cart != null)
-                        {
-                            // Tính tổng số lượng sản phẩm trong giỏ hàng
-                            int totalQuantity = cart.CartItems.Sum(ci => ci.Quantity);
-
-                            return totalQuantity;
-                        }
-                    }
+                    int totalQuantity = cart.CartItems.Sum(ci => ci.Quantity);
+                    return totalQuantity;
                 }
 
-                // Trả về 0 nếu không tìm thấy thông tin đăng nhập hoặc giỏ hàng
                 return 0;
             }
             catch (Exception ex)
@@ -110,9 +98,6 @@ namespace WebsiteBanHang.Controllers
                 return 0;
             }
         }
-
-
-
 
         public IActionResult AddToCart(int Id)
         {
@@ -182,123 +167,173 @@ namespace WebsiteBanHang.Controllers
                 return RedirectToAction("Error"); // Chẳng hạn, chuyển hướng đến trang lỗi nếu có lỗi xảy ra
             }
         }
+
         [HttpPost]
         public IActionResult UpdateCartItemQuantity(int productId, int quantity)
         {
             try
             {
-                // Lấy thông tin khách hàng đang đăng nhập từ HttpContext
-                var loggedInCustomerClaim = HttpContext.User.FindFirst(ClaimTypes.Name);
-                if (loggedInCustomerClaim != null)
+                var (_, cart) = GetLoggedInCustomerAndCart();
+
+                if (cart != null)
                 {
-                    string loggedInCustomerEmail = loggedInCustomerClaim.Value;
+                    var cartItem = cart.CartItems.FirstOrDefault(ci => ci.Product.Id == productId);
 
-                    // Tìm khách hàng theo email
-                    var loggedInCustomer = _context.Customer
-                        .Include(c => c.CustomerDetail)
-                        .FirstOrDefault(c => c.Email == loggedInCustomerEmail);
-
-                    if (loggedInCustomer != null)
+                    if (cartItem != null)
                     {
-                        int customerId = loggedInCustomer.Id;
-
-                        // Lấy giỏ hàng của khách hàng
-                        var cart = _context.CartModel
-                            .Include(c => c.CartItems)
-                                .ThenInclude(ci => ci.Product)
-                            .FirstOrDefault(c => c.CustomerId == customerId);
-
-                        if (cart != null)
+                        if (quantity > 0)
                         {
-                            // Tìm sản phẩm trong giỏ hàng
-                            var cartItem = cart.CartItems.FirstOrDefault(ci => ci.Product.Id == productId);
-
-                            if (cartItem != null)
-                            {
-                                // Cập nhật số lượng sản phẩm
-                                if (quantity > 0)
-                                {
-                                    cartItem.Quantity = quantity;
-                                }
-                                else
-                                {
-                                    // Nếu số lượng là 0 hoặc âm, xóa sản phẩm khỏi giỏ hàng
-                                    cart.CartItems.Remove(cartItem);
-                                }
-
-                                _context.SaveChanges();
-
-                                // Trả về số lượng mới để cập nhật trên giao diện
-                                return Json(new { success = true, newQuantity = cartItem.Quantity });
-                            }
+                            cartItem.Quantity = quantity;
                         }
+                        else
+                        {
+                            cart.CartItems.Remove(cartItem);
+                        }
+
+                        _context.SaveChanges();
+
+                        return Json(new { success = true, newQuantity = cartItem.Quantity });
                     }
                 }
 
-                // Trả về lỗi nếu không tìm thấy thông tin đăng nhập hoặc giỏ hàng
                 return Json(new { success = false, message = "Không thể cập nhật giỏ hàng." });
             }
             catch (Exception ex)
             {
-                // Xử lý ngoại lệ và trả về lỗi nếu có lỗi xảy ra
                 return Json(new { success = false, message = "Đã xảy ra lỗi khi cập nhật giỏ hàng." });
             }
         }
+
         [HttpPost]
         public IActionResult RemoveFromCart(int id)
         {
             try
             {
-                // Lấy thông tin khách hàng đang đăng nhập từ HttpContext
-                var loggedInCustomerClaim = HttpContext.User.FindFirst(ClaimTypes.Name);
-                if (loggedInCustomerClaim != null)
+                var (_, cart) = GetLoggedInCustomerAndCart();
+
+                if (cart != null)
                 {
-                    string loggedInCustomerEmail = loggedInCustomerClaim.Value;
-
-                    // Tìm khách hàng theo email
-                    var loggedInCustomer = _context.Customer
-                        .Include(c => c.CustomerDetail)
-                        .FirstOrDefault(c => c.Email == loggedInCustomerEmail);
-
-                    if (loggedInCustomer != null)
+                    var cartItem = cart.CartItems.FirstOrDefault(ci => ci.Product.Id == id);
+                    if (cartItem != null)
                     {
-                        int customerId = loggedInCustomer.Id;
-
-                        // Lấy giỏ hàng của khách hàng
-                        var cart = _context.CartModel
-                            .Include(c => c.CartItems)
-                                .ThenInclude(ci => ci.Product)
-                            .FirstOrDefault(c => c.CustomerId == customerId);
-
-                        if (cart != null)
-                        {
-                            // Tìm và xóa sản phẩm khỏi giỏ hàng
-                            var cartItem = cart.CartItems.FirstOrDefault(ci => ci.Product.Id == id);
-                            if (cartItem != null)
-                            {
-                                cart.CartItems.Remove(cartItem);
-                                _context.SaveChanges();
-
-                                return Json(new { success = true });
-                            }
-                        }
+                        cart.CartItems.Remove(cartItem);
+                        _context.SaveChanges();
+                        return Json(new { success = true });
                     }
                 }
 
-                // Trả về lỗi nếu không tìm thấy thông tin đăng nhập hoặc giỏ hàng
                 return Json(new { success = false, message = "Không thể xóa sản phẩm khỏi giỏ hàng." });
             }
             catch (Exception ex)
             {
-                // Xử lý ngoại lệ và trả về lỗi nếu có lỗi xảy ra
                 return Json(new { success = false, message = "Đã xảy ra lỗi khi xóa sản phẩm khỏi giỏ hàng." });
             }
         }
 
+        //[Route("CheckOut")]
+        //public IActionResult CheckOut()
+        //{
+        //    return View();
+        //}
+        [Route("CheckOut")]
+        public IActionResult Checkout()
+        {
+            var (loggedInCustomer, cartModel) = GetLoggedInCustomerAndCart();
+
+            if (cartModel != null)
+            {
+                var cartItems = cartModel.CartItems; // Lấy danh sách các mục giỏ hàng từ đối tượng cartModel
+                float total = 0;
+                try
+                {
+                    // Khai báo biến order ở đây để sử dụng trong vòng lặp
+                    var order = new OrdersModel
+                    {
+                        MaHoaDon = GenerateOrderCode(), // Implement your own order code generation logic
+                        CustomerID = loggedInCustomer != null ? loggedInCustomer.Id : null, // Set the user ID as needed
+                        ngayBan = DateTime.Now,
+                        tongTien = total,
+                        trangThai = "Đang xử lý",
+                        LoaiHoaDon = "Mua hàng"
+                    };
+
+                    foreach (var cartItem in cartItems)
+                    {
+                        float price = 0;
+                        if (cartItem.Product.GiaGiam != 0)
+                        {
+                            var giamgia = cartItem.Product.GiaBan - ((cartItem.Product.GiaBan * cartItem.Product.GiaGiam) / 100);
+                            price = (float)Convert.ToDouble(cartItem.Quantity * giamgia);
+                        }
+                        else
+                        {
+                            price = (float)Convert.ToDouble(cartItem.Quantity * cartItem.Product.GiaBan);
+                        }
+                        total += price;
+
+                        // Create an order detail for each item in the cart
+                        var orderDetail = new OrderDetaiModel
+                        {
+                            ProductId = cartItem.ProductId, // Sử dụng ProductId thay vì cartItem.Product.Id
+                            soLuong = cartItem.Quantity,
+                            gia = price // Sử dụng giá được tính toán ở trên
+                        };
+
+                        // Reduce the quantity of the product in the inventory
+                        var inventoryItem = _context.Inventory.FirstOrDefault(i => i.ProductId == cartItem.ProductId);
+                        if (inventoryItem != null)
+                        {
+                            inventoryItem.SoLuong -= cartItem.Quantity;
+                        }
+                        // Add the order detail to the order
+                        order.ctdh.Add(orderDetail);
+                    }
+
+                    // Assign total value after calculating
+                    order.tongTien = total;
+
+                    // Save the order and order details to the database
+                    _context.Order.Add(order);
+                    _context.SaveChanges();
+
+                    // Clear the cart after the purchase
+                    _context.Cart_Item.RemoveRange(cartItems); // Xóa các mục giỏ hàng
+                    _context.SaveChanges();
+
+                    TempData["CheckoutSuccess"] = "Đặt hàng thành công.";
+                }
+                catch (Exception ex)
+                {
+                    TempData["CheckoutError"] = "Đã xảy ra lỗi khi đặt hàng.";
+                    // Handle the exception
+                }
+            }
+
+            return RedirectToAction("Index");
+        }
 
 
 
+        private string GenerateOrderCode()
+        {
+            // Get the latest order code from the database
+            var latestOrder = _context.Order
+                .OrderByDescending(order => order.MaHoaDon)
+                .FirstOrDefault();
 
+            if (latestOrder != null)
+            {
+                // Extract the numeric part of the latest order code
+                if (int.TryParse(latestOrder.MaHoaDon.Substring(2), out int latestOrderNumber))
+                {
+                    // Increment the order number and format it as HDxxxxx
+                    return "HD" + (latestOrderNumber + 1).ToString("D5");
+                }
+            }
+
+            // If no existing orders, start from HD00001
+            return "HD00001";
+        }
 
     }
 }

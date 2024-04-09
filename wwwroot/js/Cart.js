@@ -86,18 +86,18 @@ $(".delete-item").on("click", function (e) {
     });
 });
 
-$(document).on("click", ".create-checkout", function (e) {
+//$(document).on("click", ".create-checkout", function (e) {
 
-    $.ajax({
-        url: "/Cart/Checkoutcart",// Đường dẫn đến API của bạn
-        type: "GET",
-        dataType: "html", // Đặt kiểu dữ liệu trả về
-        success: function (data) {
-            $('#Create_checkout').find('.modal-content').html(data)
-            $('#Create_checkout').modal('show');
-        }
-    })
-});
+//    $.ajax({
+//        url: "/Cart/Checkoutcart",// Đường dẫn đến API của bạn
+//        type: "GET",
+//        dataType: "html", // Đặt kiểu dữ liệu trả về
+//        success: function (data) {
+//            $('#Create_checkout').find('.modal-content').html(data)
+//            $('#Create_checkout').modal('show');
+//        }
+//    })
+//});
 // updateCartItemCount.js
 
 function updateCartItemCount() {
@@ -116,9 +116,6 @@ function updateCartItemCount() {
 // Gọi hàm cập nhật số lượng sản phẩm trong giỏ hàng khi trang web được tải
 updateCartItemCount();
 
-
-
-// Tạo hàm để gọi action ListCategory và hiển thị danh mục sản phẩm
 // Tạo hàm để gọi action ListCategory và hiển thị danh mục sản phẩm
 function loadCategories() {
     $.ajax({

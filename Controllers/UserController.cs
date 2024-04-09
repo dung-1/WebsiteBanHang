@@ -7,6 +7,8 @@ using X.PagedList;
 using Microsoft.EntityFrameworkCore;
 using WebsiteBanHang.Areas.Admin.AdminDTO;
 using Microsoft.AspNetCore.Authorization;
+using System.Dynamic;
+using Microsoft.CSharp.RuntimeBinder;
 namespace WebsiteBanHang.Controllers
 {
     public class UserController : Controller

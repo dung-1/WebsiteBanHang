@@ -2,146 +2,195 @@
  @inject LanguageService language
  @model List<WebsiteBanHang.Areas.Admin.Models.Cart_Item>
 
- @{
-     ViewData["Title"] = "Cart";
-     Layout = "~/Views/Shared/_Layout.cshtml";
- }
- @if (Model.Count > 0)
- {
-     double total = 0;
+@{
+    ViewData["Title"] = "Cart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if (Model.Count > 0)
+{
+    double total = 0;
 
-     <section class="section-pagetop bg-light">
-         <div class="container">
-             <h2 class="title-page">
-                 @language.GetKey("Cart")</h2>
-         </div> <!-- container.// -->
-     </section> <!-- section-pagetop.// -->
-     <div class="modal fade" id="Create_checkout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-         <div class="modal-dialog">
-             <div class="modal-content">
-             </div>
-         </div>
-     </div>
-     <section class="section-content padding-y">
-         <div class="container">
-             <div class="row">
+    <section class="section-pagetop bg-light">
+        <div class="container">
+            <h2 class="title-page">
+                @language.GetKey("Cart")
+            </h2>
+        </div> <!-- container.// -->
+    </section> <!-- section-pagetop.// -->
+    <div class="modal fade" id="Create_checkout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>
+    <section class="section-content padding-y">
+        <div class="container">
+            <div class="row">
 
-                 <main class="col-lg-9 mb-lg-0 mb-3">
-                     <div class="card">
+                <main class="col-lg-9 mb-lg-0 mb-3">
+                    <div class="card">
 
-                         <div class="table-responsive-xl">
-                             <table class="cart-table table table-borderless">
-                                 <thead class="text-muted">
-                                     <tr class="small text-uppercase">
-                                         <th scope="col" style="min-width: 280px;">Sản phẩm</th>
-                                         <th scope="col" width="150" style="min-width: 150px;">Giá</th>
-                                         <th scope="col" width="150" style="min-width: 150px;">Số lượng</th>
-                                         <th scope="col" width="100" style="min-width: 100px;"></th>
-                                     </tr>
-                                 </thead>
-                                 @foreach (var cartitem in Model)
-                                 {
-                                     var thanhtien = Convert.ToDouble(cartitem.Quantity * cartitem.Product.GiaGiam);
-                                     total += thanhtien;
-                                     <tbody>
-                                         <tr>
-                                             <td>
-                                                 <figure class="itemside">
-                                                     <div class="float-start me-3"><img src="/@cartitem.Product.Image" style="width:80px;height:80px"></div>
-                                                     <figcaption class="info">
-                                                         <span class="title text-capitalize">@cartitem.Product.TenSanPham</span>
-                                                     </figcaption>
-                                                 </figure>
-                                             </td>
-                                             <td>
-                                                 <div class="price-wrap">
-                                                     <span class="price">  @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @cartitem.Product.GiaGiam)</span>
-                                                 </div>
-                                             </td>
-                                             <td>
-                                                <input asp-for="@cartitem.Quantity" id="@($"quantity-{cartitem.Product.Id}")" class="form-control" type="number" min="1">
-                                            </td>
-                                             <td class="text-center text-nowrap">
-                                                 <button class="btn btn-success updatecartitem"
-                                                         data-productid="@cartitem.Product.Id">
-                                                     <i class="fa-solid fa-square-pen"></i>
-                                                     Cập nhật
-                                                 </button>
-                                                 <a asp-controller="Cart" asp-action="RemoveFromCart" asp-route-id="@cartitem.Product.Id" class="btn btn-danger ms-1 delete-item">
-                                                     <i class="fa-solid fa-delete-left"></i> Xóa
-                                                 </a>
-                                             </td>
-                                         </tr>
+                        <div class="table-responsive-xl">
+                            <table class="cart-table table table-borderless">
+                                <thead class="text-muted">
+                                    <tr class="small text-uppercase">
+                                        <th scope="col" style="min-width: 280px;">Sản phẩm</th>
+                                        <th scope="col" width="150" style="min-width: 150px;">Giá</th>
+                                        <th scope="col" width="150" style="min-width: 150px;">Số lượng</th>
+                                        <th scope="col" width="100" style="min-width: 100px;"></th>
+                                    </tr>
+                                </thead>
+                                @foreach (var cartitem in Model)
+                                {
+                                    var thanhtien = 0.0;
+                                    if (cartitem.Product.GiaGiam != 0)
+                                    {
+                                        var giamgia = cartitem.Product.GiaBan - ((cartitem.Product.GiaBan * cartitem.Product.GiaGiam) / 100);
+                                        thanhtien = Convert.ToDouble(cartitem.Quantity * giamgia);
+                                    }
+                                    else
+                                    {
+                                        thanhtien = Convert.ToDouble(cartitem.Quantity * cartitem.Product.GiaBan);
+                                    }
+                                    total += thanhtien;
+                                    <tbody>
+                                        @if (cartitem.Product.GiaGiam != 0)
+                                        {
+                                            var giamgia = cartitem.Product.GiaBan - ((cartitem.Product.GiaBan * cartitem.Product.GiaGiam) / 100);
 
-                                     </tbody>
-                                 }
-                             </table>
-                         </div> <!-- table.responsive-md.// -->
 
-                         <div class="card-body border-top">
-                             <a class="btn btn-primary float-end create-checkout"> <i class="fa-solid fa-receipt"></i> Đặt hàng</a>
-                             <a  asp-controller="Home" asp-action="Index" class="btn btn-secondary"><i class="fa-solid fa-circle-left"></i> Tiếp tục mua sắm</a>
-                         </div> <!-- card-body.// -->
+                                            <tr>
+                                                <td>
+                                                    <figure class="itemside">
+                                                        <div class="float-start me-3"><img src="/@cartitem.Product.Image" style="width:80px;height:80px"></div>
+                                                        <figcaption class="info">
+                                                            <span class="title text-capitalize">@cartitem.Product.TenSanPham</span>
+                                                        </figcaption>
+                                                    </figure>
+                                                </td>
+                                                <td>
+                                                    <div class="price-wrap">
+                                                        <span class="price">  @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", giamgia)</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <input asp-for="@cartitem.Quantity" id="@($"quantity-{cartitem.Product.Id}")" class="form-control" type="number" min="1">
+                                                </td>
+                                                <td class="text-center text-nowrap">
+                                                    <button class="btn btn-success updatecartitem"
+                                                            data-productid="@cartitem.Product.Id">
+                                                        <i class="fa-solid fa-square-pen"></i>
+                                                        Cập nhật
+                                                    </button>
+                                                    <a asp-controller="Cart" asp-action="RemoveFromCart" asp-route-id="@cartitem.Product.Id" class="btn btn-danger ms-1 delete-item">
+                                                        <i class="fa-solid fa-delete-left"></i> Xóa
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <figure class="itemside">
+                                                        <div class="float-start me-3"><img src="/@cartitem.Product.Image" style="width:80px;height:80px"></div>
+                                                        <figcaption class="info">
+                                                            <span class="title text-capitalize">@cartitem.Product.TenSanPham</span>
+                                                        </figcaption>
+                                                    </figure>
+                                                </td>
+                                                <td>
+                                                    <div class="price-wrap">
+                                                        <span class="price">  @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @cartitem.Product.GiaBan)</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <input asp-for="@cartitem.Quantity" id="@($"quantity-{cartitem.Product.Id}")" class="form-control" type="number" min="1">
+                                                </td>
+                                                <td class="text-center text-nowrap">
+                                                    <button class="btn btn-success updatecartitem"
+                                                            data-productid="@cartitem.Product.Id">
+                                                        <i class="fa-solid fa-square-pen"></i>
+                                                        Cập nhật
+                                                    </button>
+                                                    <a asp-controller="Cart" asp-action="RemoveFromCart" asp-route-id="@cartitem.Product.Id" class="btn btn-danger ms-1 delete-item">
+                                                        <i class="fa-solid fa-delete-left"></i> Xóa
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
 
-                     </div> <!-- card.// -->
-                 </main> <!-- col.// -->
 
-                 <aside class="col-lg-3">
+                                    </tbody>
+                                }
+                            </table>
+                        </div> <!-- table.responsive-md.// -->
 
-                     <div class="card mb-3">
-                         <div class="card-body">
-                             <p class="card-title">Hình thức giao hàng</p>
-                             <form action="">
-                                 <div class="form-check mb-2">
-                                     <input class="form-check-input" type="radio" name="delivery_method" id="delivery_method_1" checked>
-                                     <label class="form-check-label" for="delivery_method_1">Giao tiêu chuẩn</label>
-                                 </div>
-                                 <div class="form-check mb-2">
-                                     <input class="form-check-input" type="radio" name="delivery_method" id="delivery_method_2">
-                                     <label class="form-check-label" for="delivery_method_2">Giao nhanh</label>
-                                 </div>
-                             </form>
-                         </div> <!-- card-body.// -->
-                     </div> <!-- card.// -->
+                        <div class="card-body border-top">
+                            @*<a asp-controller="cart" asp-action="checkout" class="btn btn-primary float-end create-checkout"> <i class="fa-solid fa-receipt"></i> mua hàng</a>*@
+                            <a asp-controller="Cart" asp-action="CheckOut" class="btn btn-primary float-end create-checkout"> <i class="fa-solid fa-receipt"></i> Mua hàng</a>
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary"><i class="fa-solid fa-circle-left"></i> Tiếp tục mua sắm</a>
+                        </div> <!-- card-body.// -->
 
-                     <div class="card mb-3">
-                         <div class="card-body">
-                             <p class="card-title">Mã giảm giá</p>
-                             <form action="">
-                                 <div class="input-group mb-3">
-                                     <input type="text" class="form-control" placeholder="">
-                                     <button class="btn btn-primary" type="button">Áp dụng</button>
-                                 </div>
-                             </form>
-                         </div> <!-- card-body.// -->
-                     </div> <!-- card.// -->
+                    </div> <!-- card.// -->
+                </main> <!-- col.// -->
 
-                     <div class="card">
-                         <div class="card-body">
-                             <dl class="row mb-0">
-                                 <dt class="col-xxl-6 col-lg-12 col-6">Tạm tính:</dt>
-                                 <dd class="col-xxl-6 col-lg-12 col-6 text-end mb-3"> @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", total)</dd>
-                                 <dt class="col-xxl-6 col-lg-12 col-6">Phí vận chuyển:</dt>
-                                 <dd class="col-xxl-6 col-lg-12 col-6 text-end mb-3">0₫</dd>
-                                 <dt class="col-xxl-6 col-lg-12 col-6">Tổng cộng:</dt>
-                                 <dd class="col-xxl-6 col-lg-12 col-6 text-end mb-3"><strong> @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", total)</strong></dd>
-                             </dl>
-                         </div> <!-- card-body.// -->
-                     </div> <!-- card.// -->
+                <aside class="col-lg-3">
 
-                 </aside> <!-- col.// -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <p class="card-title">Hình thức giao hàng</p>
+                            <form action="">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="delivery_method" id="delivery_method_1" checked>
+                                    <label class="form-check-label" for="delivery_method_1">Giao tiêu chuẩn</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="delivery_method" id="delivery_method_2">
+                                    <label class="form-check-label" for="delivery_method_2">Giao nhanh</label>
+                                </div>
+                            </form>
+                        </div> <!-- card-body.// -->
+                    </div> <!-- card.// -->
 
-             </div> <!-- row.// -->
-         </div> <!-- container -->
-     </section> <!-- section-content.// -->
- }
- else
- {
-     <section class="section-pagetop bg-light" >
-         <div class="container">
-             <h2 class="title-page text-capitalize">Giỏ hàng</h2>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <p class="card-title">Mã giảm giá</p>
+                            <form action="">
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" placeholder="">
+                                    <button class="btn btn-primary" type="button">Áp dụng</button>
+                                </div>
+                            </form>
+                        </div> <!-- card-body.// -->
+                    </div> <!-- card.// -->
 
-             <div class="m-b-16 m-b-sm-12 align-items-center " style="display: grid;
+                    <div class="card">
+                        <div class="card-body">
+                            <dl class="row mb-0">
+                                <dt class="col-xxl-6 col-lg-12 col-6">Tạm tính:</dt>
+                                <dd class="col-xxl-6 col-lg-12 col-6 text-end mb-3"> @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", total)</dd>
+                                <dt class="col-xxl-6 col-lg-12 col-6">Phí vận chuyển:</dt>
+                                <dd class="col-xxl-6 col-lg-12 col-6 text-end mb-3">0₫</dd>
+                                <dt class="col-xxl-6 col-lg-12 col-6">Tổng cộng:</dt>
+                                <dd class="col-xxl-6 col-lg-12 col-6 text-end mb-3"><strong> @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", total)</strong></dd>
+                            </dl>
+                        </div> <!-- card-body.// -->
+                    </div> <!-- card.// -->
+
+                </aside> <!-- col.// -->
+
+            </div> <!-- row.// -->
+        </div> <!-- container -->
+    </section> <!-- section-content.// -->
+}
+else
+{
+    <section class="section-pagetop bg-light">
+        <div class="container">
+            <h2 class="title-page text-capitalize">Giỏ hàng</h2>
+
+            <div class="m-b-16 m-b-sm-12 align-items-center " style="display: grid;
                                                                          justify-content: center;
                                                                          justify-items: center;
                                                                          align-items: center;
@@ -150,15 +199,14 @@
                                                                          background: #fff;
                                                                          border-radius: 12px;
                                                                          margin: 32px auto 0;">
-                 <img src="~/img/empty-cart.png" width="296" />
-                 <p class="css-8uyn92 text-red-5 px-16 md:px-0 text-danger fs-5">Chưa có sản phẩm nào trong giỏ hàng</p>
-                 <div class="cart-status_btn m-b-32 cart-empty_cart-status_btn__yWtjL">
-                     <a href="/" class="btn btn-danger border-2" style="border-radius:10%">
-                         <span>  @language.GetKey("Buy Now")</span>
-                     </a>
-                 </div>
-             </div>
-         </div>
-     </section>
- }
- 
+                <img src="~/img/empty-cart.png" width="296" />
+                <p class="css-8uyn92 text-red-5 px-16 md:px-0 text-danger fs-5">Chưa có sản phẩm nào trong giỏ hàng</p>
+                <div class="cart-status_btn m-b-32 cart-empty_cart-status_btn__yWtjL">
+                    <a href="/" class="btn btn-danger border-2" style="border-radius:10%">
+                        <span>  @language.GetKey("Buy Now")</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+}
