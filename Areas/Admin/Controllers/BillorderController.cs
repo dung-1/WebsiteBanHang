@@ -11,6 +11,7 @@ using WebsiteBanHang.Areas.Admin.AdminDTO;
 using WebsiteBanHang.Areas.Admin.Data;
 using WebsiteBanHang.Areas.Admin.Models;
 using X.PagedList;
+using System.Security.Claims;
 
 namespace WebsiteBanHang.Areas.Admin.Controllers
 {
@@ -170,7 +171,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             return PartialView("_OrderView", orderDtos);
         }
         //Duyệt Đơn Hàng
-        public IActionResult ApproveOrder(int Id)
+        public async Task<IActionResult> ApproveOrderAsync(int Id)
         {
             var order = _context.Order
                 .Include(o => o.Customer)
@@ -181,10 +182,29 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             if (order != null)
             {
                 // Kiểm tra quyền truy cập của người dùng, ví dụ chỉ cho phép admin duyệt đơn
-                if (User.IsInRole("Admin"))
+                if (User.IsInRole("Admin") || User.IsInRole("Employee"))
                 {
                     // Cập nhật trạng thái đơn hàng là đã duyệt
                     order.trangThai = "Đã duyệt";
+
+                    // Lấy UserID của người đăng nhập vào hệ thống và gán cho trường UserID của đơn hàng
+                    // Lấy tên đăng nhập từ claim
+                    var userName = User.FindFirstValue(ClaimTypes.Name);
+
+                    // Tìm kiếm người dùng trong cơ sở dữ liệu dựa trên tên đăng nhập
+                    var user = await _context.User.FirstOrDefaultAsync(u => u.Email == userName);
+
+                    if (user != null)
+                    {
+                        // Gán ID của người dùng cho UserID của đơn hàng
+                        order.UserID = user.Id;
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Không tìm thấy người dùng với tên đăng nhập đã cung cấp.";
+                    }
+
+
 
                     // Lấy email của khách hàng
                     var customerEmail = order.Customer?.Email;
@@ -200,7 +220,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                     }
                     else
                     {
-                        TempData["ErrorMessage"] = "Không tìm thấy email ngừi nhận !!!";
+                        TempData["ErrorMessage"] = "Không tìm thấy email người nhận !!!";
                     }
                 }
                 else
@@ -215,6 +235,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
             return RedirectToAction("Index");
         }
+
 
         //sendmail
         private void SendInvoiceByEmail(string recipientEmail, OrdersModel order)
