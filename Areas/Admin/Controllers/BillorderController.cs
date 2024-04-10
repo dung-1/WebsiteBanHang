@@ -171,6 +171,8 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         {
             var order = _context.Order
                 .Include(o => o.Customer)
+                .Include(o => o.ctdh) // Load danh sách chi tiết đơn hàng
+                .ThenInclude(od => od.product) // Load thông tin sản phẩm cho mỗi chi tiết đơn hàng
                 .FirstOrDefault(o => o.id == Id);
 
             if (order != null)
@@ -195,7 +197,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                     }
                     else
                     {
-                        // Xử lý trường hợp không tìm thấy email của khách hàng
+                        TempData["ErrorMessage"] = "Không tìm thấy email ngừi nhận !!!";
                     }
                 }
                 else
@@ -210,6 +212,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
             return RedirectToAction("Index");
         }
+
 
 
 
