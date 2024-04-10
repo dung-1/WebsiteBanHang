@@ -151,17 +151,20 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 TrangThai = orderInfo.Order.trangThai,
                 LoaiHoaDon = orderInfo.Order.LoaiHoaDon,
                 ChiTietHoaDon = orderDetailsList
-                    .Where(o => o.Order.id == orderInfo.Order.id)
-                    .Select(o => new ChiTietHoaDonDto
-                    {
-                        img = o.OrderDetails.product.Image,
-                        TenSanPham = o.OrderDetails.product.TenSanPham,
-                        SoLuong = o.OrderDetails.soLuong,
-                        Gia = (decimal)o.OrderDetails.gia,
-                    }).ToList(),
+                  .Where(o => o.Order.id == orderInfo.Order.id)
+                  .Select(o => new ChiTietHoaDonDto
+                  {
+                      img = o.OrderDetails.product.Image,
+                      TenSanPham = o.OrderDetails.product.TenSanPham,
+                      SoLuong = o.OrderDetails.soLuong,
+                      Gia = o.OrderDetails.product.GiaGiam >= 0 ?
+                          (decimal)(o.OrderDetails.product.GiaBan - ((o.OrderDetails.product.GiaBan * o.OrderDetails.product.GiaGiam) / 100)) :
+                          (decimal)o.OrderDetails.product.GiaBan,
+                  }).ToList(),
+
                 TongCong = orderInfo.Order.ctdh != null
-                    ? (decimal)orderInfo.Order.ctdh.Sum(ct => ct.gia * ct.soLuong)
-                    : 0
+                      ? (decimal)orderInfo.Order.ctdh.Sum(ct => ct.gia)
+                      : 0
             }).ToList();
 
             return PartialView("_OrderView", orderDtos);
@@ -213,9 +216,6 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             return RedirectToAction("Index");
         }
 
-
-
-
         //sendmail
         private void SendInvoiceByEmail(string recipientEmail, OrdersModel order)
         {
@@ -255,13 +255,15 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 var product = orderDetail.product;
 
                 // Tính tổng tiền cho sản phẩm này
-                decimal thanhTien = (decimal)(orderDetail.soLuong * orderDetail.gia);
-
-                builder.HtmlBody += $"<tr><td style='border: 1px solid #ddd; padding: 8px;text-align:center;'>{stt}</td><td style='border: 1px solid #ddd; padding: 8px;text-align:center;'>{product?.TenSanPham}</td><td style='border: 1px solid #ddd; padding: 8px;text-align:center;'>{orderDetail.soLuong}</td><td style='border: 1px solid #ddd; padding: 8px;text-align:center;'>{orderDetail.gia.ToString("C0", new CultureInfo("vi-VN"))}</td><td style='border: 1px solid #ddd; padding: 8px;text-align:end;'>{thanhTien.ToString("C0", new CultureInfo("vi-VN"))}</td></tr>";
-
+                decimal donGia = (decimal)(orderDetail.product.GiaGiam >= 0 ?
+                    (decimal)(orderDetail.product.GiaBan - ((orderDetail.product.GiaBan * orderDetail.product.GiaGiam) / 100)) :
+                    (decimal)orderDetail.product.GiaBan);
+                decimal thanhTien = (decimal)(orderDetail.soLuong * donGia);
+                builder.HtmlBody += $"<tr><td style='border: 1px solid #ddd; padding: 8px;text-align:center;'>{stt}</td><td style='border: 1px solid #ddd; padding: 8px;text-align:center;text-transform: capitalize;'>{product?.TenSanPham}</td><td style='border: 1px solid #ddd; padding: 8px;text-align:center;'>{orderDetail.soLuong}</td><td style='border: 1px solid #ddd; padding: 8px;text-align:center;'>{donGia.ToString("C0", new CultureInfo("vi-VN"))}</td><td style='border: 1px solid #ddd; padding: 8px;text-align:end;'>{thanhTien.ToString("C0", new CultureInfo("vi-VN"))}</td></tr>";
                 tongCong += thanhTien;
                 stt++;
             }
+
 
             // Kết thúc bảng
             builder.HtmlBody += "</table>";
