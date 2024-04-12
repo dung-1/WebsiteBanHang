@@ -1,0 +1,95 @@
+﻿<nav class="sidebar sidebar-offcanvas" id="sidebar">
+    <ul class="nav">
+        <li class="nav-item nav-profile">
+            <a href="#" class="nav-link">
+                <div class="nav-profile-image">
+                    <img src="../../LayoutAdmin/assets/images/faces/face1.jpg" alt="profile">
+                    <span class="login-status online"></span>
+                    <!--change to offline or busy as needed-->
+                </div>
+                <div class="nav-profile-text d-flex flex-column">
+                    <span class="fs-6 mb-2 text-capitalize"> @string.Join(", ", User.Claims.Where(c => c.Type == ClaimTypes.Email).Select(c => c.Value))</span>
+                    <span class="text-secondary text-small  text-capitalize">@string.Join(", ", User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value))</span>
+
+                </div>
+                <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Url.Action("Index","AdminHome")">
+                <span class="menu-title">Dashboard</span>
+                <i class="mdi mdi-home menu-icon"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a asp class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                <span class="menu-title">Quản Lý Sản Phẩm</span>
+                <i class="menu-arrow"></i>
+                <i class="fa-solid fa-house-laptop menu-icon"></i>
+            </a>
+            <div class="collapse" id="ui-basic">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href="@Url.Action("Index","Product")">Sản Phẩm</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="@Url.Action("Index","Brand")">Hãng Sản Phẩm</a></li>
+                    <li class="nav-item">  <a class="nav-link" href="@Url.Action("Index","Category")">Loại Sản Phẩm</a></li>
+                </ul>
+            </div>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="@Url.Action("Index","User")">
+                <span class="menu-title">Quản Lý Người Dùng</span>
+                <i class="fa-solid fa-user menu-icon"></i>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="@Url.Action("Index","Customer")">
+                <span class="menu-title">Quản Lý Khách Hàng</span>
+                <i class="menu-icon  fa-solid fa-users"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#general-pages" aria-expanded="false" aria-controls="general-pages">
+                <span class="menu-title">Quản Lý Đơn Hàng</span>
+                <i class="menu-arrow"></i>
+                <i class="mdi mdi-table-large menu-icon"></i>
+
+            </a>
+            <div class="collapse" id="general-pages">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href="@Url.Action("Index","Billorder")"> Đang Chờ Xử Lý </a></li>
+                    <li class="nav-item"> <a class="nav-link" href="@Url.Action("Approved","Billorder")"> Đã Duyệt  </a></li>
+                    <li class="nav-item"> <a class="nav-link" href="@Url.Action("Transport","Billorder")"> Đang Giao Hàng </a></li>
+                    <li class="nav-item"> <a class="nav-link" href="@Url.Action("Complete","Billorder")"> Đã Hoàn Thành </a></li>
+                    <li class="nav-item"> <a class="nav-link" href="@Url.Action("Failorder","Billorder")"> Đơn Hàng Hủy </a></li>
+
+                </ul>
+            </div>
+        </li>
+        @*       <li class="nav-item">
+        <a class="nav-link" href="@Url.Action("Index","Order")">
+        <span class="menu-title">Quản Lý Hóa Đơn</span>
+        <i class="mdi mdi-table-large menu-icon"></i>
+        </a>
+        </li> *@
+        <li class="nav-item">
+            <a class="nav-link" href="@Url.Action("Index","Inventory")">
+                <span class="menu-title">Quản Lý Kho</span>
+                <i class="fa-solid fa-warehouse menu-icon"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Url.Action("Index","ChatChit")">
+                <span class="menu-title">Chat Với Khách Hàng</span>
+                <i class="fa-solid fa-right-from-bracket menu-icon"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Logout">
+                <span class="menu-title">Đăng Xuất</span>
+                <i class="fa-solid fa-right-from-bracket menu-icon"></i>
+            </a>
+        </li>
+    </ul>
+</nav>

@@ -22,7 +22,7 @@
         </div>
         <div class="row">
             <div class="col-md-8 form-group">
-                </div>
+            </div>
             <div class="col-md-4 form-group">
                 <label for="selectedYear" class="fs-6 text-capitalize">Chọn Năm:</label>
                 <select class="form-control" id="selectedYear" name="selectedYear" onchange="updateChart()">
@@ -86,8 +86,9 @@
             </div>
         </footer>
     </div>
-    @section scripts {
+    @section Scripts {
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
         <script>
             function updateChart() {
                 var selectedYear = document.getElementById('selectedYear').value;
@@ -118,6 +119,27 @@
                     }
                 }
             });
+        </script>
+        <script>
+            var connection = new signalR.HubConnectionBuilder().withUrl("/notificationHub").build();
+
+            connection.on("ReceiveOrderNotification", function (orderCode) {
+                // Xử lý đơn hàng mới ở bên admin
+                console.log("Received order notification: " + orderCode);
+                alert(orderCode);
+            });
+
+            connection.start().then(function () {
+                console.log("SignalR connection started.");
+            }).catch(function (err) {
+                console.error(err.toString());
+            });
+
+            $(".create-checkout").click(function () {
+                // Xử lý sự kiện nhấn nút "Mua Hàng"
+                connection.invoke("SendOrderNotification", "order123");
+            });
+
         </script>
     }
 </div>

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using WebsiteBanHang.Models;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using WebsiteBanHang.HubSignalR;
 
 namespace WebsiteBanHang
 {
@@ -33,7 +34,6 @@ namespace WebsiteBanHang
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
 
             });
-
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
@@ -60,7 +60,7 @@ namespace WebsiteBanHang
                 };
             });
 
-         
+
             builder.Services.Configure<RequestLocalizationOptions>(options =>
             {
                 var supportedCultures = new[] { "vi-VN", "en-US" };
@@ -72,6 +72,7 @@ namespace WebsiteBanHang
                 options.RequestCultureProviders.Insert(1, questStringCultureProvider);
                 //Add services to the container.
             });
+            builder.Services.AddSignalR();
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())
@@ -85,9 +86,8 @@ namespace WebsiteBanHang
             app.UseStaticFiles();
             app.UseSession();
             app.UseRouting();
-            app.UseAuthentication(); 
+            app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 // Đặt route của Admin area lên trước với tiền tố "admin"
@@ -113,9 +113,8 @@ namespace WebsiteBanHang
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}"
                 );
-
+                endpoints.MapHub<NotificationHub>("/notificationHub");
             });
-
             app.Run();
         }
     }

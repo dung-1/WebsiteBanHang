@@ -5,6 +5,8 @@ using System.Security.Claims;
 using System.Web.Helpers;
 using WebsiteBanHang.Areas.Admin.Data;
 using WebsiteBanHang.Areas.Admin.Models;
+using WebsiteBanHang.HubSignalR;
+using Microsoft.AspNetCore.SignalR;
 using WebsiteBanHang.Models;
 
 
@@ -18,11 +20,13 @@ namespace WebsiteBanHang.Controllers
 
         private readonly ApplicationDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public CartController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+        private readonly IHubContext<NotificationHub> _hub;
+        public CartController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, IHubContext<NotificationHub> hub)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
             _configuration = configuration;
+            _hub = hub;
         }
 
 
@@ -230,7 +234,7 @@ namespace WebsiteBanHang.Controllers
             }
         }
         [Route("CheckOut")]
-        public IActionResult Checkout()
+        public async Task<IActionResult> Checkout()
         {
             var (loggedInCustomer, cartModel) = GetLoggedInCustomerAndCart();
 
@@ -293,6 +297,9 @@ namespace WebsiteBanHang.Controllers
                     // Clear the cart after the purchase
                     _context.Cart_Item.RemoveRange(cartItems); // Xóa các mục giỏ hàng
                     _context.SaveChanges();
+
+                    //Gửi thông báo tới admin quản trị
+                    await _hub.Clients.All.SendAsync("ReceiveOrderNotification", order.MaHoaDon);
 
                     TempData["CheckoutSuccess"] = "Đặt hàng thành công.";
                 }

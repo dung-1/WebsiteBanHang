@@ -7,6 +7,7 @@
   </PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
 		<PackageReference Include="Chart.js" Version="3.7.1" />
 		<PackageReference Include="CurrieTechnologies.Razor.SweetAlert2" Version="5.5.0" />
 		<PackageReference Include="I18N" Version="2.1.17" />
@@ -29,6 +30,9 @@
 		<PackageReference Include="Microsoft.AspNetCore.Localization" Version="2.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.WebApiCompatShim" Version="2.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="6.0.21" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.1">
@@ -47,7 +51,6 @@
 
 	<ItemGroup>
 	  <Folder Include="Areas\Login\Models\" />
-	  <Folder Include="Dto\" />
 	  <Folder Include="wwwroot\Images\" />
 	</ItemGroup>
 
