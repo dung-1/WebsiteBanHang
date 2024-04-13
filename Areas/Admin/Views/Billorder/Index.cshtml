@@ -22,18 +22,18 @@
             <div class="row grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
-                            <table id="orderTable" class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th> Mã Hóa Đơn</th>
-                                        <th> Ngày Đặt </th>
-                                        <th> Trạng Thái</th>
-                                        <th style=" display: flex; justify-content: center;"> Thao Tác </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
+                        <table id="orderTable" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th> Mã Hóa Đơn</th>
+                                    <th> Ngày Đặt </th>
+                                    <th> Trạng Thái</th>
+                                    <th style=" display: flex; justify-content: center;"> Thao Tác </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
                     </div>
                     <div class="row">
                         <div class="col-lg-12 grid-margin stretch-card">
@@ -77,14 +77,14 @@
                 ajax: {
                     url: '/Admin/Billorder/GetAllOrders',
                     type: 'GET',
-                    dataSrc: "",
+                    dataSrc: ""
                 },
                 columns: [
                     { data: "maHoaDon" }, // Replace with actual data property names
                     {
                         data: "ngayBan",
-                        render: function (data) {
-                            // Assuming data is in ISO format, e.g., "2022-04-13T08:00:00"
+                        render: function (data, type, row) {
+                            // Assuming data is in ISO format (adjust based on your actual format)
                             var date = new Date(data);
                             return date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN');
                         }
@@ -99,13 +99,34 @@
                         }
                     }
                 ],
-                columnDefs: [
-                    { targets: 1, type: 'date-vn' } // This line tells DataTables to use the 'date-vn' type for the second column
-                ],
-                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]], // Entries per page options
-                searching: true // Enable searching
+                // Optional functionalities (uncomment if needed)
+                responsive: true, // Enables responsive behavior
+                lengthChange: true, // Disables changing number of items per page
+                autoWidth: true, // Disables automatic column width adjustment
+                buttons: ["copy", "csv", "excel", "pdf", "print"], // Adds data export buttons
+                language: {
+                    // Vietnamese localization (adjust if needed)
+                    "sProcessing": "Đang xử lý...",
+                    "sLengthMenu": "Xem _MENU_ mục",
+                    "sZeroRecords": "Không tìm thấy dòng nào phù hợp",
+                    "sInfo": "Đang xem từ _START_ đến _END_ trong tổng số _TOTAL_ mục",
+                    "sInfoEmpty": "Đang xem 0 đến 0 trong tổng số 0 mục",
+                    "sInfoFiltered": "(được lọc từ _MAX_ mục)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Tìm kiếm:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "Đầu",
+                        "sPrevious": "Trước",
+                        "sNext": "Tiếp",
+                        "sLast": "Cuối"
+                    }
+                }, 
+                // Disables default sorting (uncomment if needed)
+                aaSorting: []
             });
         }
+
     </script>
 
 

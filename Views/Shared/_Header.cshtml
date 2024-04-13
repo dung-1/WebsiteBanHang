@@ -1,0 +1,70 @@
+﻿@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Options
+@using System.Security.Claims
+@inject LanguageService language
+<header class="section-header">
+    <section class="header-main border-bottom">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-3 py-3 hvr-shrink">
+                    <a class="text-body" asp-controller="Home" asp-action="Index">
+                        <h3 class="text-primary fw-bold text-uppercase"> vifiretek <span class="fs-3 text-danger">.VN</span> </h3>
+                    </a>
+                </div> <!-- col.// -->
+                <div class="col-lg-4 col-xl-5">
+                    <form asp-controller="Home" asp-action="Index">
+                        <div class="input-group w-100">
+                            <input type="text" class="form-control" placeholder="Nhập từ khóa cần tìm ..." name="searchName" id="searchName" value="@ViewBag.SearchName">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div> <!-- col.// -->
+                <div class="col-lg-5 col-xl-4">
+                    <ul class="nav col-12 col-lg-auto my-2 my-lg-0 justify-content-center justify-content-lg-end text-small">
+                        <li>
+                            <a href="javascript:void(0);" class="nav-link text-body position-relative checkLoginAndNavigateToAccout">
+                                <i class="bi bi-person d-block text-center fs-3"></i>
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    @string.Join(", ", User.Claims.Where(c => c.Type == ClaimTypes.Email).Select(c => c.Value))
+                                }
+                                else
+                                {
+                                    @language.GetKey("Accout")
+                                }
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);" class="nav-link text-body position-relative checkLoginAndNavigateToBill">
+                                <i class="bi bi-list-check d-block text-center fs-3"></i>
+                                @language.GetKey("Bill")
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);" class="nav-link text-body position-relative checkLoginAndNavigateToCart">
+                                <i class="bi bi-cart d-block text-center fs-3" style="margin-right:auto;"></i>
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    @language.GetKey("Cart")
+                                    <span class="position-absolute top-0  badge rounded-pill bg-danger" style="margin-left: -10px;" id="cartItemCount">0</span>
+                                }
+                                else
+
+                                {
+                                    @language.GetKey("Cart")
+                                    <span class="position-absolute top-0  badge rounded-pill bg-danger" style="margin-left: -10px;" id="cartItemCount">0</span>
+
+                                }
+                            </a>
+                        </li>
+
+                    </ul>
+                </div> <!-- col.// -->
+            </div> <!-- row.// -->
+        </div> <!-- container.// -->
+    </section> <!-- header-main.// -->
+</header> <!-- section-header.// -->

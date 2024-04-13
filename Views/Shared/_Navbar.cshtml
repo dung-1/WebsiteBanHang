@@ -1,0 +1,44 @@
+﻿<nav class="navbar navbar-main navbar-expand-lg navbar-light border-bottom">
+    <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <strong><i class="bi bi-list"></i> Danh mục sản phẩm</strong>
+                    </a>
+
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown" id="categoryDropdown">
+                        <li><a class="dropdown-item" href="#">Tất cả danh mục</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-item nav-link me-2"><i class="bi bi-laptop"></i> LAPTOP MỚI</a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-item nav-link me-2"><i class="bi bi-fire"></i> KHUYẾN MÃI</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-item nav-link me-2"><i class="bi bi-cash-coin"></i> TRẢ GÓP</a>
+                </li>
+            </ul>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <!-- Hiển thị nút đăng xuất -->
+                <a class="btn btn-danger" asp-controller="Home" asp-action="Logout" role="button"><i class="fa-solid fa-left-long"></i> Đăng xuất</a>
+            }
+            else
+            {
+                <!-- Hiển thị nút đăng ký và đăng nhập -->
+                <a class=" me-2 text-white " asp-area="Login" asp-controller="Account" asp-action="Index" role="button"> <i class="fa-solid fa-user-plus"></i> Đăng ký</a>
+                <a class=" text-white" style="margin-left:15px" asp-area="Login" asp-controller="Account" asp-action="Login" role="button"><i class="fa-solid fa-right-to-bracket"></i> Đăng nhập</a>
+            }
+
+        </div>
+    </div> <!-- container.// -->
+</nav> <!-- navbar-main.// -->
