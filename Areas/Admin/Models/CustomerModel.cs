@@ -2,25 +2,14 @@
 
 namespace WebsiteBanHang.Areas.Admin.Models
 {
-    public class CustomerModel
+    public class CustomerModel :User
     {
-        [Key]
-        public int Id { get; set; }
-
-        [Required]
-        [StringLength(10)]
-        public string? MaNguoiDung { get; set; }
-
-        [StringLength(100)]
-        public string? Email { get; set; }
-
-        [StringLength(32)]
-        public string? MatKhau { get; set; }
-        public DateTime NgayTao { get; set; }
         public ICollection<CustomerRoleModel> CustomerRole { get; } = new List<CustomerRoleModel>(); // Collection navigation containing dependents
         public ICollection<OrdersModel> Order { get; } = new List<OrdersModel>(); // Collection navigation containing dependents
         public Customer_Details? CustomerDetail { get; set; } = new Customer_Details(); // Khởi tạo giá trị mặc định
         public ICollection<CartModel> Carts { get; } = new List<CartModel>();
+        public int? ChatConnectionId { get; set; } // Foreign key for ChatConnection
+        public ChatConnection? ChatConnection { get; set; }
 
     }
 }

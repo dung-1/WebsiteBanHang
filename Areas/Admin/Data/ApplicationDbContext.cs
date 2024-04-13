@@ -29,6 +29,9 @@ namespace WebsiteBanHang.Areas.Admin.Data
         public DbSet<PermissionsModel> Permissions { get; set; }
         public DbSet<Cart_Item> Cart_Item { get; set; }
         public DbSet<CartModel> CartModel { get; set; }
+        public DbSet<ChatConnection> ChatConnection { get; set; }
+        public DbSet<ChatMessage> ChatMessage { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -40,9 +43,9 @@ namespace WebsiteBanHang.Areas.Admin.Data
                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<CartModel>()
-      .HasMany(c => c.CartItems)
-      .WithOne(ci => ci.Cart)
-      .OnDelete(DeleteBehavior.Cascade);
+                  .HasMany(c => c.CartItems)
+                  .WithOne(ci => ci.Cart)
+                  .OnDelete(DeleteBehavior.Cascade);
 
 
             modelBuilder.Entity<ProductModel>()
@@ -172,6 +175,28 @@ namespace WebsiteBanHang.Areas.Admin.Data
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<ChatConnection>()
+              .HasOne(cc => cc.User) // Kết nối tới User
+              .WithMany() // Một User có thể có nhiều kết nối chat
+              .HasForeignKey(cc => cc.UserId) // Khóa ngoại của User trong ChatConnection
+              .IsRequired()
+              .OnDelete(DeleteBehavior.Restrict);
+
+            // Cấu hình mối quan hệ cho ChatMessage
+            modelBuilder.Entity<ChatMessage>()
+                .HasOne(cm => cm.FromConnection) // Kết nối tới ChatConnection của người gửi
+                .WithMany() // Một kết nối chat có thể có nhiều tin nhắn gửi đi
+                .HasForeignKey(cm => cm.ConnectionIdFrom) // Khóa ngoại của kết nối chat trong ChatMessage
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ChatMessage>()
+                .HasOne(cm => cm.ToConnection) // Kết nối tới ChatConnection của người nhận
+                .WithMany() // Một kết nối chat có thể có nhiều tin nhắn nhận được
+                .HasForeignKey(cm => cm.ConnectionIdTo) // Khóa ngoại của kết nối chat trong ChatMessage
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<UserRoleModel>()
                 .HasKey(ur => new { ur.User_ID, ur.Role_ID });
 
@@ -197,6 +222,8 @@ namespace WebsiteBanHang.Areas.Admin.Data
             modelBuilder.Entity<ProductModel>()
                 .Property(p => p.GiaGiam)
                 .HasColumnType("decimal(18,2)");
+            base.OnModelCreating(modelBuilder);
+
         }
     }
 }

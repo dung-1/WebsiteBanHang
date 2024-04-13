@@ -1,4 +1,4 @@
-let audio1 = new Audio(
+    let audio1 = new Audio(
   "https://s3-us-west-2.amazonaws.com/s.cdpn.io/242518/clickUp.mp3"
 );
 function chatOpen() {
