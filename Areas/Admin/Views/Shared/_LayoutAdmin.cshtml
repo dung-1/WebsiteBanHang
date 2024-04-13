@@ -9,13 +9,10 @@
     <link href="~/layoutadmin/assets/vendors/mdi/css/materialdesignicons.min.css" rel="stylesheet" />
     <link href="~/layoutadmin/assets/vendors/css/vendor.bundle.base.css" rel="stylesheet" />
     <link href="~/layoutadmin/assets/stylesheet.css" rel="stylesheet" />
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
-    <!-- endinject -->
     <!-- Layout styles -->
     <link href="~/layoutadmin/assets/css/style.css" rel="stylesheet" />
+    <link href="~/lib/datatables.net/datatables.bootstrap4.css" rel="stylesheet" />
+    <link href="~/lib/datatables.net/datatables.bootstrap4.min.css" rel="stylesheet" />
     <!-- End layout styles -->
     <link rel="shortcut icon" href="../../LayoutAdmin/assets/images/favicon.ico" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.9.0/sweetalert2.all.js" integrity="sha512-Gj7qCEK1iGn8FZv0PG0cT7jCxOASayniKKK8cF/S5/1C65S4aXCUgvnBBsUm94g/jyeBYkDcLMTtTUYHGVC+Pg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -70,6 +67,11 @@
     <script src="~/layoutadmin/assets/js/javascript.js"></script>
     <script src="~/lib/signalr.js/jquery.signalr.js"></script>
     <script src="~/lib/microsoft-signalr/signalr.js"></script>
+    <script src="~/layoutadmin/assets/js/notification-oders.js" asp-append-version="true"></script>
+    <script src="~/lib/datatables.net/jquery.datatables.js"></script>
+    <script src="~/lib/datatables.net/jquery.datatables.min.js"></script>
+    <script src="~/lib/datatables.net/datatables.bootstrap4.js"></script>
+    <script src="~/lib/datatables.net/datatables.bootstrap4.min.js"></script>
     <!-- End custom js for this page -->
     @await RenderSectionAsync("Scripts", required: false)
 

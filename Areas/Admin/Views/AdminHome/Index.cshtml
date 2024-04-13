@@ -120,26 +120,5 @@
                 }
             });
         </script>
-        <script>
-            var connection = new signalR.HubConnectionBuilder().withUrl("/notificationHub").build();
-
-            connection.on("ReceiveOrderNotification", function (orderCode) {
-                // Xử lý đơn hàng mới ở bên admin
-                console.log("Received order notification: " + orderCode);
-                alert(orderCode);
-            });
-
-            connection.start().then(function () {
-                console.log("SignalR connection started.");
-            }).catch(function (err) {
-                console.error(err.toString());
-            });
-
-            $(".create-checkout").click(function () {
-                // Xử lý sự kiện nhấn nút "Mua Hàng"
-                connection.invoke("SendOrderNotification", "order123");
-            });
-
-        </script>
     }
 </div>

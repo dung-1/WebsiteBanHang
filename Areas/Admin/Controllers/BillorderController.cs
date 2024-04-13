@@ -32,12 +32,12 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             _configuration = configuration;
         }
 
-        private IPagedList<OrderDto> GetOrdersByStatus(string status, int? page, string searchName)
+        private IPagedList<OrderDto> GetOrdersByStatus(string status)
         {
             try
             {
-                var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
-                int pageSize = 10; // Số mục trên mỗi trang
+                //var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
+                //int pageSize = 10; // Số mục trên mỗi trang
 
                 // Lấy danh sách đơn hàng kèm thông tin người dùng tương ứng
                 var productsQuery = from order in _context.Order
@@ -52,7 +52,8 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 var sortedProducts = productsQuery.ToList();
 
                 // Lưu trữ giá trị tìm kiếm để hiển thị lại trên giao diện người dùng
-                ViewBag.SearchName = searchName ?? ""; // Nếu searchName là null, gán giá trị mặc định
+                //ViewBag.SearchName = searchName ?? ""; 
+                // Nếu searchName là null, gán giá trị mặc định
 
                 // Chuyển đổi danh sách sang đối tượng PagedList
                 IPagedList<OrderDto> pagedCategories = sortedProducts.Select(e => new OrderDto
@@ -62,7 +63,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                     NgayBan = e.Order.ngayBan,
                     LoaiHoaDon = e.Order.LoaiHoaDon,
                     TrangThai = e.Order.trangThai,
-                }).ToPagedList(pageNumber, pageSize);
+                }).ToPagedList();
 
                 return pagedCategories;
             }
@@ -74,31 +75,55 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             }
         }
 
-        public IActionResult Index(int? page, string searchName)
+
+        public ActionResult Index(int? page, string searchName)
         {
-            var pagedCategories = GetOrdersByStatus("Đang xử lý", page, searchName);
-            return View(pagedCategories);
+            return View();
         }
+        public JsonResult GetAllOrders(int? page, string searchName)
+        {
+            try
+            {
+                var pagedOrders = GetOrdersByStatus("Đang xử lý"); // Pass null for page
+                if (pagedOrders != null)
+                {
+                    return Json(pagedOrders);
+                }
+                else
+                {
+                    // Trả về lỗi 500 (Internal Server Error) nếu pagedOrders là null
+                    Response.StatusCode = 500;
+                    return Json(new { error = "Error retrieving orders" });
+                }
+            }
+            catch (Exception ex)
+            {
+                // Xử lý các exception khác nếu cần
+                Response.StatusCode = 500;
+                return Json(new { error = "Error retrieving orders" });
+            }
+        }
+
 
         public IActionResult Approved(int? page, string searchName)
         {
-            var pagedCategories = GetOrdersByStatus("Đã duyệt", page, searchName);
+            var pagedCategories = GetOrdersByStatus("Đã duyệt");
             return View(pagedCategories);
         }
 
         public IActionResult Transport(int? page, string searchName)
         {
-            var pagedCategories = GetOrdersByStatus("Đang giao hàng", page, searchName);
+            var pagedCategories = GetOrdersByStatus("Đang giao hàng");
             return View(pagedCategories);
         }
         public IActionResult Complete(int? page, string searchName)
         {
-            var pagedCategories = GetOrdersByStatus("Hoàn thành", page, searchName);
+            var pagedCategories = GetOrdersByStatus("Hoàn thành");
             return View(pagedCategories);
         }
         public IActionResult Failorder(int? page, string searchName)
         {
-            var pagedCategories = GetOrdersByStatus("Đã hủy", page, searchName);
+            var pagedCategories = GetOrdersByStatus("Đã hủy");
             return View(pagedCategories);
         }
         [HttpGet]

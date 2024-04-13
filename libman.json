@@ -11,8 +11,13 @@
       "destination": "wwwroot/lib/microsoft-signalr/"
     },
     {
-      "library": "Chart.js@4.4.1",
-      "destination": "wwwroot/Chart.js/"
+      "provider": "cdnjs",
+      "library": "datatables.net@2.1.1",
+      "destination": "wwwroot/lib/datatables.net/"
+    },
+    {
+      "library": "datatables.net-bs4@3.2.2",
+      "destination": "wwwroot/lib/datatables.net/"
     }
   ]
 }

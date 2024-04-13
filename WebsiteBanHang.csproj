@@ -6,6 +6,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Remove="bundleconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="bundleconfig.json" />
+  </ItemGroup>
+
 	<ItemGroup>
 		<PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
 		<PackageReference Include="Chart.js" Version="3.7.1" />
@@ -43,6 +51,7 @@
 		<PackageReference Include="Microsoft.Extensions.Identity.Core" Version="6.0.23" />
 		<PackageReference Include="Microsoft.Extensions.Localization" Version="6.0.21" />
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.16" />
+		<PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.175" />
 		<PackageReference Include="MimeKit" Version="4.2.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="X.PagedList" Version="8.4.7" />
@@ -52,6 +61,10 @@
 	<ItemGroup>
 	  <Folder Include="Areas\Login\Models\" />
 	  <Folder Include="wwwroot\Images\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="bundleconfig.json" />
 	</ItemGroup>
 
 	<ItemGroup>
