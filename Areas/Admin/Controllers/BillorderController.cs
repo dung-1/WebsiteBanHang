@@ -82,9 +82,10 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         }
 
 
-        public ActionResult Index()
+        public ActionResult Index(int? page, string searchName)
         {
-            return View();
+            var pagedCategories = GetOrdersByStatus("Đang xử lý", page, searchName);
+            return View(pagedCategories);
         }
         public JsonResult GetAllOrders(int? page, string searchName)
         {
