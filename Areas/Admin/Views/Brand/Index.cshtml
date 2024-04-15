@@ -2,123 +2,113 @@
 @using X.PagedList.Web.Common;
 @{
     ViewData["Title"] = "View";
-    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutLteAdmin.cshtml";
 }
 @model X.PagedList.IPagedList<WebsiteBanHang.Areas.Admin.Models.BrandModel>
 
-<div class="main-panel">
-    <div class="content-wrapper">
-        <div class="page-header">
-            <h3 class="page-title fs-3"> Quản Lý Hãng</h3>
-        </div>
-        <div class="row">
-            <div class="row grid-margin ">
-                <div class="col-lg-6">
-                    <button type="button" class="btn btn-info create-brand">
-                        <i class="fa-solid fa-plus"></i> Thêm hãng sản phẩm
-                    </button>
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Quản Lý Hãng</h1>
                 </div>
-                <div class="col-lg-6">
-                    <form class="d-flex " role="search" asp-area="Admin" asp-controller="Brand" asp-action="Index">
-                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="searchName" id="searchName" value="@ViewBag.SearchName">
-                        <button class="btn btn-success" type="submit">Search</button>
-                    </form>
-                </div>
-
-                <div class="modal fade" id="Create_Brand" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                        </div>
-                    </div>
-                </div>
-                <div class="modal fade" id="edit-brand-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                        </div>
-                    </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang Chủ</a></li>
+                        <li class="breadcrumb-item active">Quản Lý Hãng</li>
+                    </ol>
                 </div>
             </div>
+        </div><!-- /.container-fluid -->
+    </section>
 
-            <div class="row grid-margin stretch-card">
-                <div class="card">
-                    <div class="card-body">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th> Mã Hãng Sản Phẩm </th>
-                                    <th> Tên Hãng </th>
-                                    <th> Nơi Sản Xuất</th>
-                                    <th> Ngày Sản Xuất </th>
-                                    <th> Chỉnh Sửa </th>
-                                    @if (User.IsInRole("Admin"))
-                                    {
-                                        <th> Xóa </th>
-                                    }
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model)
-                                {
-                                    <tr>
-                                        <td width="20%">
-                                            @item.MaHang
-                                        </td>
-                                        <td width="20%">
-                                            @item.TenHang
-
-                                        </td>
-                                        <td width="20%">
-                                            @item.XuatXu
-
-                                        </td>
-                                        <td width="20%">
-                                            @item.NgaySanXuat.ToString("yyyy-MM-dd")
-                                        </td>
-
-
-                                        <td>
-                                            <a data-id="@item.Id" class="btn btn-sm btn-warning edit-brand"><i class="bi bi-pencil-square"></i><i class="fa-solid fa-pen-to-square"></i> Chỉnh Sửa</a>&nbsp;
-                                        </td>
-                                        @if (User.IsInRole("Admin"))
-                                        {
-                                            <td width="10%">
-
-                                                <a onclick="deleteBrand(@item.Id)" class="btn btn-sm btn-danger">
-                                                    <i class="bi bi-trash-fill"></i><i class="fa-solid fa-trash-can"></i> Xóa
-                                                </a>
-                                            </td>
-                                        }
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-12 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body d-flex justify-content-end">
-                                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchName = ViewBag.SearchName }), new PagedListRenderOptions
-                                    {
-                                    LiElementClasses = new string[] { "page-item" },
-                                    PageClasses = new string[] { "page-link" },
-                                    Display = PagedListDisplayMode.IfNeeded,
-                                    MaximumPageNumbersToDisplay = 3 // Số trang bạn muốn hiển thị
-                                    })
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <button type="button" class="btn btn-info create-brand">
+                                <i class="fa-solid fa-plus"></i>   Thêm hãng sản phẩm
+                            </button>
+                            <div class="modal fade" id="Create_Brand" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal fade" id="edit-brand-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <table id="example1" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th> Mã Hãng Sản Phẩm </th>
+                                        <th> Tên Hãng </th>
+                                        <th> Nơi Sản Xuất</th>
+                                        <th> Ngày Sản Xuất </th>
+                                        <th> Chỉnh Sửa </th>
+                                        @if (User.IsInRole("Admin"))
+                                        {
+                                            <th> Xóa </th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td width="20%">
+                                                @item.MaHang
+                                            </td>
+                                            <td width="20%">
+                                                @item.TenHang
+
+                                            </td>
+                                            <td width="20%">
+                                                @item.XuatXu
+
+                                            </td>
+                                            <td width="20%">
+                                                @item.NgaySanXuat.ToString("yyyy-MM-dd")
+                                            </td>
+
+
+                                            <td>
+                                                <a data-id="@item.Id" class="btn btn-sm btn-warning edit-brand"><i class="bi bi-pencil-square"></i><i class="fa-solid fa-pen-to-square"></i> Sửa</a>&nbsp;
+                                            </td>
+                                            @if (User.IsInRole("Admin"))
+                                            {
+                                                <td width="10%">
+
+                                                    <a onclick="deleteBrand(@item.Id)" class="btn btn-sm btn-danger">
+                                                        <i class="bi bi-trash-fill"></i><i class="fa-solid fa-trash-can"></i> Xóa
+                                                    </a>
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.card-body -->
                     </div>
+                    <!-- /.card -->
                 </div>
+                <!-- /.col -->
             </div>
+            <!-- /.row -->
         </div>
-    </div>
-    <!-- content-wrapper ends -->
-    <!-- partial:../../partials/_footer.html -->
-    <footer class="footer">
-        <div class="container-fluid d-flex justify-content-between">
-            <span class="text-muted d-block text-center text-sm-start d-sm-inline-block">Copyright © bootstrapdash.com @DateTime.Now.Year</span>
-            <span class="float-none float-sm-end mt-1 mt-sm-0 text-end"> Free <a href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin template</a> from Bootstrapdash.com</span>
-        </div>
-    </footer>
-    <!-- partial -->
+        <!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
 </div>

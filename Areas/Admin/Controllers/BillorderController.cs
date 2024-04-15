@@ -12,6 +12,8 @@ using WebsiteBanHang.Areas.Admin.Data;
 using WebsiteBanHang.Areas.Admin.Models;
 using X.PagedList;
 using System.Security.Claims;
+using Microsoft.AspNetCore.SignalR;
+using WebsiteBanHang.HubSignalR;
 
 namespace WebsiteBanHang.Areas.Admin.Controllers
 {
@@ -25,19 +27,23 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         private readonly ILogger<BillorderController> _logger;
 
         private readonly ApplicationDbContext _context;
-        public BillorderController(ApplicationDbContext context, ILogger<BillorderController> logger, IConfiguration configuration)
+        private readonly IHubContext<NotificationHub> _hub;
+
+        public BillorderController(ApplicationDbContext context, ILogger<BillorderController> logger, IConfiguration configuration, IHubContext<NotificationHub> hub)
         {
             _context = context;
             _logger = logger;
             _configuration = configuration;
+            _hub = hub;
+
         }
 
-        private IPagedList<OrderDto> GetOrdersByStatus(string status)
+        private IPagedList<OrderDto> GetOrdersByStatus(string status, int? page, string searchName)
         {
             try
             {
-                //var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
-                //int pageSize = 10; // Số mục trên mỗi trang
+                var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
+                int pageSize = 10; // Số mục trên mỗi trang
 
                 // Lấy danh sách đơn hàng kèm thông tin người dùng tương ứng
                 var productsQuery = from order in _context.Order
@@ -52,7 +58,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 var sortedProducts = productsQuery.ToList();
 
                 // Lưu trữ giá trị tìm kiếm để hiển thị lại trên giao diện người dùng
-                //ViewBag.SearchName = searchName ?? ""; 
+                ViewBag.SearchName = searchName ?? "";
                 // Nếu searchName là null, gán giá trị mặc định
 
                 // Chuyển đổi danh sách sang đối tượng PagedList
@@ -63,7 +69,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                     NgayBan = e.Order.ngayBan,
                     LoaiHoaDon = e.Order.LoaiHoaDon,
                     TrangThai = e.Order.trangThai,
-                }).ToPagedList();
+                }).ToPagedList(pageNumber, pageSize);
 
                 return pagedCategories;
             }
@@ -78,13 +84,14 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
         public ActionResult Index(int? page, string searchName)
         {
-            return View();
+            var pagedCategories = GetOrdersByStatus("Đang xử lý", page, searchName);
+            return View(pagedCategories);
         }
         public JsonResult GetAllOrders(int? page, string searchName)
         {
             try
             {
-                var pagedOrders = GetOrdersByStatus("Đang xử lý"); // Pass null for page
+                var pagedOrders = GetOrdersByStatus("Đang xử lý", page, searchName); // Pass null for page
                 if (pagedOrders != null)
                 {
                     return Json(pagedOrders);
@@ -107,23 +114,23 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
         public IActionResult Approved(int? page, string searchName)
         {
-            var pagedCategories = GetOrdersByStatus("Đã duyệt");
+            var pagedCategories = GetOrdersByStatus("Đã duyệt", page, searchName);
             return View(pagedCategories);
         }
 
         public IActionResult Transport(int? page, string searchName)
         {
-            var pagedCategories = GetOrdersByStatus("Đang giao hàng");
+            var pagedCategories = GetOrdersByStatus("Đang giao hàng", page, searchName);
             return View(pagedCategories);
         }
         public IActionResult Complete(int? page, string searchName)
         {
-            var pagedCategories = GetOrdersByStatus("Hoàn thành");
+            var pagedCategories = GetOrdersByStatus("Hoàn thành", page, searchName);
             return View(pagedCategories);
         }
         public IActionResult Failorder(int? page, string searchName)
         {
-            var pagedCategories = GetOrdersByStatus("Đã hủy");
+            var pagedCategories = GetOrdersByStatus("Đã hủy", page, searchName);
             return View(pagedCategories);
         }
         [HttpGet]
@@ -242,6 +249,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                     if (!string.IsNullOrEmpty(customerEmail))
                     {
                         SendInvoiceByEmail(customerEmail, order);
+                        await _hub.Clients.All.SendAsync("ReceiveOrderNotification", order.MaHoaDon);
                     }
                     else
                     {

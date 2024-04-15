@@ -4,7 +4,9 @@
 {
     <div class="modal-header">
         <h1 class="modal-title fs-5" id="exampleModalLabel">Hóa Đơn : @item.MaHoaDon</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
     <div class="modal-body">
 
@@ -44,7 +46,8 @@
                 <table class="cart-table table table-borderless">
                     <thead class="text-muted">
                         <tr class="small text-uppercase">
-                            <th scope="col" style="min-width: 280px;">Sản phẩm</th>
+                            <th scope="col" style="min-width: 150px;">Sản phẩm</th>
+                            <th scope="col" style="min-width: 280px;">Ảnh</th>
                             <th scope="col" style="min-width: 150px;">Số lượng</th>
                             <th scope="col" style="min-width: 150px;">Giá</th>
                         </tr>
@@ -54,11 +57,13 @@
                         {
                             <tr>
                                 <td>
+                                    <figcaption class="info">
+                                        <a href="#" class="title">@chiTiet.TenSanPham</a>
+                                    </figcaption>
+                                </td>
+                                <td>
                                     <figure class="itemside">
-                                        <div class="float-start me-3"><img src="~/@chiTiet.img"></div>
-                                        <figcaption class="info">
-                                            <a href="#" class="title">@chiTiet.TenSanPham</a>
-                                        </figcaption>
+                                        <div class="float-start me-3"><img style="width:100px;height:100px;" src="~/@chiTiet.img"></div>
                                     </figure>
                                 </td>
                                 <td>@chiTiet.SoLuong</td>

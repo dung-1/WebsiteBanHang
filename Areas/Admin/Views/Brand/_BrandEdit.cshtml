@@ -1,7 +1,9 @@
 ﻿@model WebsiteBanHang.Areas.Admin.Models.BrandModel
 <div class="modal-header">
     <h1 class="modal-title fs-5" id="exampleModalLabel">Sửa Hãng sản phẩm</h1>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
 </div>
 <div class="modal-body">
     <form  id="EditFormBrand">
@@ -29,7 +31,7 @@
             <span asp-validation-for="NgaySanXuat" class="text-danger"></span>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
             <button type="button" class="btn btn-primary" onclick="validateEditBrand()">Lưu Thông Tin</button>
         </div>
     </form>

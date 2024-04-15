@@ -3,110 +3,107 @@
 @model X.PagedList.IPagedList<WebsiteBanHang.Areas.Admin.AdminDTO.OrderDto>
 @{
     ViewData["Title"] = "View";
-    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
-
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutLteAdmin.cshtml";
 }
 
-<div class="main-panel">
-    <div class="content-wrapper">
-        <div class="page-header">
-            <h3 class="page-title fs-3"> Đang Chờ Xử Lý</h3>
-        </div>
-        <div class="modal fade" id="View_Order" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Xử Lý Đơn Hàng</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang Chủ</a></li>
+                        <li class="breadcrumb-item active">Xử Lý Đơn Hàng</li>
+                    </ol>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="row grid-margin stretch-card">
-                <div class="card">
-                    <div class="card-body">
-                            <table id="orderTable" class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th> Mã Hóa Đơn</th>
-                                        <th> Ngày Đặt </th>
-                                        <th> Trạng Thái</th>
-                                        <th style=" display: flex; justify-content: center;"> Thao Tác </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-12 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body d-flex justify-content-end">
-                                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchName = ViewBag.SearchName }), new PagedListRenderOptions
-                               {
-                                   LiElementClasses = new string[] { "page-item" },
-                                   PageClasses = new string[] { "page-link" },
-                                   Display = PagedListDisplayMode.IfNeeded,
-                                   MaximumPageNumbersToDisplay = 3 // Số trang bạn muốn hiển thị
-                               })
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <div class="modal fade" id="View_Order" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
             </div>
         </div>
     </div>
-    <!-- content-wrapper ends -->
-    <!-- partial:../../partials/_footer.html -->
-    <footer class="footer">
-        <div class="container-fluid d-flex justify-content-between">
-            <span class="text-muted d-block text-center text-sm-start d-sm-inline-block">Copyright © bootstrapdash.com @DateTime.Now.Year</span>
-            <span class="float-none float-sm-end mt-1 mt-sm-0 text-end"> Free <a href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin template</a> from Bootstrapdash.com</span>
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            @if (Model.Count > 0)
+                            {
+                                <table id="example1" class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th> Mã Hóa Đơn</th>
+                                            <th> Ngày Đặt </th>
+                                            <th> Trạng Thái</th>
+                                            <th style=" display: flex; justify-content: center;"> Thao Tác </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @item.MaHoaDon
+                                                </td>
+                                                <td>
+                                                    @item.NgayBan
+                                                </td>
+
+                                                <td>
+                                                    <span class=" badge bg-danger">@item.TrangThai</span>
+                                                </td>
+                                                <td>
+                                                    <a data-id="@item.Id" class="btn btn-sm btn-primary View-Order ">
+                                                        <i class="fa-solid fa-eye"></i> Xem chi tiết
+                                                    </a>
+                                                    <a asp-area="Admin" asp-controller="Billorder" asp-action="ApproveOrder" asp-route-Id="@item.Id" class="btn btn-sm btn-warning ">
+                                                        <i class="fa-solid fa-pen-to-square"></i> Duyệt Đơn
+                                                    </a>
+                                                    <a asp-area="Admin" asp-controller="Billorder" asp-action="CancelOrder" asp-route-Id="@item.Id" class="btn btn-sm btn-danger ">
+                                                        <i class="fa-solid fa-trash-can"></i> Hủy Đơn
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                <div class="m-b-16 m-b-sm-12 align-items-center " style="display: grid;
+                                                        justify-content: center;
+                                                        justify-items: center;
+                                                        align-items: center;
+                                                        height:auto;
+                                                        background:#fff;
+                                                        padding: 28px 0 16px;
+                                                        background: #fff;">
+                                    <img src="~/img/null_order.png" width="100px" />
+                                    <p class="css-8uyn92 text-red-5 px-16 md:px-0 text-danger fs-5">Chưa có đơn hàng </p>
+                                </div>
+                            }
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
         </div>
-    </footer>
-    <!-- partial -->
+        <!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
 </div>
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            loadData();
-        });
-
-        function loadData() {
-            $('#orderTable').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: '/Admin/Billorder/GetAllOrders',
-                    type: 'GET',
-                    dataSrc: "",
-                },
-                columns: [
-                    { data: "maHoaDon" }, // Replace with actual data property names
-                    {
-                        data: "ngayBan",
-                        render: function (data) {
-                            // Assuming data is in ISO format, e.g., "2022-04-13T08:00:00"
-                            var date = new Date(data);
-                            return date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN');
-                        }
-                    },
-                    { data: "trangThai" },
-                    {
-                        data: null,
-                        render: function (data, type, row) {
-                            return '<a data-id="' + row.id + '" class="btn btn-sm btn-primary View-Order"><i class="fa-solid fa-eye"></i> Details</a> ' +
-                                '<a href="/Admin/Billorder/ApproveOrder/' + row.id + '" class="btn btn-sm btn-warning"><i class="fa-solid fa-pen-to-square"></i> Approve</a> ' +
-                                '<a href="/Admin/Billorder/CancelOrder/' + row.id + '" class="btn btn-sm btn-danger"><i class="fa-solid fa-trash-can"></i> Cancel</a>';
-                        }
-                    }
-                ],
-                columnDefs: [
-                    { targets: 1, type: 'date-vn' } // This line tells DataTables to use the 'date-vn' type for the second column
-                ],
-                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]], // Entries per page options
-                searching: true // Enable searching
-            });
-        }
-    </script>
-
-
-}

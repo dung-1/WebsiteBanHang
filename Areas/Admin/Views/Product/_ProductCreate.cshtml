@@ -2,7 +2,9 @@
 
 <div class="modal-header">
     <h1 class="modal-title fs-5" id="exampleModalLabel">Thêm Sản Phẩm</h1>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
 </div>
 <div class="modal-body">
     <form  id="createFormProduct" enctype="multipart/form-data">
@@ -52,7 +54,7 @@
             <span asp-validation-for="ThongTinSanPham" class="text-danger"></span>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
             <button type="button" onclick="validateAndSubmitProduct()" class="btn btn-primary">Lưu Thông Tin</button>
         </div>
     </form>
