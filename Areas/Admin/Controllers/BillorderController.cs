@@ -43,7 +43,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             try
             {
                 var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
-                int pageSize = 10; // Số mục trên mỗi trang
+                int pageSize = int.MaxValue; // Số mục trên mỗi trang
 
                 // Lấy danh sách đơn hàng kèm thông tin người dùng tương ứng
                 var productsQuery = from order in _context.Order
@@ -87,29 +87,29 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             var pagedCategories = GetOrdersByStatus("Đang xử lý", page, searchName);
             return View(pagedCategories);
         }
-        public JsonResult GetAllOrders(int? page, string searchName)
-        {
-            try
-            {
-                var pagedOrders = GetOrdersByStatus("Đang xử lý", page, searchName); // Pass null for page
-                if (pagedOrders != null)
-                {
-                    return Json(pagedOrders);
-                }
-                else
-                {
-                    // Trả về lỗi 500 (Internal Server Error) nếu pagedOrders là null
-                    Response.StatusCode = 500;
-                    return Json(new { error = "Error retrieving orders" });
-                }
-            }
-            catch (Exception ex)
-            {
-                // Xử lý các exception khác nếu cần
-                Response.StatusCode = 500;
-                return Json(new { error = "Error retrieving orders" });
-            }
-        }
+        //public JsonResult GetAllOrders(int? page, string searchName)
+        //{
+        //    try
+        //    {
+        //        var pagedOrders = GetOrdersByStatus("Đang xử lý", page, searchName); // Pass null for page
+        //        if (pagedOrders != null)
+        //        {
+        //            return Json(pagedOrders);
+        //        }
+        //        else
+        //        {
+        //            // Trả về lỗi 500 (Internal Server Error) nếu pagedOrders là null
+        //            Response.StatusCode = 500;
+        //            return Json(new { error = "Error retrieving orders" });
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Xử lý các exception khác nếu cần
+        //        Response.StatusCode = 500;
+        //        return Json(new { error = "Error retrieving orders" });
+        //    }
+        //}
 
 
         public IActionResult Approved(int? page, string searchName)

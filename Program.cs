@@ -114,6 +114,7 @@ namespace WebsiteBanHang
                     pattern: "{controller=Home}/{action=Index}/{id?}"
                 );
                 endpoints.MapHub<NotificationHub>("/notificationHub");
+                endpoints.MapHub<NotificationHub>("/chathub");
             });
             app.Run();
         }
