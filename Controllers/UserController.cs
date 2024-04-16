@@ -9,6 +9,7 @@ using WebsiteBanHang.Areas.Admin.AdminDTO;
 using Microsoft.AspNetCore.Authorization;
 using System.Dynamic;
 using Microsoft.CSharp.RuntimeBinder;
+using static WebsiteBanHang.Areas.Admin.AdminDTO.ProductViewDTO;
 namespace WebsiteBanHang.Controllers
 {
     public class UserController : Controller
@@ -77,6 +78,7 @@ namespace WebsiteBanHang.Controllers
             var product = _context.Product
                 .Include(p => p.Brand)
                 .Include(p => p.Category)
+                .Include(p => p.Inventory)
                 .Where(p => p.Id == productid)
                 .FirstOrDefault();
 
@@ -86,16 +88,38 @@ namespace WebsiteBanHang.Controllers
                 return NotFound(); // Hoặc thực hiện xử lý khác theo yêu cầu của bạn.
             }
 
+            // Lấy ra category của sản phẩm chi tiết
+            var categoryId = product.Category.Id;
+
+            // Lấy ra danh sách sản phẩm liên quan có cùng category (loại trừ sản phẩm chi tiết)
+            var relatedProducts = _context.Product
+       .Where(p => p.Category.Id == categoryId && p.Id != productid)
+       .Select(p => new ProductDTO
+       {
+           Id = p.Id,
+           MaSanPham = p.MaSanPham,
+           TenSanPham = p.TenSanPham,
+           GiaBan = p.GiaBan,
+           GiaGiam = p.GiaGiam,
+           GiaNhap = p.GiaNhap,
+           SoLuong = p.Inventory.FirstOrDefault().SoLuong,
+           Image = p.Image
+       })
+       .ToList();
+
             var productView = new ProductViewDTO
             {
                 Id = product.Id,
                 GiaNhap = product.GiaNhap,
+                GiaGiam = product.GiaGiam,
+                GiaBan = product.GiaBan,
                 HangTen = product.Brand.TenHang,
                 LoaiTen = product.Category.TenLoai,
                 Image = product.Image,
                 MaSanPham = product.MaSanPham,
                 TenSanPham = product.TenSanPham,
-                ThongTinSanPham = product.ThongTinSanPham
+                ThongTinSanPham = product.ThongTinSanPham,
+                RelatedProducts = relatedProducts // Truyền danh sách sản phẩm liên quan vào DTO
             };
 
             return View(productView);
