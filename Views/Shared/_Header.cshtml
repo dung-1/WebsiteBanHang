@@ -9,19 +9,43 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-3 py-3 hvr-shrink">
-                    <a class="text-body" asp-controller="Home" asp-action="Index">
-                        <h3 class="text-primary fw-bold text-uppercase"> vifiretek <span class="fs-3 text-danger">.VN</span> </h3>
-                    </a>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a class="text-body" asp-controller="User" asp-action="Index">
+                            <h3 class="text-primary fw-bold text-uppercase"> vifiretek <span class="fs-3 text-danger">.VN</span> </h3>
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="text-body" asp-controller="Home" asp-action="Index">
+                            <h3 class="text-primary fw-bold text-uppercase"> vifiretek <span class="fs-3 text-danger">.VN</span> </h3>
+                        </a>
+                    }
+
                 </div> <!-- col.// -->
                 <div class="col-lg-4 col-xl-5">
-                    <form asp-controller="Home" asp-action="Index">
-                        <div class="input-group w-100">
-                            <input type="text" class="form-control" placeholder="Nhập từ khóa cần tìm ..." name="searchName" id="searchName" value="@ViewBag.SearchName">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-search"></i>
-                            </button>
-                        </div>
-                    </form>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <form asp-controller="Home" asp-action="Index">
+                            <div class="input-group w-100">
+                                <input type="text" class="form-control" placeholder="Nhập từ khóa cần tìm ..." name="searchName" id="searchName" value="@ViewBag.SearchName">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-controller="User" asp-action="Index">
+                            <div class="input-group w-100">
+                                <input type="text" class="form-control" placeholder="Nhập từ khóa cần tìm ..." name="searchName" id="searchName" value="@ViewBag.SearchName">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    }
                 </div> <!-- col.// -->
                 <div class="col-lg-5 col-xl-4">
                     <ul class="nav col-12 col-lg-auto my-2 my-lg-0 justify-content-center justify-content-lg-end text-small">

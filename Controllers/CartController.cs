@@ -153,7 +153,7 @@ namespace WebsiteBanHang.Controllers
                             {
                                 CartId = cart.Id,
                                 ProductId = id,
-                                Quantity = quantity
+                                Quantity = quantity >0 ? quantity : 1,
                             };
                             _context.Cart_Item.Add(cartItem);
                         }

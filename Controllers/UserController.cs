@@ -67,7 +67,6 @@ namespace WebsiteBanHang.Controllers
             return View(pagedProducts);
         }
 
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
@@ -124,7 +123,5 @@ namespace WebsiteBanHang.Controllers
 
             return View(productView);
         }
-
-
     }
 }
