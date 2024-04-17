@@ -93,11 +93,11 @@
             <div class="row">
                 <div class="col-lg-3 col-md-6">
                     <ul class="list-unstyled">
-                        <h6>
+                        <li>
                             <b>
                                 CÔNG TY TNHH TIN HỌC CÔNG NGHỆ AZ VIỆT NAM
                             </b>
-                        </h6>
+                        </li>
                         <li>Địa chỉ: Số 18, ngõ 121, Thái Hà, Đống Đa, Hà Nội</li>
                         <li>Hotline: 0825 233 233</li>
                         <li>Email: hotrolaptopaz@gmail.com</li>
@@ -110,11 +110,11 @@
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <ul class="list-unstyled">
-                        <h6>
+                        <li>
                             <b>
                                 THÔNG TIN CÔNG TY
                             </b>
-                        </h6>
+                        </li>
                         <li>Giới thiệu công ty</li>
                         <li>Tuyển dụng</li>
                         <li>Gửi góp ý, khiếu nại</li>
@@ -127,11 +127,11 @@
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <ul class="list-unstyled">
-                        <h6>
+                        <li>
                             <b>
                                 CHÍNH SÁCH CÔNG TY
                             </b>
-                        </h6>
+                        </li>
                         <li>Chính sách chất lượng</li>
                         <li>Chính sách bảo hành</li>
                         <li>Chính sách đổi trả </li>
@@ -142,11 +142,11 @@
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <ul class="list-unstyled">
-                        <h6>
+                        <li>
                             <b>
                                 HỆ THỐNG CỬA HÀNG LAPTOPAZ
                             </b>
-                        </h6>
+                        </li>
                         <li>Số 18, ngõ 121, Thái Hà, Đống Đa, Hà Nội</li>
                         <li>Bán hàng: Từ 8h30 - 21h30</li>
                         <li>Kỹ thuật: Từ 8h30 - 12h & 13h30 - 17h30</li>
@@ -177,3 +177,77 @@
         </p>
     </div>
 </footer>
+
+<!-- Popup chat window -->
+<!-- chat open -->
+<div class="chat-bar-open" id="chat-open">
+    <button id="chat-open-button"
+            type="button"
+            class="collapsible close"
+            onclick="chatOpen()">
+        <img src="~/img/telegram.png" alt="send messenger image" />
+    </button>
+</div>
+
+<!-- chat close -->
+<div class="chat-bar-close" id="chat-close">
+    <button id="chat-close-button"
+            type="button"
+            class="collapsible close"
+            onclick="chatClose()">
+        <i class="material-icons-outlined"> close </i>
+    </button>
+</div>
+
+<!-- chat-window 1 -->
+<div class="chat-window" id="chat-window1">
+    <div class="hi-there">
+        <p class="p1">Xin chào quý khách !</p>
+        <br />
+        <p class="p2">Xin chào Hãy hỏi chúng tôi bất cứ điều gì, Chia sẻ của bạn<br />Nhận xét.</p>
+    </div>
+    <div class="start-conversation">
+        <h1>
+            Chúng tôi thường trả lời sau vài phút.
+        </h1>
+        <button class="new-conversation"
+                type="button"
+                onclick="openConversation()">
+            <span>Bắt đầu ngay</span><i class="material-icons-outlined"> send </i>
+        </button>
+    </div>
+</div>
+
+<!-- chat chat-window 2 -->
+<div class="chat-window2" id="chat-window2">
+    <div class="message-box" id="messageBox">
+        <div class="hi-there">
+            <p class="p1">Hi There</p>
+            <br />
+            <p class="p2">The team typically replies in few minutes.</p>
+        </div>
+        <div class="first-chat">
+            <p>Is there any offlines versions available for Maxeon Player?</p>
+            <div class="arrow"></div>
+        </div>
+        <div class="second-chat">
+            <div class="circle"></div>
+            <p>Currently we don't have but we will launch soon.</p>
+            <div class="arrow"></div>
+        </div>
+    </div>
+    <div class="input-box">
+        <div class="surveysparrow">
+            <img src="~/img/sparrow favicon.png" />
+            <p>we run on surveysparrow</p>
+        </div>
+        <div class="write-reply">
+            <input class="inputText" type="text" id="textInput" placeholder="Write a reply..." />
+        </div>
+        <div class="send-button">
+            <button type="submit" class="send-message" id="send" onclick="userResponse()">
+                <i class="material-icons-outlined"> send </i>
+            </button>
+        </div>
+    </div>
+</div>

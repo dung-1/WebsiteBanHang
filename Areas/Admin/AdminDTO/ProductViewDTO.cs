@@ -20,7 +20,19 @@
         public bool CheckboxPrice3 { get; set; }
         public bool CheckboxPrice4 { get; set; }
         public bool CheckboxPrice5 { get; set; }
+        public List<ProductDTO> RelatedProducts { get; set; }
 
+        public class ProductDTO
+        {
+            public int Id { get; set; }
+            public string? MaSanPham { get; set; }
+            public string? TenSanPham { get; set; }
+            public int SoLuong { get; set; }
+            public decimal GiaNhap { get; set; }
+            public decimal GiaBan { get; set; }
+            public decimal GiaGiam { get; set; }
+            public string? Image { get; set; }
+        }
         internal ProductViewDTO Select(Func<object, ProductViewDTO> value)
         {
             throw new NotImplementedException();

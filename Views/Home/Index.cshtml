@@ -90,11 +90,11 @@
 
                                 </span>
                             </span>
-                            <a href="#" class="img-wrap text-center">
+                            <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id"  class="img-wrap text-center">
                                 <img class="img-fluid" src="@product.Image">
                             </a>
                             <figcaption class="info-wrap mt-2">
-                                <a href="#" class="title text-capitalize">@product.TenSanPham</a>
+                                <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id"  class="title text-capitalize">@product.TenSanPham</a>
                                 <div class="row">
                                     <div class="col-6 price mt-1 fw-bold text-danger">
                                         @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", giamgia)
@@ -102,7 +102,7 @@
                                     <div class="col-6 price mt-1  " style="padding-top: 5px;font-size: 14px;color:#a29c9cd7;text-decoration: line-through;font-style: normal;">
                                         @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @product.GiaBan)
                                     </div>
-                                    @if (inventoryItem.SoLuong >0)
+                                    @if (inventoryItem.SoLuong > 0)
                                     {
                                         <div class="row">
                                             <div class="col-8 price fw-bold text-danger">
@@ -139,11 +139,11 @@
 
                     <div class="col-lg-3 col-md-6">
                         <div class="card p-3 mb-4 hvr-float">
-                            <a href="#" class="img-wrap text-center">
+                            <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id"  class="img-wrap text-center">
                                 <img class="img-fluid" src="@product.Image">
                             </a>
                             <figcaption class="info-wrap mt-2">
-                                <a href="#" class="title text-capitalize">@product.TenSanPham</a>
+                                <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id"  class="title text-capitalize">@product.TenSanPham</a>
                                 <div class="row">
                                     <div class="col-6 price mt-1 fw-bold text-danger">
                                         @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @product.GiaBan)
@@ -209,82 +209,6 @@
                 </ul>
             </nav>
         </div>
-
-
-        <!-- Popup chat window -->
-        <!-- chat open -->
-        <div class="chat-bar-open" id="chat-open">
-            <button id="chat-open-button"
-                    type="button"
-                    class="collapsible close"
-                    onclick="chatOpen()">
-                <img src="~/img/telegram.png" alt="send messenger image" />
-            </button>
-        </div>
-
-        <!-- chat close -->
-        <div class="chat-bar-close" id="chat-close">
-            <button id="chat-close-button"
-                    type="button"
-                    class="collapsible close"
-                    onclick="chatClose()">
-                <i class="material-icons-outlined"> close </i>
-            </button>
-        </div>
-
-        <!-- chat-window 1 -->
-        <div class="chat-window" id="chat-window1">
-            <div class="hi-there">
-                <p class="p1">Xin chào quý khách !</p>
-                <br />
-                <p class="p2">Xin chào Hãy hỏi chúng tôi bất cứ điều gì, Chia sẻ của bạn<br />Nhận xét.</p>
-            </div>
-            <div class="start-conversation">
-                <h1>
-                    Chúng tôi thường trả lời sau vài phút.
-                </h1>
-                <button class="new-conversation"
-                        type="button"
-                        onclick="openConversation()">
-                    <span>Bắt đầu ngay</span><i class="material-icons-outlined"> send </i>
-                </button>
-            </div>
-        </div>
-
-        <!-- chat chat-window 2 -->
-        <div class="chat-window2" id="chat-window2">
-            <div class="message-box" id="messageBox">
-                <div class="hi-there">
-                    <p class="p1">Hi There</p>
-                    <br />
-                    <p class="p2">The team typically replies in few minutes.</p>
-                </div>
-                <div class="first-chat">
-                    <p>Is there any offlines versions available for Maxeon Player?</p>
-                    <div class="arrow"></div>
-                </div>
-                <div class="second-chat">
-                    <div class="circle"></div>
-                    <p>Currently we don't have but we will launch soon.</p>
-                    <div class="arrow"></div>
-                </div>
-            </div>
-            <div class="input-box">
-                <div class="surveysparrow">
-                    <img src="~/img/sparrow favicon.png" />
-                    <p>we run on surveysparrow</p>
-                </div>
-                <div class="write-reply">
-                    <input class="inputText" type="text" id="textInput" placeholder="Write a reply..." />
-                </div>
-                <div class="send-button">
-                    <button type="submit" class="send-message" id="send" onclick="userResponse()">
-                        <i class="material-icons-outlined"> send </i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
         <!-- row.// -->
     </div> <!-- container.// -->
 </section>

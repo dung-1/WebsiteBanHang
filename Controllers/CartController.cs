@@ -103,10 +103,17 @@ namespace WebsiteBanHang.Controllers
             }
         }
 
-        public IActionResult AddToCart(int Id)
+        public IActionResult AddToCart(int id, int quantity)
         {
             try
             {
+                // Kiểm tra xem người dùng đã đăng nhập chưa
+                if (!User.Identity.IsAuthenticated)
+                {
+                    // Chuyển hướng người dùng đến trang đăng nhập
+                    return RedirectToAction("Login", "Account");
+                }
+
                 // Lấy thông tin khách hàng đang đăng nhập từ HttpContext
                 var loggedInCustomerClaim = HttpContext.User.FindFirst(ClaimTypes.Name);
                 if (loggedInCustomerClaim != null)
@@ -137,23 +144,23 @@ namespace WebsiteBanHang.Controllers
                         }
 
                         // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa
-                        var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == Id);
+                        var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == id);
 
                         if (cartItem == null)
                         {
-                            // Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm mới sản phẩm vào giỏ hàng với số lượng 1
+                            // Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm mới sản phẩm vào giỏ hàng với số lượng nhập vào
                             cartItem = new Cart_Item
                             {
                                 CartId = cart.Id,
-                                ProductId = Id,
-                                Quantity = 1
+                                ProductId = id,
+                                Quantity = quantity >0 ? quantity : 1,
                             };
                             _context.Cart_Item.Add(cartItem);
                         }
                         else
                         {
-                            // Nếu sản phẩm đã tồn tại trong giỏ hàng, tăng số lượng thêm 1
-                            cartItem.Quantity += 1;
+                            // Nếu sản phẩm đã tồn tại trong giỏ hàng, tăng số lượng theo số lượng nhập vào
+                            cartItem.Quantity += quantity;
                         }
 
                         _context.SaveChanges();
@@ -163,7 +170,7 @@ namespace WebsiteBanHang.Controllers
                 }
 
                 // Xử lý khi không tìm thấy thông tin đăng nhập hoặc thông tin khách hàng (nếu cần)
-                return RedirectToAction("Login"); // Chẳng hạn, chuyển hướng đến trang đăng nhập nếu không có thông tin đăng nhập
+                return RedirectToAction("Login", "Account"); // Chẳng hạn, chuyển hướng đến trang đăng nhập nếu không có thông tin đăng nhập
             }
             catch (Exception ex)
             {
@@ -171,6 +178,7 @@ namespace WebsiteBanHang.Controllers
                 return RedirectToAction("Error"); // Chẳng hạn, chuyển hướng đến trang lỗi nếu có lỗi xảy ra
             }
         }
+
 
         [HttpPost]
         public IActionResult UpdateCartItemQuantity(int productId, int quantity)

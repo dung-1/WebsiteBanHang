@@ -192,6 +192,47 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
+    $("#addTocartdetail").submit(function (event) {
+        event.preventDefault(); // Ngăn chặn hành động mặc định của form
+
+        var productId = $(this).data("product-id");
+        var quantity = $("#quantity").val(); // Lấy số lượng nhập vào từ input
+
+        $.ajax({
+            type: "POST",
+            url: "/Cart/AddToCart",
+            data: { id: productId, quantity: quantity }, // Truyền số lượng vào data
+            success: function (result) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                Toast.fire({
+                    icon: "success",
+                    title: "Thêm sản phẩm vào giỏ hàng thành công!"
+                }).then(function () {
+                    location.reload();
+                });
+            },
+            error: function () {
+                // Xử lý lỗi nếu có
+                Swal.fire("Lỗi", "Bạn cần phải đăng nhập.", "warning").then(function () {
+                    window.location.href = "/Login/account/Login";
+                });
+            }
+        });
+    });
+});
+
+
+$(document).ready(function () {
     $(".checkLoginAndNavigateToCart").click(function () {
         $.ajax({
             type: "GET",
