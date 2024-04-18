@@ -31,9 +31,10 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <button type="button" class="btn btn-info create-produt ">
-                                <i class="fa-solid fa-plus"></i> Thêm  sản phẩm
-                            </button>
+                            <a asp-area="Admin" asp-action="_ProductAdd" class="btn bg-blue float-sm-right">
+                                <i class="fa fa-plus-square"></i>
+                                Thêm mới
+                            </a>
                             <div class="modal fade" id="Create_Product" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
@@ -89,7 +90,7 @@
 
                                             </td>
                                             <td>
-                                                <a data-id="@item.Id" class="btn btn-sm btn-warning edit-produt"><i class="bi bi-pencil-square"></i><i class="fa-solid fa-pen-to-square"></i>Sửa</a>&nbsp;
+                                                <a asp-area="Admin" asp-action="_ProductUpdate" asp-route-id="@item.Id" class="btn btn-sm btn-warning edit-produt"><i class="bi bi-pencil-square"></i><i class="fa-solid fa-pen-to-square"></i>Sửa</a>&nbsp;
                                             </td>
                                             @if (User.IsInRole("Admin"))
                                             {

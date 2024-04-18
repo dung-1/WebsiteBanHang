@@ -69,7 +69,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             return View(pagedProducts);
         }
 
-        public IActionResult Create()
+        public IActionResult _ProductAdd()
         {
             // Truy vấn danh sách loại sản phẩm và hãng sản phẩm từ cơ sở dữ liệu
             var loaiProductList = _context.Category.ToList();
@@ -79,7 +79,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             ViewBag.LoaiProductList = new SelectList(loaiProductList, "Id", "TenLoai");
             ViewBag.HangProductList = new SelectList(hangProductList, "Id", "TenHang");
 
-            return PartialView("_ProductCreate");
+            return View();
         }
 
         [HttpGet]
@@ -162,7 +162,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public IActionResult _ProductUpdate(int id)
         {
             var category = _context.Product.Find(id);
             var loaiProductList = _context.Category.ToList();
@@ -175,7 +175,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            return PartialView("_ProductEdit", category);
+            return View(category);
         }
 
 
@@ -226,6 +226,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 existingProduct.MaSanPham = updatedProduct.MaSanPham;
                 existingProduct.TenSanPham = updatedProduct.TenSanPham;
                 existingProduct.ThongTinSanPham = updatedProduct.ThongTinSanPham;
+                existingProduct.GiaBan= updatedProduct.GiaBan;
                 existingProduct.GiaNhap = updatedProduct.GiaNhap;
                 existingProduct.GiaGiam = updatedProduct.GiaGiam;
                 existingProduct.HangId = updatedProduct.HangId;
