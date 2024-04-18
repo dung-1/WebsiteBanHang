@@ -18,6 +18,10 @@
     {
       "library": "datatables.net-bs4@3.2.2",
       "destination": "wwwroot/lib/datatables.net/"
+    },
+    {
+      "library": "ckeditor@4.19.1",
+      "destination": "wwwroot/lib/ckeditor"
     }
   ]
 }

@@ -400,8 +400,7 @@ namespace WebsiteBanHang.Migrations
 
                     b.Property<string>("ThongTinSanPham")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

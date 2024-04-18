@@ -1,0 +1,123 @@
+﻿@{
+    ViewData["Title"] = "View";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutLteAdmin.cshtml";
+}
+@model WebsiteBanHang.Areas.Admin.Models.ProductModel
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12">
+                    <h1>Thêm Sản Phẩm</h1>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <section class="content">
+        <div class="container-fluid">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <form id="createFormProduct"  class="form-horizontal">
+                @*nav-tabs*@
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" role="tab" href="#general">Thông tin bài viết</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" role="tab" href="#general-detail">Thông tin chi tiết</a>
+                    </li>
+                </ul>
+                @*end nav-tabs*@
+                @*tab-content*@
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="general">
+                        <div class="row mt-2">
+                            <div class="col-md">
+                                <label asp-for="TenSanPham" class="col-md control-label">Tên Sản Phẩm</label>
+                                <div class="col-md">
+                                    <input asp-for="TenSanPham" name="TenSanPham" id="TenSanPham" class="form-control" />
+                                    <span asp-validation-for="TenSanPham" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md">
+                                <label asp-for="Image" class="col-md control-label">Ảnh Sản Phẩm</label>
+                                <div class="col-md">
+                                    <input asp-for="Image" id="Image" type="file" class="form-control" name="imageFile" />
+                                    <span asp-validation-for="Image" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md">
+                                <label asp-for="ThongTinSanPham" class="col-md control-label">Thông Tin Sản Phẩm</label>
+                                <div class="col-md">
+                                    <textarea asp-for="ThongTinSanPham" name="ThongTinSanPham" id="ThongTinSanPham" rows="10" class="form-control"></textarea>
+                                    <span asp-validation-for="ThongTinSanPham" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="general-detail">
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <label asp-for="HangId" class="col-md control-label"></label>
+                                <div class="col-md">
+                                    <select asp-for="HangId" asp-items="ViewBag.hangProductList" id="HangId" class="form-control">
+                                        <option value="">--Chọn hãng sản phẩm--</option>
+                                    </select>
+                                    <span asp-validation-for="HangId" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="LoaiId" class="col-md control-label"></label>
+                                <div class="col-md">
+                                    <select asp-for="LoaiId" asp-items="ViewBag.loaiProductList" id="LoaiId" class="form-control">
+                                        <option value="">--Chọn loại sản phẩm--</option>
+                                    </select>
+                                    <span asp-validation-for="LoaiId" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-4">
+                                <label asp-for="GiaNhap" class="col-md control-label">Giá Nhập</label>
+                                <div class="col-md">
+                                    <input asp-for="GiaNhap" id="GiaNhap" class="form-control" oninput="formatCurrency(this)" onkeypress="return isNumberKey(event)" />
+                                    <span asp-validation-for="GiaNhap" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="GiaBan"  class="col-md control-label">Giá Bán</label>
+                                <div class="col-md">
+                                    <input asp-for="GiaBan" id="GiaBan" class="form-control" oninput="formatCurrency(this)" onkeypress="return isNumberKey(event)" />
+                                    <span asp-validation-for="GiaBan" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="GiaGiam" class="col-md control-label">Giảm(%)</label>
+                                <div class="col-md">
+                                    <input asp-for="GiaGiam" id="GiaGiam" type="number" class="form-control" />
+                                    <span asp-validation-for="GiaGiam" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row p-2">
+                    <div class="col-sm">
+                        <div class="float-sm-right">
+                            <button type="button" onclick="validateAndSubmitProduct()" class="btn btn-success save-button"><i class="fas fa-save"></i>Lưu thông tin</button>
+                            <button type="reset" class="btn btn-primary"><i class="fas fa-sync"></i>Làm mới</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <script>
+                CKEDITOR.replace('ThongTinSanPham');
+            </script>
+        </div>
+    </section>
+
+</div>

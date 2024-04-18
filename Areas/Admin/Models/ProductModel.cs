@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.VisualBasic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing.Drawing2D;
 using System.Reflection.Metadata;
@@ -32,7 +33,7 @@ namespace WebsiteBanHang.Areas.Admin.Models
         public string? Image { get; set; }
 
         [Required]
-        [StringLength(100)]
+        [Column(TypeName = "nvarchar(max)")]
         public string? ThongTinSanPham { get; set; }
 
         public ICollection<OrderDetaiModel> Order_Detai { get; } = new List<OrderDetaiModel>(); // Collection navigation containing dependents
