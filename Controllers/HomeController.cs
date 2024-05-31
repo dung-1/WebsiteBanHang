@@ -94,19 +94,21 @@ namespace WebsiteBanHang.Controllers
 
             // Lấy ra danh sách sản phẩm liên quan có cùng category (loại trừ sản phẩm chi tiết)
             var relatedProducts = _context.Product
-       .Where(p => p.Category.Id == categoryId && p.Id != productid)
-       .Select(p => new ProductDTO
-       {
-           Id = p.Id,
-           MaSanPham = p.MaSanPham,
-           TenSanPham = p.TenSanPham,
-           GiaBan = p.GiaBan,
-           GiaGiam = p.GiaGiam,
-           GiaNhap = p.GiaNhap,
-           SoLuong = p.Inventory.FirstOrDefault().SoLuong,
-           Image = p.Image
-       })
-       .ToList();
+                .Where(p => p.Category.Id == categoryId && p.Id != productid)
+                .Select(p => new ProductDTO
+                {
+                    Id = p.Id,
+                    MaSanPham = p.MaSanPham,
+                    TenSanPham = p.TenSanPham,
+                    GiaBan = p.GiaBan,
+                    GiaGiam = p.GiaGiam,
+                    GiaNhap = p.GiaNhap,
+                    SoLuong = p.Inventory.FirstOrDefault() != null ? p.Inventory.FirstOrDefault().SoLuong : 0,
+                    Image = p.Image
+                })
+                .ToList();
+
+
 
             var productView = new ProductViewDTO
             {
@@ -131,6 +133,8 @@ namespace WebsiteBanHang.Controllers
             var categories = _context.Category.ToList();
             return Json(categories);
         }
+
+
         public IActionResult changeLanguage(String language)
         {
             Response.Cookies.Append(CookieRequestCultureProvider.DefaultCookieName,

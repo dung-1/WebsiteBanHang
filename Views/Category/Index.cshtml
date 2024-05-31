@@ -1,6 +1,7 @@
 ﻿@using System.Globalization;
 ﻿@using X.PagedList.Mvc.Core;
 @using X.PagedList.Web.Common;
+@inject LanguageService language
 
 @{
     ViewData["Title"] = "Index";
@@ -39,7 +40,7 @@
                             <div class="filter-content collapse show" id="collapse_2">
                                 <div class="card-body pt-0">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="true" name="checkbox_all" id="checkbox_all" @(Model.FirstOrDefault()?.CheckboxAll ?? false ? "checked" : "") checked>
+                                        <input class="form-check-input" type="checkbox" value="true" name="checkbox_all" id="checkbox_all" @(Model.FirstOrDefault()?.CheckboxAll ?? false ? "checked" : "")>
                                         <label class="form-check-label" for="checkbox_all">
                                             Tất cả
                                         </label>
@@ -88,62 +89,120 @@
 
             <main class="col-md-8 col-lg-9">
                 <header class="border-bottom mb-4 pb-3">
-                    <div class="form-inline d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-center ">
                         <span>@ViewBag.TotalProducts sản phẩm</span>
-                        @*  <div>
-                        <select class="form-select">
-                        <option>Bán chạy nhất</option>
-                        <option>Mới nhất</option>
-                        <option>Đánh giá cao nhất</option>
-                        <option>Giá thấp nhất</option>
-                        </select>
-                        </div> *@
                     </div>
                 </header> <!-- sect-heading -->
 
                 <div class="row item-grid">
                     @foreach (var product in Model)
                     {
-                        <div class="col-lg-4 col-md-6">
-                            <div class="card p-3 mb-4 hvr-float">
-                                <span class="productType" style="position: absolute; top: 10px; left: 10px; width: 40px;">
-                                    <img class="img-fluid" src="~/img/sales.png" alt="sale off">
-                                    <span class="percent" style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); line-height: 40px; color: #fff; font-weight: 600;">
-                                        @if (product.GiaGiam > 0)
-                                        {
-                                            var phanTramGiam = ((product.GiaNhap - product.GiaGiam) / product.GiaNhap) * 100;
-                                            @("-" + phanTramGiam.ToString("0"))
-                                        }%
+                        @if (product.GiaGiam != 0)
+                        {
+                            var giamgia = product.GiaBan - ((product.GiaBan * product.GiaGiam) / 100);
+                            var inventoryItem = product.RelatedProducts.FirstOrDefault();
 
+                            <div class="col-lg-3 col-md-6">
+                                <div class="card p-3 mb-4 hvr-float">
+                                    <span class="productType" style="position: absolute; top: 10px; left: 10px; width: 40px;">
+                                        <img class="img-fluid" src="~/img/sales.png" alt="sale off">
+                                        <span class="percent" style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); line-height: 40px; color: #fff; font-weight: 600;">
+                                            @("-" + string.Format("{0:0.##}", product.GiaGiam))%
+
+                                        </span>
                                     </span>
-                                </span>
-                                <a href="#" class="img-wrap text-center">
-                                    <img class="img-fluid" src="~/@product.Image">
-                                </a>
-                                <figcaption class="info-wrap mt-2">
-                                    <a href="#" class="title text-capitalize">@product.TenSanPham</a>
-                                    <div class="row">
-                                        <div class="col-6 price mt-1 fw-bold text-danger">
-                                            @string.Format(new CultureInfo("vi-VN", false), "{0:c0}",@product.GiaGiam)
-                                        </div>
-                                        <div class="col-6 price mt-1  " style="padding-top: 5px;font-size: 14px;color:#a29c9cd7;text-decoration: line-through;font-style: normal;">
-                                            @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @product.GiaNhap)
-                                        </div>
-
+                                    <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id" class="img-wrap text-center">
+                                        <img class="img-fluid" src="~/@product.Image">
+                                    </a>
+                                    <figcaption class="info-wrap mt-2">
+                                        <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id" class="title text-capitalize">@product.TenSanPham</a>
                                         <div class="row">
-                                            @* <div class="col-4 price mt-1  " style="padding-top: 5px;font-size: 14px;color:#a29c9cd7;text-decoration: line-through;font-style: normal;">
-                                        </div> *@
-                                            <div class="col-12 price  fw-bold text-danger">
-                                                <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@product.Id" class="btn btn-primary" id="addToCartButton">
-                                                    <i class="fa-solid fa-cart-plus"></i> Mua Ngay
-                                                </a>
+                                            <div class="col-6 price mt-1 fw-bold text-danger">
+                                                @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", giamgia)
                                             </div>
+                                            <div class="col-6 price mt-1  " style="padding-top: 5px;font-size: 14px;color:#a29c9cd7;text-decoration: line-through;font-style: normal;">
+                                                @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @product.GiaBan)
+                                            </div>
+                                            @if (inventoryItem?.SoLuong > 0)
+                                            {
+                                                <div class="row">
+                                                    <div class="col-8 price fw-bold text-danger">
+                                                        <a href="javascript:void(0);" data-product-id="@product.Id" class="btn btn-primary addToCartButton">
+                                                            <i class="fa-solid fa-cart-plus"></i> @language.GetKey("Buy Now")
+                                                        </a>
+                                                    </div>
+                                                    <div class="col-4">
+
+                                                        <p style="font-size:14px;">
+                                                            Còn: <span class="text-danger">@inventoryItem.SoLuong</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="row">
+                                                    <div class="col-8 price fw-bold text-danger">
+                                                        <a href="#" class="btn btn-danger">
+                                                            @language.GetKey("Sold out")
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            }
                                         </div>
-                                    </div>
-                                </figcaption>
+                                    </figcaption>
+                                </div>
                             </div>
-                        </div> <!-- col.// -->
-                    }
+                        }
+                        else
+                        {
+                            var inventoryItem = product.RelatedProducts.FirstOrDefault();
+
+
+                            <div class="col-lg-3 col-md-6">
+                                <div class="card p-3 mb-4 hvr-float">
+                                    <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id" class="img-wrap text-center">
+                                        <img class="img-fluid" src="~/@product.Image">
+                                    </a>
+                                    <figcaption class="info-wrap mt-2">
+                                        <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id" class="title text-capitalize">@product.TenSanPham</a>
+                                        <div class="row">
+                                            <div class="col-6 price mt-1 fw-bold text-danger">
+                                                @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @product.GiaBan)
+                                            </div>
+
+                                            @if (inventoryItem?.SoLuong > 0)
+                                            {
+                                                <div class="row">
+                                                    <div class="col-8 price fw-bold text-danger">
+                                                        <a href="javascript:void(0);" data-product-id="@product.Id" class="btn btn-primary addToCartButton">
+                                                            <i class="fa-solid fa-cart-plus"></i> @language.GetKey("Buy Now")
+                                                        </a>
+                                                    </div>
+                                                    <div class="col-4">
+
+                                                        <p style="font-size:14px;">
+                                                            Còn: <span class="text-danger">@inventoryItem.SoLuong</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="row">
+                                                    <div class="col-8 price fw-bold text-danger">
+                                                        <a href="#" class="btn btn-danger">
+                                                            @language.GetKey("Sold out")
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </figcaption>
+                                </div>
+                            </div>
+                        }
+                    }<!-- col.// -->
                 </div> <!-- row end.// -->
 
 
