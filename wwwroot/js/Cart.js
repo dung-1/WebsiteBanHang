@@ -1,15 +1,4 @@
-﻿var carousel = document.getElementById('carouselExampleCrossfade');
-var interval = 3000;
-
-function carouselNext() {
-    var currentSlide = carousel.querySelector('.carousel-item.active');
-    var nextSlide = currentSlide.nextElementSibling || carousel.querySelector('.carousel-item:first-child');
-
-    currentSlide.classList.remove('active');
-    nextSlide.classList.add('active');
-}
-
-setInterval(carouselNext, interval);
+﻿
 $(document).ready(function () {
     $(".updatecartitem").click(function () {
         var productId = $(this).data("productid");
@@ -187,7 +176,7 @@ $(document).ready(function () {
                     window.location.href = "/Login/account/Login";
                 });
             }
-        }); 
+        });
     });
 });
 
@@ -240,7 +229,7 @@ $(document).ready(function () {
             success: function (isLoggedIn) {
                 if (isLoggedIn) {
                     window.location.href = "/Cart/Index";
-                } 
+                }
             },
             error: function () {
                 // Người dùng chưa đăng nhập, hiển thị thông báo và chuyển hướng đến trang đăng nhập
@@ -288,4 +277,47 @@ $(document).ready(function () {
         });
     });
 });
+
+var carousel = document.getElementById('carouselExampleCrossfade');
+var interval = 3000;
+var intervalId;
+
+function carouselNext() {
+    var currentSlide = carousel.querySelector('.carousel-item.active');
+    var nextSlide = currentSlide.nextElementSibling || carousel.querySelector('.carousel-item:first-child');
+
+    currentSlide.classList.remove('active');
+    nextSlide.classList.add('active');
+}
+
+function carouselPrev() {
+    var currentSlide = carousel.querySelector('.carousel-item.active');
+    var prevSlide = currentSlide.previousElementSibling || carousel.querySelector('.carousel-item:last-child');
+
+    currentSlide.classList.remove('active');
+    prevSlide.classList.add('active');
+}
+
+function startCarousel() {
+    intervalId = setInterval(carouselNext, interval);
+}
+
+function stopCarousel() {
+    clearInterval(intervalId);
+}
+
+carousel.querySelector('.carousel-control-next').addEventListener('click', function () {
+    stopCarousel();
+    carouselNext();
+    startCarousel();
+});
+
+carousel.querySelector('.carousel-control-prev').addEventListener('click', function () {
+    stopCarousel();
+    carouselPrev();
+    startCarousel();
+});
+
+// Start the carousel
+startCarousel();
 

@@ -1119,16 +1119,16 @@ function validateAndEditProduct() {
     var form = document.getElementById('editFormProduct');
     var formData = new FormData(form);
     // Additional data
-    var giaBanInput = form.elements['GiaBan'];
-    var giaNhapInput = form.elements['GiaNhap'];
-    var giaGiamInput = form.elements['GiaGiam'];
     var tenSanPhamInput = form.elements['TenSanPham'];
-    var thongTinSanPhamInput = form.elements['ThongTinSanPham'];
+    var giaNhapInput = form.elements['GiaNhap'];
+    var giaBanInput = form.elements['GiaBan'];
+    var giaGiamInput = form.elements['GiaGiam'];
+    var thongTinSanPhamInputs = form.elements['ThongTinSanPham'];
 
-    var giaBanValidationError = document.querySelector('[data-valmsg-for="GiaBan"]');
-    var giaNhapValidationError = document.querySelector('[data-valmsg-for="GiaNhap"]');
-    var giaGiamValidationError = document.querySelector('[data-valmsg-for="GiaGiam"]');
     var tenSanPhamValidationError = document.querySelector('[data-valmsg-for="TenSanPham"]');
+    var giaNhapValidationError = document.querySelector('[data-valmsg-for="GiaNhap"]');
+    var giaBanValidationError = document.querySelector('[data-valmsg-for="GiaBan"]');
+    var giaGiamValidationError = document.querySelector('[data-valmsg-for="GiaGiam"]');
     var thongTinSanPhamValidationError = document.querySelector('[data-valmsg-for="ThongTinSanPham"]');
 
     // Kiểm tra trường "Tên sản phẩm"
@@ -1151,17 +1151,6 @@ function validateAndEditProduct() {
             } else {
                 // Ẩn lỗi nếu tên sản phẩm không trùng
                 hideValidationError(tenSanPhamValidationError);
-
-                // Tiếp tục kiểm tra các trường khác nếu tên sản phẩm không trùng
-                var editorData = CKEDITOR.instances['ThongTinSanPham'].getData();
-                thongTinSanPhamInput.value = editorData;
-                // Kiểm tra trường "Thông Tin Sản Phẩm"
-                if (!thongTinSanPhamInput.value) {
-                    showValidationError(thongTinSanPhamValidationError, "Vui lòng nhập thông tin sản phẩm.");
-                    return;
-                } else {
-                    hideValidationError(thongTinSanPhamValidationError);
-                }
 
                 // Kiểm tra trường "Giá bán"
                 if (!giaBanInput.value) {
@@ -1193,6 +1182,17 @@ function validateAndEditProduct() {
                     showValidationError(giaBanValidationError, 'Giá hoặc giảm giá không hợp lệ.');
                     return;
                 }
+
+                var editorDatabase = CKEDITOR.instances['ThongTinSanPham'].getData();
+             
+                // Kiểm tra trường "Thông Tin Sản Phẩm"
+                if (!thongTinSanPhamInputs.value) {
+                    showValidationError(thongTinSanPhamValidationError, "Vui lòng nhập thông tin sản phẩm.");
+                    return;
+                } else {
+                    hideValidationError(thongTinSanPhamValidationError);
+                }
+                formData.set("ThongTinSanPham",editorDatabase)
                 formData.set("GiaNhap", giaNhapDecimal.toString());
                 formData.set("GiaBan", giaBanDecimal.toString());
 
