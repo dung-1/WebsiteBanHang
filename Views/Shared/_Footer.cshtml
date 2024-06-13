@@ -1,4 +1,16 @@
-﻿<footer class="mt-5">
+﻿@using Microsoft.AspNetCore.Localization
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    var languageCookie = HttpContextAccessor.HttpContext.Request.Cookies[CookieRequestCultureProvider.DefaultCookieName];
+    var currentLanguage = "vi-VN"; // Ngôn ngữ mặc định
+
+    if (!string.IsNullOrEmpty(languageCookie))
+    {
+        var parsedCookie = CookieRequestCultureProvider.ParseCookieValue(languageCookie);
+        currentLanguage = parsedCookie?.UICultures.FirstOrDefault().Value ?? "vi-VN";
+    }
+}
+<footer class="mt-5">
     <div class="tintuc-footer hide-mobile hide-tablet">
         <div class="container">
             <div class="main-title">
@@ -153,11 +165,34 @@
                         <li class="mt-3">
                             <div class="dropdown">
                                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <img src="~/img/world1.png" /> Ngôn Ngữ
+                                    @if (currentLanguage == "vi-VN")
+                                    {
+
+                                        <img src="~/img/vietnam.png" />
+
+
+
+                                    }
+                                    else if (currentLanguage == "en-US")
+                                    {
+
+                                        <img src="~/img/united-kingdom.png" />
+
+
+                                    }
+
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <a class="dropdown-item" asp-controller="Home" asp-action="changeLanguage" asp-route-language="vi-VN"><img src="~/img/vietnam.png" /> Việt Nam</a>
-                                    <a class="dropdown-item" asp-controller="Home" asp-action="changeLanguage" asp-route-language="en-US"><img src="~/img/united-kingdom.png" /> Tiếng Anh</a>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Home" asp-action="changeLanguage" asp-route-language="vi-VN">
+                                            <img src="~/img/vietnam.png" /> Việt Nam
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Home" asp-action="changeLanguage" asp-route-language="en-US">
+                                            <img src="~/img/united-kingdom.png" /> Tiếng Anh
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </li>

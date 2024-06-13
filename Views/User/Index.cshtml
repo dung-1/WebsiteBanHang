@@ -101,7 +101,7 @@
                                     <div class="col-6 price mt-1  " style="padding-top: 5px;font-size: 14px;color:#a29c9cd7;text-decoration: line-through;font-style: normal;">
                                         @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @product.GiaBan)
                                     </div>
-                                    @if (inventoryItem.SoLuong > 0)
+                                    @if (inventoryItem?.SoLuong > 0)
                                     {
                                   
                                         <div class="row">

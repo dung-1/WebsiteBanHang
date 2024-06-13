@@ -129,6 +129,12 @@
   <data name="Cart" xml:space="preserve">
     <value>Cart</value>
   </data>
+  <data name="Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
   <data name="Sold out" xml:space="preserve">
     <value>Sold out</value>
   </data>

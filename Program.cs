@@ -19,9 +19,12 @@ namespace WebsiteBanHang
             builder.Services.AddControllersWithViews();
             builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-            );
+            //builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            //    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString"))
+            //);
+            // For Entity Framework
+            var connectionString = builder.Configuration["ConnectionStrings:Database"];
+            builder.Services.AddDbContext<ApplicationDbContext>(o => o.UseSqlServer(connectionString, sqlServerOptionsAction: sqlOption => { sqlOption.EnableRetryOnFailure(); }));
 
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(cfg =>
@@ -80,6 +83,7 @@ namespace WebsiteBanHang
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+
             app.UseRequestLocalization();
 
             app.UseHttpsRedirection();

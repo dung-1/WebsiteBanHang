@@ -129,6 +129,12 @@
   <data name="Cart" xml:space="preserve">
     <value>Giỏ Hàng</value>
   </data>
+  <data name="Next" xml:space="preserve">
+    <value>Sau</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Trước</value>
+  </data>
   <data name="Sold out" xml:space="preserve">
     <value>Đã Hết</value>
   </data>

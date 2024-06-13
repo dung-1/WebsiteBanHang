@@ -1,9 +1,10 @@
 [
   {
-    "outputFileName": "wwwroot/js/bundle.min.js",
+    "outputFileName": "wwwroot/_bundle/js/bundle_client.min.js",
     "inputFiles": [
       "wwwroot/js/Cart.js",
-      "wwwroot/js/chat.js"
+      "wwwroot/js/chat.js",
+      "wwwroot/js/apiaddress.js"
     ]
   }
 ]
