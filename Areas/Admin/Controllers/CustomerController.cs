@@ -28,44 +28,52 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
         public IActionResult Index(int? page, string searchName)
         {
-            var pageNumber = page ?? 1;
-            int pageSize = 5;
-
-            var productsQuery = _context.Customer
-                .Include(p => p.CustomerRole)
-                .ThenInclude(ur => ur.Role) // Include Role information
-                .Include(p => p.CustomerDetail)
-                .OrderByDescending(p => p.Id);
-
-            if (!string.IsNullOrEmpty(searchName))
+            try
             {
-                productsQuery = (IOrderedQueryable<CustomerModel>)productsQuery.Where(p => p.CustomerDetail.HoTen.Contains(searchName));
-            }
+                var pageNumber = page ?? 1;
+                int pageSize = 5;
 
-            var sortedProducts = productsQuery
-                .Where(p => p.CustomerRole.Any(ur => ur.Role.Name == "Customer"))
-                .ToList();
+                var productsQuery = _context.Customer
+                    .Include(p => p.CustomerRole)
+                    .ThenInclude(ur => ur.Role) // Include Role information
+                    .Include(p => p.CustomerDetail)
+                    .OrderByDescending(p => p.Id);
 
-            if (searchName != null)
-            {
-                ViewBag.SearchName = searchName;
-            }
-            else
-            {
-                ViewBag.SearchName = ""; // Hoặc gán một giá trị mặc định khác nếu cần thiết
-            }
-
-            IPagedList<UserModelViewDto> pagedProducts = sortedProducts
-                .Select(e => new UserModelViewDto
+                if (!string.IsNullOrEmpty(searchName))
                 {
-                    Id = e.Id,
-                    MaNguoiDung = e.MaNguoiDung,
-                    HoTen = e.CustomerDetail.HoTen,
-                    Email = e.Email,
-                })
-                .ToPagedList(pageNumber, pageSize);
+                    productsQuery = (IOrderedQueryable<CustomerModel>)productsQuery.Where(p => p.CustomerDetail.HoTen.Contains(searchName));
+                }
 
-            return View(pagedProducts);
+                var sortedProducts = productsQuery
+                    .Where(p => p.CustomerRole.Any(ur => ur.Role.Name == "Customer"))
+                    .ToList();
+
+                if (searchName != null)
+                {
+                    ViewBag.SearchName = searchName;
+                }
+                else
+                {
+                    ViewBag.SearchName = ""; // Hoặc gán một giá trị mặc định khác nếu cần thiết
+                }
+
+                IPagedList<UserModelViewDto> pagedProducts = sortedProducts
+                    .Select(e => new UserModelViewDto
+                    {
+                        Id = e.Id,
+                        MaNguoiDung = e.MaNguoiDung,
+                        HoTen = e.CustomerDetail.HoTen,
+                        Email = e.Email,
+                    })
+                    .ToPagedList(pageNumber, pageSize);
+
+                return View(pagedProducts);
+            }
+            catch (Exception e)
+            {
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
+            }
+
         }
         [HttpPost]
         public IActionResult Delete(int id)
@@ -84,8 +92,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                // Log lỗi hoặc xử lý nếu cần
-                return Json(new { success = false });
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
             }
         }
 
@@ -130,56 +137,64 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Edit([FromBody] UserCreateDto userDto)
         {
-            if (ModelState.IsValid)
+            try
             {
-                try
+                if (ModelState.IsValid)
                 {
-                    // Lấy người dùng từ cơ sở dữ liệu
-                    var customer = _context.Customer
-                        .Include(u => u.CustomerDetail)
-                        .Include(u => u.CustomerRole)
-                        .FirstOrDefault(u => u.Id == userDto.Id);
-
-                    if (customer == null)
+                    try
                     {
-                        return NotFound();
+                        // Lấy người dùng từ cơ sở dữ liệu
+                        var customer = _context.Customer
+                            .Include(u => u.CustomerDetail)
+                            .Include(u => u.CustomerRole)
+                            .FirstOrDefault(u => u.Id == userDto.Id);
+
+                        if (customer == null)
+                        {
+                            return NotFound();
+                        }
+
+                        // Cập nhật thông tin từ userDto vào user
+                        customer.Email = userDto.Email;
+                        customer.NgayTao = DateTime.Now;
+                        customer.CustomerDetail.HoTen = userDto.HoTen;
+                        customer.CustomerDetail.SoDienThoai = userDto.SoDienThoai;
+                        customer.CustomerDetail.DiaChi = userDto.DiaChi;
+
+                        // Nếu có mật khẩu mới được nhập, hãy cập nhật nó
+                        if (!string.IsNullOrEmpty(userDto.MatKhau))
+                        {
+                            // Ở đây, bạn thường sẽ mã hóa mật khẩu mới trước khi lưu vào cơ sở dữ liệu
+                            // Ví dụ: user.MatKhau = Mã hóa(userDto.MatKhau);
+                            customer.MatKhau = GetMd5Hash(userDto.MatKhau);
+                        }
+
+
+
+                        // Lưu thay đổi vào cơ sở dữ liệu
+                        _context.SaveChanges();
+
+                        return RedirectToAction("Index"); // Chuyển hướng đến trang danh sách người dùng sau khi chỉnh sửa thành công
                     }
-
-                    // Cập nhật thông tin từ userDto vào user
-                    customer.Email = userDto.Email;
-                    customer.NgayTao = DateTime.Now;
-                    customer.CustomerDetail.HoTen = userDto.HoTen;
-                    customer.CustomerDetail.SoDienThoai = userDto.SoDienThoai;
-                    customer.CustomerDetail.DiaChi = userDto.DiaChi;
-
-                    // Nếu có mật khẩu mới được nhập, hãy cập nhật nó
-                    if (!string.IsNullOrEmpty(userDto.MatKhau))
+                    catch (Exception)
                     {
-                        // Ở đây, bạn thường sẽ mã hóa mật khẩu mới trước khi lưu vào cơ sở dữ liệu
-                        // Ví dụ: user.MatKhau = Mã hóa(userDto.MatKhau);
-                        customer.MatKhau = GetMd5Hash(userDto.MatKhau);
+                        return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
                     }
-
-                 
-
-                    // Lưu thay đổi vào cơ sở dữ liệu
-                    _context.SaveChanges();
-
-                    return RedirectToAction("Index"); // Chuyển hướng đến trang danh sách người dùng sau khi chỉnh sửa thành công
                 }
-                catch (Exception)
-                {
-                    // Xử lý lỗi nếu có
-                    ModelState.AddModelError(string.Empty, "Có lỗi xảy ra khi cập nhật người dùng.");
-                }
+
+                // Nếu ModelState không hợp lệ, quay trở lại view chỉnh sửa với dữ liệu và thông báo lỗi
+                var roleList = _context.Role.ToList();
+                roleList = roleList.Where(role => role.Name != "Customer").ToList();
+                ViewBag.Vatrolist = new SelectList(roleList, "Id", "Name", userDto.VaiTroId);
+
+                return View("_CustomerEdit", userDto);
+            }
+            catch (Exception ex)
+            {
+
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
             }
 
-            // Nếu ModelState không hợp lệ, quay trở lại view chỉnh sửa với dữ liệu và thông báo lỗi
-            var roleList = _context.Role.ToList();
-            roleList = roleList.Where(role => role.Name != "Customer").ToList();
-            ViewBag.Vatrolist = new SelectList(roleList, "Id", "Name", userDto.VaiTroId);
-
-            return View("_CustomerEdit", userDto);
         }
 
 

@@ -24,43 +24,59 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         [Authorize(Roles = "Admin,Employee")]
         public IActionResult Index(int? page)
         {
-            var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
-            int pageSize = 5; // Số mục trên mỗi trang
-
-            // Lấy dữ liệu sản phẩm đã sắp xếp
-            var productsQuery = _context.Order_Detai
-                .Include(p => p.product)
-                .Include(p => p.order)
-                .OrderByDescending(p => p.ID);
-            var sortedProducts = productsQuery.ToList();
-
-            // Tạo danh sách sản phẩm đã sắp xếp dưới dạng danh sách DTO
-            var pagedCategories = sortedProducts.Select(e => new OderDetailDto
+            try
             {
-                Id = e.ID,
-                MaHoaDon = e.order.MaHoaDon,
-                TenSanPham = e.product.TenSanPham,
-                SoLuong = e.soLuong,
-                Gia = e.gia,
-            }).ToPagedList(pageNumber, pageSize); // Sử dụng PagedList.Mvc để phân trang
+                var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
+                int pageSize = 5; // Số mục trên mỗi trang
 
-            if (TempData["SuccessMessage"] != null)
+                // Lấy dữ liệu sản phẩm đã sắp xếp
+                var productsQuery = _context.Order_Detai
+                    .Include(p => p.product)
+                    .Include(p => p.order)
+                    .OrderByDescending(p => p.ID);
+                var sortedProducts = productsQuery.ToList();
+
+                // Tạo danh sách sản phẩm đã sắp xếp dưới dạng danh sách DTO
+                var pagedCategories = sortedProducts.Select(e => new OderDetailDto
+                {
+                    Id = e.ID,
+                    MaHoaDon = e.order.MaHoaDon,
+                    TenSanPham = e.product.TenSanPham,
+                    SoLuong = e.soLuong,
+                    Gia = e.gia,
+                }).ToPagedList(pageNumber, pageSize); // Sử dụng PagedList.Mvc để phân trang
+
+                if (TempData["SuccessMessage"] != null)
+                {
+                    ViewBag.SuccessMessage = TempData["SuccessMessage"].ToString();
+                }
+
+                return View(pagedCategories);
+            }
+            catch (Exception ex)
             {
-                ViewBag.SuccessMessage = TempData["SuccessMessage"].ToString();
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
             }
 
-            return View(pagedCategories);
         }
         public IActionResult Delete(int? id)
         {
-            var deleterecord = _context.Product.Find(id);
-            if (deleterecord == null)
+            try
             {
-                return NotFound();
+                var deleterecord = _context.Product.Find(id);
+                if (deleterecord == null)
+                {
+                    return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
+                }
+                _context.Product.Remove(deleterecord);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
             }
-            _context.Product.Remove(deleterecord);
-            _context.SaveChanges();
-            return RedirectToAction("Index");
+            catch (Exception ex)
+            {
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
+            }
+
         }
 
     }

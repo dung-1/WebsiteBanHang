@@ -28,45 +28,54 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
         public IActionResult Index(int? page, string searchName)
         {
-            var pageNumber = page ?? 1;
-            int pageSize = 5;
-
-            var productsQuery =  _context.Product
-                .Include(p => p.Brand)
-                .Include(p => p.Category)
-                .OrderByDescending(p => p.Id);
-
-            if (!string.IsNullOrEmpty(searchName))
+            try
             {
-                productsQuery = (IOrderedQueryable<ProductModel>)productsQuery.Where(p => p.TenSanPham.Contains(searchName) || p.Brand.TenHang.Contains(searchName) || p.Category.TenLoai.Contains(searchName));
-            }
 
-            var sortedProducts = productsQuery.ToList();
+                var pageNumber = page ?? 1;
+                int pageSize = 5;
 
-            if (searchName != null)
-            {
-                ViewBag.SearchName = searchName;
-            }
-            else
-            {
-                ViewBag.SearchName = ""; // Hoặc gán một giá trị mặc định khác nếu cần thiết
-            }
+                var productsQuery = _context.Product
+                    .Include(p => p.Brand)
+                    .Include(p => p.Category)
+                    .OrderByDescending(p => p.Id);
 
-            IPagedList<ProductViewDTO> pagedProducts = sortedProducts
-                .Select(e => new ProductViewDTO
+                if (!string.IsNullOrEmpty(searchName))
                 {
-                    Id = e.Id,
-                    GiaNhap = e.GiaNhap,
-                    GiaBan = e.GiaBan,
-                    GiaGiam = e.GiaGiam,
-                    HangTen = e.Brand.TenHang,
-                    Image = e.Image,
-                    MaSanPham = e.MaSanPham,
-                    TenSanPham = e.TenSanPham,
-                })
-                .ToPagedList(pageNumber, pageSize);
+                    productsQuery = (IOrderedQueryable<ProductModel>)productsQuery.Where(p => p.TenSanPham.Contains(searchName) || p.Brand.TenHang.Contains(searchName) || p.Category.TenLoai.Contains(searchName));
+                }
 
-            return View(pagedProducts);
+                var sortedProducts = productsQuery.ToList();
+
+                if (searchName != null)
+                {
+                    ViewBag.SearchName = searchName;
+                }
+                else
+                {
+                    ViewBag.SearchName = ""; // Hoặc gán một giá trị mặc định khác nếu cần thiết
+                }
+
+                IPagedList<ProductViewDTO> pagedProducts = sortedProducts
+                    .Select(e => new ProductViewDTO
+                    {
+                        Id = e.Id,
+                        GiaNhap = e.GiaNhap,
+                        GiaBan = e.GiaBan,
+                        GiaGiam = e.GiaGiam,
+                        HangTen = e.Brand.TenHang,
+                        Image = e.Image,
+                        MaSanPham = e.MaSanPham,
+                        TenSanPham = e.TenSanPham,
+                    })
+                    .ToPagedList(pageNumber, pageSize);
+
+                return View(pagedProducts);
+            }
+            catch (Exception)
+            {
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
+            }
+
         }
 
         public IActionResult _ProductAdd()
@@ -92,50 +101,58 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Create(ProductModel product, IFormFile imageFile)
         {
-            bool isTenSanPhamExists = _context.Product.Any(p => p.TenSanPham == product.TenSanPham);
-            if (isTenSanPhamExists)
+            try
             {
-                ModelState.AddModelError("TenSanPham", "Tên sản phẩm đã tồn tại.");
+                bool isTenSanPhamExists = _context.Product.Any(p => p.TenSanPham == product.TenSanPham);
+                if (isTenSanPhamExists)
+                {
+                    ModelState.AddModelError("TenSanPham", "Tên sản phẩm đã tồn tại.");
+                    return View(product);
+                }
+
+                // Tạo mã sản phẩm mới tự động và gán cho product.MaSanPham
+                product.MaSanPham = GenerateProductCode(product);
+
+                // Tìm hãng sản phẩm và loại sản phẩm dựa trên ID được chọn trong dropdownlist
+                var brand = _context.Brand.Find(product.HangId);
+                var category = _context.Category.Find(product.LoaiId);
+
+                if (brand != null && category != null)
+                {
+                    // Xử lý tải ảnh lên và lưu đường dẫn vào trường Image
+                    if (imageFile != null && imageFile.Length > 0)
+                    {
+                        var imagePath = "images/";
+                        var imageName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(imageFile.FileName);
+                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imagePath, imageName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            imageFile.CopyTo(stream);
+                        }
+
+                        product.Image = Path.Combine(imagePath, imageName);
+
+                        // Gán hãng sản phẩm và loại sản phẩm cho sản phẩm
+                        product.Brand = brand;
+                        product.Category = category;
+
+                        // Thêm sản phẩm vào cơ sở dữ liệu
+                        _context.Product.Add(product);
+                        _context.SaveChanges();
+
+                        return RedirectToAction("Index");
+                    }
+                }
+
+                // Nếu ModelState không hợp lệ hoặc không tìm thấy hãng sản phẩm hoặc loại sản phẩm, quay lại view Create với model đã nhập
                 return View(product);
             }
-
-            // Tạo mã sản phẩm mới tự động và gán cho product.MaSanPham
-            product.MaSanPham = GenerateProductCode(product);
-
-            // Tìm hãng sản phẩm và loại sản phẩm dựa trên ID được chọn trong dropdownlist
-            var brand = _context.Brand.Find(product.HangId);
-            var category = _context.Category.Find(product.LoaiId);
-
-            if (brand != null && category != null)
+            catch (Exception)
             {
-                // Xử lý tải ảnh lên và lưu đường dẫn vào trường Image
-                if (imageFile != null && imageFile.Length > 0)
-                {
-                    var imagePath = "images/";
-                    var imageName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(imageFile.FileName);
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imagePath, imageName);
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        imageFile.CopyTo(stream);
-                    }
-
-                    product.Image = Path.Combine(imagePath, imageName);
-
-                    // Gán hãng sản phẩm và loại sản phẩm cho sản phẩm
-                    product.Brand = brand;
-                    product.Category = category;
-
-                    // Thêm sản phẩm vào cơ sở dữ liệu
-                    _context.Product.Add(product);
-                    _context.SaveChanges();
-
-                    return RedirectToAction("Index");
-                }
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
             }
 
-            // Nếu ModelState không hợp lệ hoặc không tìm thấy hãng sản phẩm hoặc loại sản phẩm, quay lại view Create với model đã nhập
-            return View(product);
         }
 
         private string GenerateProductCode(ProductModel product)
@@ -173,7 +190,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             ViewBag.HangProductList = new SelectList(hangProductList, "Id", "TenHang");
             if (category == null)
             {
-                return NotFound();
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
             }
             return View(category);
         }
@@ -192,55 +209,64 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Edit(ProductModel updatedProduct, IFormFile imageFile)
         {
-            bool isTenSanPhamExists = _context.Product.Any(p => p.TenSanPham == updatedProduct.TenSanPham && p.Id != updatedProduct.Id);
 
-            if (isTenSanPhamExists)
+            try
             {
-                ModelState.AddModelError("TenSanPham", "Tên sản phẩm đã tồn tại.");
+                bool isTenSanPhamExists = _context.Product.Any(p => p.TenSanPham == updatedProduct.TenSanPham && p.Id != updatedProduct.Id);
+
+                if (isTenSanPhamExists)
+                {
+                    ModelState.AddModelError("TenSanPham", "Tên sản phẩm đã tồn tại.");
+                    return View(updatedProduct);
+                }
+
+                var brand = _context.Brand.Find(updatedProduct.HangId);
+                var category = _context.Category.Find(updatedProduct.LoaiId);
+                var existingProduct = _context.Product.Find(updatedProduct.Id);
+
+                if (existingProduct != null)
+                {
+                    if (imageFile != null && imageFile.Length > 0)
+
+                    {
+                        // Nếu có tệp ảnh mới được tải lên, cập nhật ảnh
+                        var imagePath = "images/";
+                        var imageName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
+                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imagePath, imageName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            imageFile.CopyTo(stream);
+                        }
+
+                        existingProduct.Image = Path.Combine(imagePath, imageName);
+                    }
+                    // Cập nhật các thông tin khác của sản phẩm
+                    existingProduct.Id = updatedProduct.Id;
+                    existingProduct.MaSanPham = updatedProduct.MaSanPham;
+                    existingProduct.TenSanPham = updatedProduct.TenSanPham;
+                    existingProduct.ThongTinSanPham = updatedProduct.ThongTinSanPham;
+                    existingProduct.GiaBan = updatedProduct.GiaBan;
+                    existingProduct.GiaNhap = updatedProduct.GiaNhap;
+                    existingProduct.GiaGiam = updatedProduct.GiaGiam;
+                    existingProduct.HangId = updatedProduct.HangId;
+                    existingProduct.LoaiId = updatedProduct.LoaiId;
+                    updatedProduct.Brand = brand;
+                    updatedProduct.Category = category;
+
+                    _context.Product.Update(existingProduct);
+                    _context.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+
+                // Nếu ModelState không hợp lệ hoặc không tìm thấy sản phẩm, quay lại view Edit với model đã nhập
                 return View(updatedProduct);
             }
-
-            var brand = _context.Brand.Find(updatedProduct.HangId);
-            var category = _context.Category.Find(updatedProduct.LoaiId);
-            var existingProduct = _context.Product.Find(updatedProduct.Id);
-
-            if (existingProduct != null)
+            catch (Exception ex)
             {
-                if (imageFile != null && imageFile.Length > 0)
-
-                {
-                    // Nếu có tệp ảnh mới được tải lên, cập nhật ảnh
-                    var imagePath = "images/";
-                    var imageName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imagePath, imageName);
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        imageFile.CopyTo(stream);
-                    }
-
-                    existingProduct.Image = Path.Combine(imagePath, imageName);
-                }
-                // Cập nhật các thông tin khác của sản phẩm
-                existingProduct.Id = updatedProduct.Id;
-                existingProduct.MaSanPham = updatedProduct.MaSanPham;
-                existingProduct.TenSanPham = updatedProduct.TenSanPham;
-                existingProduct.ThongTinSanPham = updatedProduct.ThongTinSanPham;
-                existingProduct.GiaBan= updatedProduct.GiaBan;
-                existingProduct.GiaNhap = updatedProduct.GiaNhap;
-                existingProduct.GiaGiam = updatedProduct.GiaGiam;
-                existingProduct.HangId = updatedProduct.HangId;
-                existingProduct.LoaiId = updatedProduct.LoaiId;
-                updatedProduct.Brand = brand;
-                updatedProduct.Category = category;
-
-                _context.Product.Update(existingProduct);
-                _context.SaveChanges();
-                return RedirectToAction("Index");
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
             }
 
-            // Nếu ModelState không hợp lệ hoặc không tìm thấy sản phẩm, quay lại view Edit với model đã nhập
-            return View(updatedProduct);
         }
 
         public IActionResult Delete(int? id)
@@ -248,7 +274,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             var deleterecord = _context.Product.Find(id);
             if (deleterecord == null)
             {
-                return NotFound();
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
             }
 
             try
@@ -260,7 +286,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             catch (Exception ex)
             {
                 // Log lỗi hoặc xử lý nếu cần
-                return Json(new { success = false });
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
             }
         }
 

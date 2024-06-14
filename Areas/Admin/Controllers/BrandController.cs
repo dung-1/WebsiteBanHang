@@ -20,38 +20,48 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
         public IActionResult Index(int? page, string searchName)
         {
-            var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
-            int pageSize = 5; // Số mục trên mỗi trang
-
-            var sortedBrands = _context.Brand.AsQueryable().OrderByDescending(b => b.Id);
-
-            if (!string.IsNullOrEmpty(searchName))
+            try
             {
-                sortedBrands = (IOrderedQueryable<BrandModel>)sortedBrands.Where(p => p.TenHang.Contains(searchName));
+                var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
+                int pageSize = 5; // Số mục trên mỗi trang
+
+                var sortedBrands = _context.Brand.AsQueryable().OrderByDescending(b => b.Id);
+
+                if (!string.IsNullOrEmpty(searchName))
+                {
+                    sortedBrands = (IOrderedQueryable<BrandModel>)sortedBrands.Where(p => p.TenHang.Contains(searchName));
+                }
+
+                var sortedProducts = sortedBrands.ToList();
+
+                if (searchName != null)
+                {
+                    ViewBag.SearchName = searchName;
+                }
+                else
+                {
+                    ViewBag.SearchName = ""; // Hoặc gán một giá trị mặc định khác nếu cần thiết
+                }
+
+
+                IPagedList<BrandModel> pagedBrands = sortedProducts.ToPagedList(pageNumber, pageSize);
+
+
+
+                if (TempData.ContainsKey("SuccessMessage"))
+                {
+                    ViewBag.SuccessMessage = TempData["SuccessMessage"].ToString();
+                }
+
+                return View(pagedBrands);
+
+            }
+            catch
+            {
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
+
             }
 
-            var sortedProducts = sortedBrands.ToList();
-
-            if (searchName != null)
-            {
-                ViewBag.SearchName = searchName;
-            }
-            else
-            {
-                ViewBag.SearchName = ""; // Hoặc gán một giá trị mặc định khác nếu cần thiết
-            }
-
-
-            IPagedList<BrandModel> pagedBrands = sortedProducts.ToPagedList(pageNumber, pageSize);
-
-
-
-            if (TempData.ContainsKey("SuccessMessage"))
-            {
-                ViewBag.SuccessMessage = TempData["SuccessMessage"].ToString();
-            }
-
-            return View(pagedBrands);
         }
 
 
@@ -132,7 +142,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit([FromBody]BrandModel empobj)
+        public IActionResult Edit([FromBody] BrandModel empobj)
         {
             if (ModelState.IsValid)
             {
@@ -150,7 +160,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             var deleterecord = _context.Brand.Find(id);
             if (deleterecord == null)
             {
-                return NotFound();
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
             }
 
             try
@@ -161,8 +171,8 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                // Log lỗi hoặc xử lý nếu cần
-                return Json(new { success = false });
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
+
             }
         }
     }

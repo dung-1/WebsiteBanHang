@@ -23,47 +23,55 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
         public IActionResult Index(int? page, string searchName)
         {
-            var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
-            int pageSize = 5; // Số mục trên mỗi trang
-
-
-            var productsQuery = _context.Inventory
-                .Include(p => p.product)
-                .OrderByDescending(p => p.Id);
-
-            if (!string.IsNullOrEmpty(searchName))
+            try
             {
-                productsQuery = (IOrderedQueryable<InventoriesModel>)productsQuery.Where(p => p.product.TenSanPham.Contains(searchName));
+                var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
+                int pageSize = 5; // Số mục trên mỗi trang
+
+
+                var productsQuery = _context.Inventory
+                    .Include(p => p.product)
+                    .OrderByDescending(p => p.Id);
+
+                if (!string.IsNullOrEmpty(searchName))
+                {
+                    productsQuery = (IOrderedQueryable<InventoriesModel>)productsQuery.Where(p => p.product.TenSanPham.Contains(searchName));
+                }
+
+                var sortedProducts = productsQuery.ToList();
+
+                if (searchName != null)
+                {
+                    ViewBag.SearchName = searchName;
+                }
+                else
+                {
+                    ViewBag.SearchName = ""; // Hoặc gán một giá trị mặc định khác nếu cần thiết
+                }
+
+
+                if (TempData.ContainsKey("SuccessMessage"))
+                {
+                    ViewBag.SuccessMessage = TempData["SuccessMessage"].ToString();
+                }
+                IPagedList<InventoryViewDto> pagedProducts = sortedProducts
+                               .Select(e => new InventoryViewDto
+                               {
+                                   Id = e.Id,
+                                   TenSanPham = e.product.TenSanPham,
+                                   MaKho = e.MaKho,
+                                   NgayNhap = e.NgayNhap,
+                                   SoLuong = e.SoLuong,
+                               })
+                               .ToPagedList(pageNumber, pageSize);
+
+                return View(pagedProducts);
+            }
+            catch
+            {
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
             }
 
-            var sortedProducts = productsQuery.ToList();
-
-            if (searchName != null)
-            {
-                ViewBag.SearchName = searchName;
-            }
-            else
-            {
-                ViewBag.SearchName = ""; // Hoặc gán một giá trị mặc định khác nếu cần thiết
-            }
-
-
-            if (TempData.ContainsKey("SuccessMessage"))
-            {
-                ViewBag.SuccessMessage = TempData["SuccessMessage"].ToString();
-            }
-            IPagedList<InventoryViewDto> pagedProducts = sortedProducts
-                           .Select(e => new InventoryViewDto
-                           {
-                               Id = e.Id,
-                               TenSanPham = e.product.TenSanPham,
-                               MaKho=e.MaKho,
-                               NgayNhap = e.NgayNhap,
-                               SoLuong = e.SoLuong,
-                           })
-                           .ToPagedList(pageNumber, pageSize);
-
-            return View(pagedProducts);
         }
 
         public IActionResult Create()
@@ -85,19 +93,26 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Create(InventoriesModel empobj)
         {
-            // Tạo mã loại sản phẩm mới tự động và gán cho empobj.MaLoai
-            empobj.MaKho = GenerateCategoryCode(empobj);
-            var product = _context.Product.Find(empobj.ProductId);
-            if (product != null)
-            {
-                empobj.product = product;
-                _context.Inventory.Add(empobj);
-                _context.SaveChanges();
+            try
+            {  // Tạo mã loại sản phẩm mới tự động và gán cho empobj.MaLoai
+                empobj.MaKho = GenerateCategoryCode(empobj);
+                var product = _context.Product.Find(empobj.ProductId);
+                if (product != null)
+                {
+                    empobj.product = product;
+                    _context.Inventory.Add(empobj);
+                    _context.SaveChanges();
 
-                return RedirectToAction("Index"); // Chuyển đến action "Index"
+                    return RedirectToAction("Index"); // Chuyển đến action "Index"
 
+                }
+                return View(empobj);
             }
-            return View(empobj);
+            catch
+            {
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
+            }
+
         }
 
         private string GenerateCategoryCode(InventoriesModel empobj)
@@ -147,19 +162,25 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
         [HttpPost]
         public IActionResult Edit([FromBody] InventoriesModel empobj)
+
         {
-            var brand = _context.Product.Find(empobj.ProductId);
-
-            if (brand != null)
+            try
             {
+                var brand = _context.Product.Find(empobj.ProductId);
 
-                empobj.product = brand;
-                _context.Inventory.Update(empobj);
-                _context.SaveChanges();
-                return RedirectToAction("Index");
+                if (brand != null)
+                {
+
+                    empobj.product = brand;
+                    _context.Inventory.Update(empobj);
+                    _context.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+
+                return View(empobj);
             }
+            catch { return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml"); }
 
-            return View(empobj);
         }
 
         [HttpPost]
@@ -168,7 +189,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             var deleterecord = _context.Inventory.Find(id);
             if (deleterecord == null)
             {
-                return NotFound();
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
             }
             try
             {
@@ -178,8 +199,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                // Log lỗi hoặc xử lý nếu cần
-                return Json(new { success = false });
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
             }
         }
 
