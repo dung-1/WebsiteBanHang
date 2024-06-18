@@ -1,9 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
+using OfficeOpenXml.Table;
+using WebsiteBanHang.Areas.Admin.AdminDTO;
+using WebsiteBanHang.Areas.Admin.Common;
 using WebsiteBanHang.Areas.Admin.Data;
 using WebsiteBanHang.Areas.Admin.Models;
+using WebsiteBanHang.Models;
 using X.PagedList;
+using static System.Web.Razor.Parser.SyntaxConstants;
 
 namespace WebsiteBanHang.Areas.Admin.Controllers
 {
@@ -13,9 +19,15 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
     public class CategoryController : Controller
     {
         private readonly ApplicationDbContext _context;
-        public CategoryController(ApplicationDbContext context)
+        readonly IReporting _IReporting;
+        readonly AdminHomeController _homeAdmin;
+
+        public CategoryController(ApplicationDbContext context, IReporting iReporting, AdminHomeController homeAdmin)
         {
             _context = context;
+            _IReporting = iReporting;
+            _homeAdmin = homeAdmin;
+
         }
 
         public IActionResult Index(int? page, string searchName)
@@ -195,7 +207,94 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
             }
         }
+        //import excel
 
 
+        [HttpPost]
+        public async Task<IActionResult> Import(IFormFile formFile, CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (formFile == null || formFile.Length <= 0)
+                {
+                    return View("Error", new ErrorViewModel { RequestId = "formfile is empty" });
+                }
+
+                if (!Path.GetExtension(formFile.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
+                {
+                    return View("Error", new ErrorViewModel { RequestId = "Not Support file extension" });
+                }
+
+                var list = new List<CategoryModel>();
+
+                using (var stream = new MemoryStream())
+                {
+                    await formFile.CopyToAsync(stream, cancellationToken);
+
+                    using (var package = new ExcelPackage(stream))
+                    {
+                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                        var rowCount = worksheet.Dimension.Rows;
+
+                        for (int row = 2; row <= rowCount; row++)
+                        {
+                            var maLoai = worksheet.Cells[row, 1].Value?.ToString().Trim();
+                            var tenLoai = worksheet.Cells[row, 2].Value?.ToString().Trim();
+
+                            if (!string.IsNullOrEmpty(maLoai) && !string.IsNullOrEmpty(tenLoai))
+                            {
+                                // Kiểm tra xem tên loại đã tồn tại chưa
+                                bool isTenLoaiExists = _context.Category.Any(u => u.TenLoai == tenLoai);
+
+                                if (!isTenLoaiExists)
+                                {
+                                    list.Add(new CategoryModel
+                                    {
+                                        MaLoai = maLoai,
+                                        TenLoai = tenLoai
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Thêm danh sách vào cơ sở dữ liệu
+                if (list.Count > 0)
+                {
+                    _context.Category.AddRange(list);
+                    await _context.SaveChangesAsync(cancellationToken);
+                }
+
+                return RedirectToAction("Index");
+
+            }
+            catch (Exception ex)
+            {
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
+
+
+            }
+
+        }
+        //export excel
+        [HttpPost]
+        public IActionResult DownloadReport(IFormCollection obj)
+        {
+            string reportname = $"Dungcts_Category_{Guid.NewGuid():N}.xlsx";
+            var list = _IReporting.GetCategorywiseReport();
+            if (list.Count > 0)
+            {
+                var exportbytes = _homeAdmin.ExporttoExcel<Category_exrepoting_Dto>(list, reportname);
+                return File(exportbytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", reportname);
+            }
+            else
+            {
+                TempData["Message"] = "No Data to Export";
+                return View();
+            }
+        }
+
+       
     }
 }

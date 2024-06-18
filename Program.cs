@@ -7,6 +7,12 @@ using WebsiteBanHang.Models;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using WebsiteBanHang.HubSignalR;
+using OfficeOpenXml;
+using System.Configuration;
+using System.ComponentModel;
+using LicenseContext = OfficeOpenXml.LicenseContext;
+using WebsiteBanHang.Areas.Admin.Controllers;
+using WebsiteBanHang.Areas.Admin.Common;
 
 namespace WebsiteBanHang
 {
@@ -62,8 +68,12 @@ namespace WebsiteBanHang
                     return factory.Create("SharedResource", assemblyName.Name);
                 };
             });
+            //Thiết lập giấy phép(License Context) cho EPPlus
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            builder.Services.AddTransient<IReporting, ReportingConcrete>();
+            builder.Services.AddTransient<AdminHomeController>();
 
-
+            //tích hợp đa ngôn ngữ
             builder.Services.Configure<RequestLocalizationOptions>(options =>
             {
                 var supportedCultures = new[] { "vi-VN", "en-US" };

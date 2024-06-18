@@ -1,9 +1,15 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿    using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
+using System.Globalization;
+using WebsiteBanHang.Areas.Admin.AdminDTO;
+using WebsiteBanHang.Areas.Admin.Common;
 using WebsiteBanHang.Areas.Admin.Data;
 using WebsiteBanHang.Areas.Admin.Models;
+using WebsiteBanHang.Models;
 using X.PagedList;
+using static i18n.Helpers.NuggetParser;
 
 namespace WebsiteBanHang.Areas.Admin.Controllers
 {
@@ -13,9 +19,14 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
     public class BrandController : Controller
     {
         private readonly ApplicationDbContext _context;
-        public BrandController(ApplicationDbContext context)
+        readonly IReporting _IReporting;
+        readonly AdminHomeController _homeAdmin;
+        public BrandController(ApplicationDbContext context, IReporting iReporting, AdminHomeController homeAdmin)
         {
             _context = context;
+            _IReporting = iReporting;
+            _homeAdmin = homeAdmin;
+
         }
 
         public IActionResult Index(int? page, string searchName)
@@ -173,6 +184,117 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             {
                 return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
 
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Import(IFormFile formFile, CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (formFile == null || formFile.Length <= 0)
+                {
+                    return View("Error", new ErrorViewModel { RequestId = "formfile is empty" });
+                }
+
+                if (!Path.GetExtension(formFile.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
+                {
+                    return View("Error", new ErrorViewModel { RequestId = "Not Support file extension" });
+                }
+
+                var list = new List<BrandModel>();
+
+                using (var stream = new MemoryStream())
+                {
+                    await formFile.CopyToAsync(stream, cancellationToken);
+
+                    using (var package = new ExcelPackage(stream))
+                    {
+                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                        var rowCount = worksheet.Dimension.Rows;
+
+                        for (int row = 2; row <= rowCount; row++)
+                        {
+                            var brand = new BrandModel();
+
+                            brand.MaHang = worksheet.Cells[row, 1].Value?.ToString().Trim();
+                            brand.TenHang = worksheet.Cells[row, 2].Value?.ToString().Trim();
+                            brand.XuatXu = worksheet.Cells[row, 3].Value?.ToString().Trim();
+
+                            if (DateTime.TryParse(worksheet.Cells[row, 4].Value?.ToString().Trim(), out DateTime ngaysanxuat))
+                            {
+                                brand.NgaySanXuat = ngaysanxuat;
+                            }
+                            else
+                            {
+                                // Handle the case where the date is invalid
+                                // You can log an error, skip the record, or use a default date
+                                Console.WriteLine($"Error parsing date in row {row}, column 4");
+                            }
+
+                            if (!string.IsNullOrEmpty(brand.MaHang) && !string.IsNullOrEmpty(brand.TenHang) && !string.IsNullOrEmpty(brand.XuatXu))
+                            {
+                                // Attempt to parse the date in the desired format
+                                if (DateTime.TryParseExact(brand.NgaySanXuat.ToString("dd/MM/yyyy"), "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDate))
+                                {
+                                    // Use the parsed date (parsedDate) for further processing
+                                }
+                                else
+                                {
+                                    // Handle the case where the date is invalid
+                                    Console.WriteLine($"Error parsing date in format dd/MM/yyyy: {brand.NgaySanXuat}");
+                                }
+                            }
+                            {
+                                // Kiểm tra xem tên loại đã tồn tại chưa
+                                bool isTenLoaiExists = _context.Brand.Any(u => u.TenHang == brand.TenHang);
+
+                                if (!isTenLoaiExists)
+                                {
+                                    list.Add(new BrandModel
+                                    {
+                                        MaHang = brand.MaHang,
+                                        TenHang = brand.TenHang,
+                                        NgaySanXuat = brand.NgaySanXuat,
+                                        XuatXu = brand.XuatXu // Assuming XuatXu is another property
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Thêm danh sách vào cơ sở dữ liệu
+                if (list.Count > 0)
+                {
+                    _context.Brand.AddRange(list);
+                    await _context.SaveChangesAsync(cancellationToken);
+                }
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
+            }
+        }
+
+
+
+        [HttpPost]
+        public IActionResult DownloadReport(IFormCollection obj)
+        {
+            string reportname = $"Dungcts_Brand_{Guid.NewGuid():N}.xlsx";
+            var list = _IReporting.GetBrandwiseReport();
+            if (list.Count > 0)
+            {
+                var exportbytes = _homeAdmin.ExporttoExcel<Brand_exrepoting_Dto>(list, reportname);
+                return File(exportbytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", reportname);
+            }
+            else
+            {
+                TempData["Message"] = "No Data to Export";
+                return View();
             }
         }
     }

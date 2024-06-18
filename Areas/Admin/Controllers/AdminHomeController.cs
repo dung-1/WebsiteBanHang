@@ -8,6 +8,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebsiteBanHang.Areas.Admin.AdminDTO;
 using WebsiteBanHang.Areas.Admin.Models;
+using OfficeOpenXml.Table;
+using OfficeOpenXml;
 
 namespace WebsiteBanHang.Areas.Admin.Controllers
 {
@@ -92,6 +94,13 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
             }
 
+        }
+        public byte[] ExporttoExcel<T>(List<T> table, string filename)
+        {
+            using ExcelPackage pack = new ExcelPackage();
+            ExcelWorksheet ws = pack.Workbook.Worksheets.Add(filename);
+            ws.Cells["A1"].LoadFromCollection(table, true, TableStyles.Light1);
+            return pack.GetAsByteArray();
         }
     }
 }

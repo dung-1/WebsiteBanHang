@@ -2,10 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using System.Globalization;
 using WebsiteBanHang.Areas.Admin.AdminDTO;
+using WebsiteBanHang.Areas.Admin.Common;
 using WebsiteBanHang.Areas.Admin.Data;
 using WebsiteBanHang.Areas.Admin.Models;
+using WebsiteBanHang.Models;
 using X.PagedList;
 using static WebsiteBanHang.Areas.Admin.Data.ApplicationDbContext;
 
@@ -18,11 +21,16 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         private readonly ILogger<ProductController> _logger;
 
         private readonly ApplicationDbContext _context;
-        public ProductController(ApplicationDbContext context, ILogger<ProductController> logger)
+        readonly IReporting _IReporting;
+        private readonly IWebHostEnvironment _hostEnvironment;
+        readonly AdminHomeController _homeAdmin;
+        public ProductController(ApplicationDbContext context, ILogger<ProductController> logger, IReporting iReporting, AdminHomeController homeAdmin, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
+            _IReporting = iReporting;
+            _homeAdmin = homeAdmin;
             _logger = logger;
-
+            _hostEnvironment = hostEnvironment;
         }
         [Authorize(Roles = "Admin,Employee")]
 
@@ -81,14 +89,22 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         public IActionResult _ProductAdd()
         {
             // Truy vấn danh sách loại sản phẩm và hãng sản phẩm từ cơ sở dữ liệu
-            var loaiProductList = _context.Category.ToList();
-            var hangProductList = _context.Brand.ToList();
+            try
+            {
+                var loaiProductList = _context.Category.ToList();
+                var hangProductList = _context.Brand.ToList();
 
-            // Tạo SelectList để sử dụng trong dropdown
-            ViewBag.LoaiProductList = new SelectList(loaiProductList, "Id", "TenLoai");
-            ViewBag.HangProductList = new SelectList(hangProductList, "Id", "TenHang");
+                // Tạo SelectList để sử dụng trong dropdown
+                ViewBag.LoaiProductList = new SelectList(loaiProductList, "Id", "TenLoai");
+                ViewBag.HangProductList = new SelectList(hangProductList, "Id", "TenHang");
 
-            return View();
+                return View();
+            }
+            catch
+            {
+
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
+            }
         }
 
         [HttpGet]
@@ -290,5 +306,126 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             }
         }
 
+        //import excel
+
+        [HttpPost]
+        public async Task<IActionResult> Import(IFormFile formFile, CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (formFile == null || formFile.Length <= 0)
+                {
+                    return View("Error", new ErrorViewModel { RequestId = "formfile is empty" });
+                }
+
+                if (!Path.GetExtension(formFile.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
+                {
+                    return View("Error", new ErrorViewModel { RequestId = "Not Support file extension" });
+                }
+
+                var productsToImport = new List<ProductModel>();
+
+                using (var stream = new MemoryStream())
+                {
+                    await formFile.CopyToAsync(stream, cancellationToken);
+
+                    using (var package = new ExcelPackage(stream))
+                    {
+                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                        var rowCount = worksheet.Dimension.Rows;
+
+                        for (int row = 2; row <= rowCount; row++)
+                        {
+                            var maSanPham = worksheet.Cells[row, 1].Value?.ToString()?.Trim();
+                            var tenSanPham = worksheet.Cells[row, 2].Value?.ToString()?.Trim();
+                            var hangSanPham = int.TryParse(worksheet.Cells[row, 3].Value?.ToString()?.Trim(), out int hangId) ? hangId : 0;
+                            var loaiSanPham = int.TryParse(worksheet.Cells[row, 4].Value?.ToString()?.Trim(), out int loaiId) ? loaiId : 0;
+                            var giaNhap = int.TryParse(worksheet.Cells[row, 5].Value?.ToString()?.Trim(), out int giaNhapValue) ? giaNhapValue : 0;
+                            var giaBan = int.TryParse(worksheet.Cells[row, 6].Value?.ToString()?.Trim(), out int giaBanValue) ? giaBanValue : 0;
+                            var giamGia = int.TryParse(worksheet.Cells[row, 7].Value?.ToString()?.Trim(), out int giamGiaValue) ? giamGiaValue : 0;
+                            var image = worksheet.Cells[row, 8].Value?.ToString()?.Trim();
+                            var thongTin = worksheet.Cells[row, 9].Value?.ToString()?.Trim();
+
+                            // Validate required fields
+                            if (!string.IsNullOrEmpty(maSanPham) && !string.IsNullOrEmpty(tenSanPham) && !string.IsNullOrEmpty(image) && !string.IsNullOrEmpty(thongTin))
+                            {
+                                // Check if product with the same name and code already exists
+                                bool isProductExists = await _context.Product.AnyAsync(p => p.TenSanPham == tenSanPham && p.MaSanPham == maSanPham, cancellationToken);
+
+                                if (!isProductExists)
+                                {
+                                    // Generate unique filename for image
+                                    var imageFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(image);
+
+                                    // Path to save image relative to wwwroot
+                                    var imagePath = Path.Combine("images", imageFileName);
+
+                                    // Combine with wwwroot path
+                                    var absoluteImagePath = Path.Combine(_hostEnvironment.WebRootPath, imagePath);
+
+                                    // Copy image to wwwroot/images folder
+                                    using (var fileStream = new FileStream(absoluteImagePath, FileMode.Create))
+                                    {
+                                        await formFile.CopyToAsync(fileStream, cancellationToken);
+                                    }
+
+                                    var imageUrl = "" + imagePath.Replace('\\', '/'); // Use '/' for URL
+
+                                    // Add product to list for import
+                                    productsToImport.Add(new ProductModel
+                                    {
+                                        MaSanPham = maSanPham,
+                                        TenSanPham = tenSanPham,
+                                        HangId = hangSanPham,
+                                        LoaiId = loaiSanPham,
+                                        GiaNhap = giaNhap,
+                                        GiaBan = giaBan,
+                                        GiaGiam = giamGia,
+                                        Image = imageUrl,
+                                        ThongTinSanPham = thongTin,
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Add imported products to the database
+                if (productsToImport.Count > 0)
+                {
+                    _context.Product.AddRange(productsToImport);
+                    await _context.SaveChangesAsync(cancellationToken);
+                }
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                _logger.LogError(ex, "Error occurred during import");
+
+                // Return an error view
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
+            }
+        }
+
+
+
+        [HttpPost]
+        public IActionResult DownloadReport(IFormCollection obj)
+        {
+            string reportname = $"Dungcts_Product_{Guid.NewGuid():N}.xlsx";
+            var list = _IReporting.GetProductwiseReport();
+            if (list.Count > 0)
+            {
+                var exportbytes = _homeAdmin.ExporttoExcel<Product_exrepoting_Dto>(list, reportname);
+                return File(exportbytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", reportname);
+            }
+            else
+            {
+                TempData["Message"] = "No Data to Export";
+                return View();
+            }
+        }
     }
 }
