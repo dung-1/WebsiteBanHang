@@ -128,7 +128,6 @@
 
                         <div class="card-body border-top">
                             @*<a asp-controller="cart" asp-action="checkout" class="btn btn-primary float-end create-checkout"> <i class="fa-solid fa-receipt"></i> mua hàng</a>*@
-                            <a asp-controller="Cart" asp-action="CheckOut" class="btn btn-primary float-end create-checkout"> <i class="fa-solid fa-receipt"></i> Mua hàng</a>
                             <a asp-controller="User" asp-action="Index" class="btn btn-secondary"><i class="fa-solid fa-circle-left"></i> Tiếp tục mua sắm</a>
                         </div> <!-- card-body.// -->
 
@@ -136,35 +135,6 @@
                 </main> <!-- col.// -->
 
                 <aside class="col-lg-3">
-
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <p class="card-title">Hình thức giao hàng</p>
-                            <form action="">
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="radio" name="delivery_method" id="delivery_method_1" checked>
-                                    <label class="form-check-label" for="delivery_method_1">Giao tiêu chuẩn</label>
-                                </div>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="radio" name="delivery_method" id="delivery_method_2">
-                                    <label class="form-check-label" for="delivery_method_2">Giao nhanh</label>
-                                </div>
-                            </form>
-                        </div> <!-- card-body.// -->
-                    </div> <!-- card.// -->
-
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <p class="card-title">Mã giảm giá</p>
-                            <form action="">
-                                <div class="input-group mb-3">
-                                    <input type="text" class="form-control" placeholder="">
-                                    <button class="btn btn-primary" type="button">Áp dụng</button>
-                                </div>
-                            </form>
-                        </div> <!-- card-body.// -->
-                    </div> <!-- card.// -->
-
                     <div class="card">
                         <div class="card-body">
                             <dl class="row mb-0">
@@ -177,7 +147,24 @@
                             </dl>
                         </div> <!-- card-body.// -->
                     </div> <!-- card.// -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <p class="card-title">Hình thức thanh toán</p>
+                            <form method="post" asp-controller="Cart" asp-action="Checkout">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="delivery_method" id="delivery_method_1" value="cod" checked>
+                                    <label class="form-check-label" for="delivery_method_1">Thanh toán khi nhận hàng</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="delivery_method" id="delivery_method_2" value="card">
+                                    <label class="form-check-label" for="delivery_method_2">Thanh toán qua thẻ</label>
+                                </div>
+                                <button type="submit" class="btn btn-info">Checkout</button>
+                            </form>
 
+
+                        </div> <!-- card-body.// -->
+                    </div> <!-- card.// -->
                 </aside> <!-- col.// -->
 
             </div> <!-- row.// -->

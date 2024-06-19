@@ -2,10 +2,9 @@
 using WebsiteBanHang.Areas.Admin.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 using WebsiteBanHang.Models;
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
 using WebsiteBanHang.HubSignalR;
 using OfficeOpenXml;
 using System.Configuration;
@@ -13,6 +12,10 @@ using System.ComponentModel;
 using LicenseContext = OfficeOpenXml.LicenseContext;
 using WebsiteBanHang.Areas.Admin.Controllers;
 using WebsiteBanHang.Areas.Admin.Common;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
+using static System.Web.Razor.Parser.SyntaxConstants;
+using Stripe;
+
 
 namespace WebsiteBanHang
 {
@@ -85,7 +88,22 @@ namespace WebsiteBanHang
                 options.RequestCultureProviders.Insert(1, questStringCultureProvider);
                 //Add services to the container.
             });
+            //đăng ký cho SignalR
             builder.Services.AddSignalR();
+            //đăng ký cho thanh toán StripSettings
+            builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("StripeSettings"));
+
+            //đăng ký test cho chức năng login google gmail StripSettings
+            //builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+            //{
+            //    googleOptions.ClientId = configuration["Authentication:Google:ClientId"];
+            //    googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+            //});
+
+            builder.Services.AddControllers().AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            });
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())
@@ -128,7 +146,7 @@ namespace WebsiteBanHang
                     pattern: "{controller=Home}/{action=Index}/{id?}"
                 );
                 endpoints.MapHub<NotificationHub>("/notificationHub");
-                endpoints.MapHub<NotificationHub>("/chathub");
+                endpoints.MapHub<ChatHub>("/chathub");
             });
             app.Run();
         }
