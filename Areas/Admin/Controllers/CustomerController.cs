@@ -31,7 +31,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             try
             {
                 var pageNumber = page ?? 1;
-                int pageSize = 5;
+                int pageSize = int.MaxValue; // Số mục trên mỗi trang
 
                 var productsQuery = _context.Customer
                     .Include(p => p.CustomerRole)

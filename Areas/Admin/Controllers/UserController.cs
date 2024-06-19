@@ -34,7 +34,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             {
 
                 var pageNumber = page ?? 1;
-                int pageSize = 5;
+                int pageSize = int.MaxValue;
 
                 var productsQuery = _context.User
                     .Include(p => p.UserRole)

@@ -26,7 +26,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             try
             {
                 var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
-                int pageSize = 5; // Số mục trên mỗi trang
+                int pageSize = int.MaxValue; // Số mục trên mỗi trang
 
 
                 var productsQuery = _context.Inventory

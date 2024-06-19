@@ -38,10 +38,8 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         {
             try
             {
-
-                var pageNumber = page ?? 1;
-                int pageSize = 5;
-
+                var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
+                int pageSize = int.MaxValue; // Số mục trên mỗi trang
                 var productsQuery = _context.Product
                     .Include(p => p.Brand)
                     .Include(p => p.Category)
