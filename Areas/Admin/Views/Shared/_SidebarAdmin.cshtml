@@ -71,15 +71,17 @@
                         </li>
                     </ul>
                 </li>
-
-                <li class="nav-item">
-                    <a href="@Url.Action("Index","User")" class="nav-link">
-                        <i class="fa-solid fa-user menu-icon"></i>
-                        <p>
-                            Quản Lý Người Dùng
-                        </p>
-                    </a>
-                </li>
+                    @if (User.IsInRole("Admin"))
+                {
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index","User")" class="nav-link">
+                            <i class="fa-solid fa-user menu-icon"></i>
+                            <p>
+                                Quản Lý Người Dùng
+                            </p>
+                        </a>
+                    </li>
+                }
                 <li class="nav-item">
                     <a href="@Url.Action("Index","Customer")" class="nav-link">
                         <i class="menu-icon  fa-solid fa-users"></i>
@@ -98,7 +100,7 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a  href="@Url.Action("Index","Billorder")" class="nav-link">
+                            <a href="@Url.Action("Index","Billorder")" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Đang Chờ Xử Lý</p>
                             </a>
@@ -127,7 +129,7 @@
                                 <p>Đơn Hàng Hủy</p>
                             </a>
                         </li>
-                        </ul>
+                    </ul>
                 </li>
                 <li class="nav-item">
                     <a href="@Url.Action("Index","Inventory")" class="nav-link">
@@ -154,7 +156,7 @@
                     </a>
                 </li>
             </ul>
-           
+
         </nav>
         <!-- /.sidebar-menu -->
     </div>

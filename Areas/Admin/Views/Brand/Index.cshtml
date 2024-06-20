@@ -31,9 +31,33 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <button type="button" class="btn btn-info create-brand">
-                                <i class="fa-solid fa-plus"></i>   Thêm hãng sản phẩm
-                            </button>
+
+
+                            <div class="row">
+                                <div class="col-3">
+                                    <button type="button" class="btn btn-info create-brand">
+                                        <i class="fa-solid fa-plus"></i>   Thêm hãng sản phẩm
+                                    </button>
+                                   
+                                </div>
+
+                                <div class="col-3">
+                                    <form id="importForm" asp-controller="Brand" asp-action="Import" enctype="multipart/form-data" method="post">
+                                        <input type="file" id="fileInput" name="formFile" style="display: none;" />
+                                        <button type="button" class="btn btn-danger" onclick="document.getElementById('fileInput').click();"><i class="fa-solid fa-file-excel"></i> Import Excel</button>
+                                    </form>
+
+                                </div>
+                                <div class="col-3">
+                                    <form autocomplete="off" asp-controller="Brand" asp-antiforgery="true" asp-action="DownloadReport" method="post">
+                                        <button type="submit" id="btnsubmit" class="btn btn-success"><i class="fa-solid fa-file-excel"></i> Export to Excel</button>
+                                    </form>
+                                </div>
+
+
+                            </div>
+
+                          
                             <div class="modal fade" id="Create_Brand" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
@@ -112,3 +136,10 @@
     </section>
     <!-- /.content -->
 </div>
+@section Scripts {
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function () {
+            document.getElementById('importForm').submit();
+        });
+    </script>
+}

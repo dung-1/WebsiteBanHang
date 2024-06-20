@@ -75,9 +75,8 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                // Xử lý exception theo nhu cầu của bạn, ví dụ: logging
-                ViewBag.ErrorMessage = "Có lỗi xảy ra khi xử lý yêu cầu.";
-                return null; // hoặc throw ex; tùy vào cách xử lý lỗi của bạn
+                return (IPagedList<OrderDto>)View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
+
             }
         }
 
@@ -136,137 +135,154 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult View(int id)
         {
-            var orderDetailsQuery = from order in _context.Order
-                                    join customerDetail in _context.Customer_Details
-                                    on order.CustomerID equals customerDetail.CustomerId into orderCustomerDetails
-                                    from customer in orderCustomerDetails.DefaultIfEmpty()
-                                    join userDetail in _context.Users_Details
-                                    on order.UserID equals userDetail.UserId into orderUserDetails
-                                    from user in orderUserDetails.DefaultIfEmpty()
-                                    join orderDetail in _context.Order_Detai
-                                    on order.id equals orderDetail.OrderId into orderDetails
-                                    from details in orderDetails.DefaultIfEmpty()
-                                    join product in _context.Product
-                                    on details.ProductId equals product.Id into orderProductDetails
-                                    from orderProduct in orderProductDetails.DefaultIfEmpty()
-                                    where order.id == id
-                                    orderby order.id descending
-                                    select new
-                                    {
-                                        Order = order,
-                                        UserDetail = user,
-                                        CustomerDetail = customer,
-                                        OrderDetails = details,
-                                        Product = orderProduct
-                                    };
-
-            var orderDetailsList = orderDetailsQuery.ToList();
-
-            if (orderDetailsList.Count == 0)
+            try
             {
-                return NotFound();
+                var orderDetailsQuery = from order in _context.Order
+                                        join customerDetail in _context.Customer_Details
+                                        on order.CustomerID equals customerDetail.CustomerId into orderCustomerDetails
+                                        from customer in orderCustomerDetails.DefaultIfEmpty()
+                                        join userDetail in _context.Users_Details
+                                        on order.UserID equals userDetail.UserId into orderUserDetails
+                                        from user in orderUserDetails.DefaultIfEmpty()
+                                        join orderDetail in _context.Order_Detai
+                                        on order.id equals orderDetail.OrderId into orderDetails
+                                        from details in orderDetails.DefaultIfEmpty()
+                                        join product in _context.Product
+                                        on details.ProductId equals product.Id into orderProductDetails
+                                        from orderProduct in orderProductDetails.DefaultIfEmpty()
+                                        where order.id == id
+                                        orderby order.id descending
+                                        select new
+                                        {
+                                            Order = order,
+                                            UserDetail = user,
+                                            CustomerDetail = customer,
+                                            OrderDetails = details,
+                                            Product = orderProduct
+                                        };
+
+                var orderDetailsList = orderDetailsQuery.ToList();
+
+                if (orderDetailsList.Count == 0)
+                {
+                    return NotFound();
+                }
+
+                var distinctOrders = orderDetailsList
+                    .GroupBy(o => o.Order.id)
+                    .Select(group => group.First())
+                    .ToList();
+
+                var orderDtos = distinctOrders.Select(orderInfo => new OrderDto
+                {
+                    Id = orderInfo.Order.id,
+                    MaHoaDon = orderInfo.Order.MaHoaDon,
+                    TenKhachHang = orderInfo.CustomerDetail?.HoTen,
+                    TenNhanVien = orderInfo.UserDetail?.HoTen,
+                    SoDienThoai = orderInfo.CustomerDetail?.SoDienThoai,
+                    DiaChi = orderInfo.CustomerDetail?.DiaChi,
+                    NgayBan = orderInfo.Order.ngayBan,
+                    TrangThai = orderInfo.Order.trangThai,
+                    LoaiHoaDon = orderInfo.Order.LoaiHoaDon,
+                    ChiTietHoaDon = orderDetailsList
+                      .Where(o => o.Order.id == orderInfo.Order.id)
+                      .Select(o => new ChiTietHoaDonDto
+                      {
+                          img = o.OrderDetails.product.Image,
+                          TenSanPham = o.OrderDetails.product.TenSanPham,
+                          SoLuong = o.OrderDetails.soLuong,
+                          Gia = o.OrderDetails.product.GiaGiam >= 0 ?
+                              (decimal)(o.OrderDetails.product.GiaBan - ((o.OrderDetails.product.GiaBan * o.OrderDetails.product.GiaGiam) / 100)) :
+                              (decimal)o.OrderDetails.product.GiaBan,
+                      }).ToList(),
+
+                    TongCong = orderInfo.Order.ctdh != null
+                          ? (decimal)orderInfo.Order.ctdh.Sum(ct => ct.gia)
+                          : 0
+                }).ToList();
+
+                return PartialView("_OrderView", orderDtos);
+            }
+            catch
+            {
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
             }
 
-            var distinctOrders = orderDetailsList
-                .GroupBy(o => o.Order.id)
-                .Select(group => group.First())
-                .ToList();
-
-            var orderDtos = distinctOrders.Select(orderInfo => new OrderDto
-            {
-                Id = orderInfo.Order.id,
-                MaHoaDon = orderInfo.Order.MaHoaDon,
-                TenKhachHang = orderInfo.CustomerDetail?.HoTen,
-                TenNhanVien = orderInfo.UserDetail?.HoTen,
-                SoDienThoai = orderInfo.CustomerDetail?.SoDienThoai,
-                DiaChi = orderInfo.CustomerDetail?.DiaChi,
-                NgayBan = orderInfo.Order.ngayBan,
-                TrangThai = orderInfo.Order.trangThai,
-                LoaiHoaDon = orderInfo.Order.LoaiHoaDon,
-                ChiTietHoaDon = orderDetailsList
-                  .Where(o => o.Order.id == orderInfo.Order.id)
-                  .Select(o => new ChiTietHoaDonDto
-                  {
-                      img = o.OrderDetails.product.Image,
-                      TenSanPham = o.OrderDetails.product.TenSanPham,
-                      SoLuong = o.OrderDetails.soLuong,
-                      Gia = o.OrderDetails.product.GiaGiam >= 0 ?
-                          (decimal)(o.OrderDetails.product.GiaBan - ((o.OrderDetails.product.GiaBan * o.OrderDetails.product.GiaGiam) / 100)) :
-                          (decimal)o.OrderDetails.product.GiaBan,
-                  }).ToList(),
-
-                TongCong = orderInfo.Order.ctdh != null
-                      ? (decimal)orderInfo.Order.ctdh.Sum(ct => ct.gia)
-                      : 0
-            }).ToList();
-
-            return PartialView("_OrderView", orderDtos);
         }
         //Duyệt Đơn Hàng
         public async Task<IActionResult> ApproveOrderAsync(int Id)
         {
-            var order = _context.Order
+            try
+            {
+                 var order = _context.Order
                 .Include(o => o.Customer)
                 .Include(o => o.ctdh) // Load danh sách chi tiết đơn hàng
                 .ThenInclude(od => od.product) // Load thông tin sản phẩm cho mỗi chi tiết đơn hàng
                 .FirstOrDefault(o => o.id == Id);
 
-            if (order != null)
-            {
-                // Kiểm tra quyền truy cập của người dùng, ví dụ chỉ cho phép admin duyệt đơn
-                if (User.IsInRole("Admin") || User.IsInRole("Employee"))
+                if (order != null)
                 {
-                    // Cập nhật trạng thái đơn hàng là đã duyệt
-                    order.trangThai = "Đã duyệt";
-
-                    // Lấy UserID của người đăng nhập vào hệ thống và gán cho trường UserID của đơn hàng
-                    // Lấy tên đăng nhập từ claim
-                    var userName = User.FindFirstValue(ClaimTypes.Name);
-
-                    // Tìm kiếm người dùng trong cơ sở dữ liệu dựa trên tên đăng nhập
-                    var user = await _context.User.FirstOrDefaultAsync(u => u.Email == userName);
-
-                    if (user != null)
+                    // Kiểm tra quyền truy cập của người dùng, ví dụ chỉ cho phép admin duyệt đơn
+                    if (User.IsInRole("Admin") || User.IsInRole("Employee"))
                     {
-                        // Gán ID của người dùng cho UserID của đơn hàng
-                        order.UserID = user.Id;
+                        // Cập nhật trạng thái đơn hàng là đã duyệt
+                        order.trangThai = "Đã duyệt";
+
+                        // Lấy UserID của người đăng nhập vào hệ thống và gán cho trường UserID của đơn hàng
+                        // Lấy tên đăng nhập từ claim
+                        var userName = User.FindFirstValue(ClaimTypes.Name);
+
+                        // Tìm kiếm người dùng trong cơ sở dữ liệu dựa trên tên đăng nhập
+                        var user = await _context.User.FirstOrDefaultAsync(u => u.Email == userName);
+
+                        if (user != null)
+                        {
+                            // Gán ID của người dùng cho UserID của đơn hàng
+                            order.UserID = user.Id;
+                        }
+                        else
+                        {
+                            TempData["ErrorMessage"] = "Không tìm thấy người dùng với tên đăng nhập đã cung cấp.";
+                        }
+
+
+
+                        // Lấy email của khách hàng
+                        var customerEmail = order.Customer?.Email;
+
+                        _context.SaveChanges();
+
+                        TempData["SuccessMessage"] = "Đã duyệt đơn hàng thành công.";
+
+                        // Gửi hóa đơn qua email
+                        if (!string.IsNullOrEmpty(customerEmail))
+                        {
+                            SendInvoiceByEmail(customerEmail, order);
+                            await _hub.Clients.All.SendAsync("ReceiveOrderNotification", order.MaHoaDon);
+                        }
+                        else
+                        {
+                            TempData["ErrorMessage"] = "Không tìm thấy email người nhận !!!";
+                        }
                     }
                     else
                     {
-                        TempData["ErrorMessage"] = "Không tìm thấy người dùng với tên đăng nhập đã cung cấp.";
-                    }
-
-
-
-                    // Lấy email của khách hàng
-                    var customerEmail = order.Customer?.Email;
-
-                    _context.SaveChanges();
-
-                    TempData["SuccessMessage"] = "Đã duyệt đơn hàng thành công.";
-
-                    // Gửi hóa đơn qua email
-                    if (!string.IsNullOrEmpty(customerEmail))
-                    {
-                        SendInvoiceByEmail(customerEmail, order);
-                        await _hub.Clients.All.SendAsync("ReceiveOrderNotification", order.MaHoaDon);
-                    }
-                    else
-                    {
-                        TempData["ErrorMessage"] = "Không tìm thấy email người nhận !!!";
+                        TempData["ErrorMessage"] = "Bạn không có quyền duyệt đơn hàng.";
                     }
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Bạn không có quyền duyệt đơn hàng.";
+                    TempData["ErrorMessage"] = "Không tìm thấy đơn hàng.";
                 }
+
+                return RedirectToAction("Index");
             }
-            else
+            catch
             {
-                TempData["ErrorMessage"] = "Không tìm thấy đơn hàng.";
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
+
             }
 
-            return RedirectToAction("Index");
         }
 
 
@@ -349,67 +365,88 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         //Giao Đơn Hàng
         public IActionResult DeliverOrder(int Id)
         {
-            var order = _context.Order.Find(Id);
-
-            if (order != null)
+            try
             {
-                // Kiểm tra quyền truy cập của người dùng, ví dụ chỉ cho phép admin giao hàng
-                if (User.IsInRole("Admin"))
-                {
-                    // Cập nhật trạng thái đơn hàng là đã giao hàng
-                    order.trangThai = "Đang giao hàng";
-                    _context.SaveChanges();
+                var order = _context.Order.Find(Id);
 
-                    TempData["SuccessMessage"] = "Đã giao hàng thành công.";
+                if (order != null)
+                {
+                    // Kiểm tra quyền truy cập của người dùng, ví dụ chỉ cho phép admin giao hàng
+                    if (User.IsInRole("Admin"))
+                    {
+                        // Cập nhật trạng thái đơn hàng là đã giao hàng
+                        order.trangThai = "Đang giao hàng";
+                        _context.SaveChanges();
+
+                        TempData["SuccessMessage"] = "Đã giao hàng thành công.";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Bạn không có quyền giao hàng.";
+                    }
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Bạn không có quyền giao hàng.";
+                    TempData["ErrorMessage"] = "Không tìm thấy đơn hàng.";
                 }
+
+                return RedirectToAction("Approved"); // Chuyển hướng về trang danh sách đơn hàng
             }
-            else
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Không tìm thấy đơn hàng.";
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
+
+
             }
 
-            return RedirectToAction("Approved"); // Chuyển hướng về trang danh sách đơn hàng
         }
 
         //Hủy Đơn Hàng
         public IActionResult CancelOrder(int Id)
         {
-            var order = _context.Order.Include(o => o.ctdh).FirstOrDefault(o => o.id == Id);
-
-            if (order != null)
+            try
             {
-                // Kiểm tra quyền truy cập của người dùng, ví dụ chỉ cho phép khách hàng hủy đơn
-                if (User.IsInRole("Admin"))
-                {
-                    foreach (var orderDetail in order.ctdh)
-                    {
-                        var inventoryItem = _context.Inventory.FirstOrDefault(i => i.ProductId == orderDetail.ProductId);
-                        if (inventoryItem != null)
-                        {
-                            inventoryItem.SoLuong += orderDetail.soLuong;
-                        }
-                    }
-                    // Cập nhật trạng thái đơn hàng là đã hủy
-                    order.trangThai = "Đã hủy";
-                    _context.SaveChanges();
+                var order = _context.Order.Include(o => o.ctdh).FirstOrDefault(o => o.id == Id);
 
-                    TempData["SuccessMessage"] = "Đã hủy đơn hàng thành công.";
+                if (order != null)
+                {
+                    // Kiểm tra quyền truy cập của người dùng, ví dụ chỉ cho phép khách hàng hủy đơn
+                    if (User.IsInRole("Admin"))
+                    {
+                        foreach (var orderDetail in order.ctdh)
+                        {
+                            var inventoryItem = _context.Inventory.FirstOrDefault(i => i.ProductId == orderDetail.ProductId);
+                            if (inventoryItem != null)
+                            {
+                                inventoryItem.SoLuong += orderDetail.soLuong;
+                            }
+                        }
+                        // Cập nhật trạng thái đơn hàng là đã hủy
+                        order.trangThai = "Đã hủy";
+                        _context.SaveChanges();
+
+                        TempData["SuccessMessage"] = "Đã hủy đơn hàng thành công.";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Bạn không có quyền hủy đơn hàng.";
+                    }
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Bạn không có quyền hủy đơn hàng.";
+                    TempData["ErrorMessage"] = "Không tìm thấy đơn hàng.";
                 }
+
+                return RedirectToAction("Failorder"); // Chuyển hướng về trang danh sách đơn hàng
             }
-            else
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Không tìm thấy đơn hàng.";
+
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
+
+
             }
 
-            return RedirectToAction("Failorder"); // Chuyển hướng về trang danh sách đơn hàng
         }
 
 

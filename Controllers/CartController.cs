@@ -2,14 +2,15 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using System.Web.Helpers;
 using WebsiteBanHang.Areas.Admin.Data;
 using WebsiteBanHang.Areas.Admin.Models;
 using WebsiteBanHang.HubSignalR;
 using Microsoft.AspNetCore.SignalR;
 using WebsiteBanHang.Models;
-
-
+using Stripe.Checkout;
+using Stripe;
+using Microsoft.Extensions.Options;
+using static System.Web.Razor.Parser.SyntaxConstants;
 
 namespace WebsiteBanHang.Controllers
 {
@@ -21,12 +22,14 @@ namespace WebsiteBanHang.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHubContext<NotificationHub> _hub;
-        public CartController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, IHubContext<NotificationHub> hub)
+        private readonly StripeSettings _stripeSettings;
+        public CartController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, IHubContext<NotificationHub> hub, IOptions<StripeSettings> stripeSettings)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
             _configuration = configuration;
             _hub = hub;
+            _stripeSettings = stripeSettings.Value;
         }
 
 
@@ -153,7 +156,7 @@ namespace WebsiteBanHang.Controllers
                             {
                                 CartId = cart.Id,
                                 ProductId = id,
-                                Quantity = quantity >0 ? quantity : 1,
+                                Quantity = quantity > 0 ? quantity : 1,
                             };
                             _context.Cart_Item.Add(cartItem);
                         }
@@ -178,7 +181,6 @@ namespace WebsiteBanHang.Controllers
                 return RedirectToAction("Error"); // Chẳng hạn, chuyển hướng đến trang lỗi nếu có lỗi xảy ra
             }
         }
-
 
         [HttpPost]
         public IActionResult UpdateCartItemQuantity(int productId, int quantity)
@@ -241,88 +243,6 @@ namespace WebsiteBanHang.Controllers
                 return Json(new { success = false, message = "Đã xảy ra lỗi khi xóa sản phẩm khỏi giỏ hàng." });
             }
         }
-        [Route("CheckOut")]
-        public async Task<IActionResult> Checkout()
-        {
-            var (loggedInCustomer, cartModel) = GetLoggedInCustomerAndCart();
-
-            if (cartModel != null)
-            {
-                var cartItems = cartModel.CartItems; // Lấy danh sách các mục giỏ hàng từ đối tượng cartModel
-                float total = 0;
-                try
-                {
-                    // Khai báo biến order ở đây để sử dụng trong vòng lặp
-                    var order = new OrdersModel
-                    {
-                        MaHoaDon = GenerateOrderCode(), // Implement your own order code generation logic
-                        CustomerID = loggedInCustomer != null ? loggedInCustomer.Id : null, // Set the user ID as needed
-                        ngayBan = DateTime.Now,
-                        tongTien = total,
-                        trangThai = "Đang xử lý",
-                        LoaiHoaDon = "Mua hàng"
-                    };
-
-                    foreach (var cartItem in cartItems)
-                    {
-                        float price = 0;
-                        if (cartItem.Product.GiaGiam != 0)
-                        {
-                            var giamgia = cartItem.Product.GiaBan - ((cartItem.Product.GiaBan * cartItem.Product.GiaGiam) / 100);
-                            price = (float)Convert.ToDouble(cartItem.Quantity * giamgia);
-                        }
-                        else
-                        {
-                            price = (float)Convert.ToDouble(cartItem.Quantity * cartItem.Product.GiaBan);
-                        }
-                        total += price;
-
-                        // Create an order detail for each item in the cart
-                        var orderDetail = new OrderDetaiModel
-                        {
-                            ProductId = cartItem.ProductId, // Sử dụng ProductId thay vì cartItem.Product.Id
-                            soLuong = cartItem.Quantity,
-                            gia = price // Sử dụng giá được tính toán ở trên
-                        };
-
-                        // Reduce the quantity of the product in the inventory
-                        var inventoryItem = _context.Inventory.FirstOrDefault(i => i.ProductId == cartItem.ProductId);
-                        if (inventoryItem != null)
-                        {
-                            inventoryItem.SoLuong -= cartItem.Quantity;
-                        }
-                        // Add the order detail to the order
-                        order.ctdh.Add(orderDetail);
-                    }
-
-                    // Assign total value after calculating
-                    order.tongTien = total;
-
-                    // Save the order and order details to the database
-                    _context.Order.Add(order);
-                    _context.SaveChanges();
-
-                    // Clear the cart after the purchase
-                    _context.Cart_Item.RemoveRange(cartItems); // Xóa các mục giỏ hàng
-                    _context.SaveChanges();
-
-                    //Gửi thông báo tới admin quản trị
-                    await _hub.Clients.All.SendAsync("ReceiveOrderNotification", order.MaHoaDon);
-
-                    TempData["CheckoutSuccess"] = "Đặt hàng thành công.";
-                }
-                catch (Exception ex)
-                {
-                    TempData["CheckoutError"] = "Đã xảy ra lỗi khi đặt hàng.";
-                    // Handle the exception
-                }
-            }
-
-            return RedirectToAction("Index");
-        }
-
-
-
         private string GenerateOrderCode()
         {
             // Get the latest order code from the database
@@ -344,5 +264,134 @@ namespace WebsiteBanHang.Controllers
             return "HD00001";
         }
 
+        [Route("Checkout")]
+        public async Task<IActionResult> Checkout(string delivery_method)
+        {
+            var (loggedInCustomer, cartModel) = GetLoggedInCustomerAndCart();
+
+            if (cartModel != null)
+            {
+                var cartItems = cartModel.CartItems; // Lấy danh sách các mục giỏ hàng từ đối tượng cartModel
+                float total = 0;
+                try
+                {
+                    foreach (var cartItem in cartItems)
+                    {
+                        float price = 0;
+                        if (cartItem.Product.GiaGiam != 0)
+                        {
+                            var giamgia = cartItem.Product.GiaBan - cartItem.Product.GiaBan * cartItem.Product.GiaGiam / 100;
+                            price = (float)Convert.ToDouble(cartItem.Quantity * giamgia);
+                        }
+                        else
+                        {
+                            price = (float)Convert.ToDouble(cartItem.Quantity * cartItem.Product.GiaBan);
+                        }
+                        total += price;
+                    }
+
+                    // Kiểm tra phương thức thanh toán
+                    if (delivery_method == "card")
+                    {
+                        var order = new OrdersModel
+                        {
+                            MaHoaDon = GenerateOrderCode(), // Implement your own order code generation logic
+                            CustomerID = loggedInCustomer != null ? loggedInCustomer.Id : null, // Set the user ID as needed
+                            ngayBan = DateTime.Now,
+                            tongTien = total,
+                            trangThai = "Đang xử lý",
+                            LoaiHoaDon = "Mua hàng"
+                        };
+
+                        // Save the order temporarily without committing to database
+                        _context.Order.Add(order);
+                        _context.SaveChanges(); // Lưu tạm vào database để có ID của order
+
+                        // Clear the cart after the purchase
+                        _context.Cart_Item.RemoveRange(cartItems); // Xóa các mục giỏ hàng
+                        _context.SaveChanges();
+
+                        // Gửi thông báo tới admin quản trị
+                        await _hub.Clients.All.SendAsync("ReceiveOrderNotification", order.MaHoaDon);
+
+                        var currency = "vnd"; // Currency code  
+                        StripeConfiguration.ApiKey = _stripeSettings.SecretKey;
+
+                        var totalAmount = (int)order.tongTien;
+
+                        var options = new SessionCreateOptions
+                        {
+                            PaymentMethodTypes = new List<string> { "card" },
+                            LineItems = new List<SessionLineItemOptions>
+                    {
+                        new SessionLineItemOptions
+                        {
+                            PriceData = new SessionLineItemPriceDataOptions
+                            {
+                                Currency = currency,
+                                UnitAmount = totalAmount,  // Amount in smallest currency unit (e.g., cents)
+                                ProductData = new SessionLineItemPriceDataProductDataOptions
+                                {
+                                    Name = "Product Name",
+                                    Description = "Product Description"
+                                }
+                            },
+                            Quantity = 1
+                        }
+                    },
+                            Mode = "payment",
+                            SuccessUrl = Url.Action("PaymentSuccess", "Cart", new { orderId = order.id }, Request.Scheme),
+                            CancelUrl = Url.Action("PaymentCancel", "Cart", null, Request.Scheme)
+                        };
+
+                        var service = new SessionService();
+                        var session = service.Create(options);
+
+                        return Redirect(session.Url);
+                    }
+                    else
+                    {
+                        // Đánh dấu đơn hàng đã thanh toán khi nhận hàng
+                        var order = new OrdersModel
+                        {
+                            MaHoaDon = GenerateOrderCode(), // Implement your own order code generation logic
+                            CustomerID = loggedInCustomer != null ? loggedInCustomer.Id : null, // Set the user ID as needed
+                            ngayBan = DateTime.Now,
+                            tongTien = total,
+                            trangThai = "Đang xử lý",
+                            LoaiHoaDon = "Mua hàng"
+                        };
+
+                        // Save the order temporarily without committing to database
+                        _context.Order.Add(order);
+                        _context.SaveChanges(); // Lưu tạm vào database để có ID của order
+
+                        // Clear the cart after the purchase
+                        _context.Cart_Item.RemoveRange(cartItems); // Xóa các mục giỏ hàng
+                        _context.SaveChanges();
+
+                        // Gửi thông báo tới admin quản trị
+                        await _hub.Clients.All.SendAsync("ReceiveOrderNotification", order.MaHoaDon);
+                        return RedirectToAction("Index");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TempData["CheckoutError"] = "Đã xảy ra lỗi khi đặt hàng.";
+                    // Handle the exception
+                }
+            }
+
+            return RedirectToAction("Index");
+        }
+        public IActionResult PaymentSuccess()
+        {
+            return View();
+        }
+
+        public IActionResult PaymentCancel()
+        {
+            return View();
+        }
     }
 }

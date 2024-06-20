@@ -2,11 +2,14 @@
 using WebsiteBanHang.Areas.Admin.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.Extensions.Options;
 using WebsiteBanHang.Models;
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
 using WebsiteBanHang.HubSignalR;
+using OfficeOpenXml;
+using LicenseContext = OfficeOpenXml.LicenseContext;
+using WebsiteBanHang.Areas.Admin.Controllers;
+using WebsiteBanHang.Areas.Admin.Common;
+
 
 namespace WebsiteBanHang
 {
@@ -62,8 +65,12 @@ namespace WebsiteBanHang
                     return factory.Create("SharedResource", assemblyName.Name);
                 };
             });
+            //Thiết lập giấy phép(License Context) cho EPPlus
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            builder.Services.AddTransient<IReporting, ReportingConcrete>();
+            builder.Services.AddTransient<AdminHomeController>();
 
-
+            //tích hợp đa ngôn ngữ
             builder.Services.Configure<RequestLocalizationOptions>(options =>
             {
                 var supportedCultures = new[] { "vi-VN", "en-US" };
@@ -75,7 +82,23 @@ namespace WebsiteBanHang
                 options.RequestCultureProviders.Insert(1, questStringCultureProvider);
                 //Add services to the container.
             });
+            //đăng ký cho SignalR
             builder.Services.AddSignalR();
+            //đăng ký cho thanh toán StripSettings
+            builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("StripeSettings"));
+
+            //đăng ký test cho chức năng login google gmail StripSettings
+            //builder.Services.AddAuthentication().AddGoogle(options =>
+            //{
+            //    IConfigurationSection googleAuthNSection = builder.Configuration.GetSection("Authentication:Google");
+            //    options.ClientId = googleAuthNSection["ClientId"];
+            //    options.ClientSecret = googleAuthNSection["ClientSecret"];
+            //});
+
+            builder.Services.AddControllers().AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            });
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())
@@ -83,6 +106,7 @@ namespace WebsiteBanHang
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+            app.UseStatusCodePagesWithReExecute("/StatusCode/{0}");
 
             app.UseRequestLocalization();
 
@@ -118,7 +142,7 @@ namespace WebsiteBanHang
                     pattern: "{controller=Home}/{action=Index}/{id?}"
                 );
                 endpoints.MapHub<NotificationHub>("/notificationHub");
-                endpoints.MapHub<NotificationHub>("/chathub");
+                endpoints.MapHub<ChatHub>("/chathub");
             });
             app.Run();
         }

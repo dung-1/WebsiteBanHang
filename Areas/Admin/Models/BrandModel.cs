@@ -20,7 +20,7 @@ namespace WebsiteBanHang.Areas.Admin.Models
         [StringLength(20)]
         public string XuatXu { get; set; } // Thêm thuộc tính Xuất Xứ
 
-        [Display(Name = "Ngày Xuất Xứ")]
+        [Display(Name = "Ngày Xuất Xứ")] 
         [DataType(DataType.Date)]
         public DateTime NgaySanXuat { get; set; } // Thêm thuộc tính Ngày Xuất Xứ
 

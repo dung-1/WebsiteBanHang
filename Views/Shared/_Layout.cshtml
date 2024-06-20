@@ -22,7 +22,7 @@
     <link href="~/css/hover.css" type="text/css" rel="stylesheet">
     <link href="~/css/home.css" type="text/css" rel="stylesheet">
     <link href="~/css/reponsive.css" type="text/css" rel="stylesheet">
-
+    <link rel="stylesheet" href="~/css/phone-ring.css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="Tab icon" href="assets/images/sparrow favicon.png"type="image/png" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
@@ -49,7 +49,7 @@
 
     <!-- _Footer -->
     @await Html.PartialAsync("_Footer.cshtml")
-
+    @await Html.PartialAsync("_CallMe.cshtml")
     <a href="#" id="back-to-top" title="Back to top"> <i class="fa-sharp fa-solid fa-circle-up"></i> </a>
     <style>
         #back-to-top {
@@ -100,8 +100,22 @@
     <script src="~/js/chat.js"></script>
     <script src="~/lib/signalr.js/jquery.signalr.js"></script>
     <script src="~/lib/microsoft-signalr/signalr.js"></script>
-    <script src="~/js/notification-mail.js"></script>
+     <script src="~/js/notification-mail.js"></script>
+    <script src="~/js/chathub-send-admin.js"></script>
     <script src="~/js/cart.js"></script>
+    <script src="~/layoutadmin/lte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/layoutadmin/lte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/layoutadmin/lte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/layoutadmin/lte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/layoutadmin/lte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/layoutadmin/lte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/layoutadmin/lte/plugins/jszip/jszip.min.js"></script>
+    <script src="~/layoutadmin/lte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/layoutadmin/lte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/layoutadmin/lte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/layoutadmin/lte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/layoutadmin/lte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <script src="~/layoutadmin/lte/dist/js/datatable-extention-admin.js"></script>
 </body>
 
 </html>

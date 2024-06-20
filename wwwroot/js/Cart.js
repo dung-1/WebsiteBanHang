@@ -258,7 +258,8 @@ $(document).ready(function () {
             }
         });
     });
-}); $(document).ready(function () {
+});
+$(document).ready(function () {
     $(".checkLoginAndNavigateToBill").click(function () {
         $.ajax({
             type: "GET",

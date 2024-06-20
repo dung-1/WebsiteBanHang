@@ -17,6 +17,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
     public class UserController : Controller
     {
+
         private readonly ILogger<UserController> _logger;
 
         private readonly ApplicationDbContext _context;
@@ -29,47 +30,55 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
         public IActionResult Index(int? page, string searchName)
         {
-            var pageNumber = page ?? 1;
-            int pageSize = 5;
-
-            var productsQuery = _context.User
-                .Include(p => p.UserRole)
-                .ThenInclude(ur => ur.Role) // Include Role information
-                .Include(p => p.userDetail)
-                .OrderByDescending(p => p.Id);
-
-            if (!string.IsNullOrEmpty(searchName))
+            try
             {
-                productsQuery = (IOrderedQueryable<UserModel>)productsQuery.Where(p => p.userDetail.HoTen.Contains(searchName));
-            }
 
-            var sortedProducts = productsQuery
-                .Where(p => !p.UserRole.Any(ur => ur.Role.Name == "Customer")) // Loại bỏ người dùng có vai trò "Customer"
-                .ToList();
+                var pageNumber = page ?? 1;
+                int pageSize = int.MaxValue;
 
-            if (searchName != null)
-            {
-                ViewBag.SearchName = searchName;
-            }
-            else
-            {   
-                ViewBag.SearchName = ""; // Hoặc gán một giá trị mặc định khác nếu cần thiết
-            }
+                var productsQuery = _context.User
+                    .Include(p => p.UserRole)
+                    .ThenInclude(ur => ur.Role) // Include Role information
+                    .Include(p => p.userDetail)
+                    .OrderByDescending(p => p.Id);
 
-            IPagedList<UserModelViewDto> pagedProducts = sortedProducts
-                .Select(e => new UserModelViewDto
+                if (!string.IsNullOrEmpty(searchName))
                 {
-                    Id = e.Id,
-                    MaNguoiDung = e.MaNguoiDung,
-                    HoTen = e.userDetail.HoTen,
-                    Email = e.Email,
-                    VaiTro = e.UserRole
-                        .Select(ur => ur.Role.Name)
-                        .FirstOrDefault()
-                })
-                .ToPagedList(pageNumber, pageSize);
+                    productsQuery = (IOrderedQueryable<UserModel>)productsQuery.Where(p => p.userDetail.HoTen.Contains(searchName));
+                }
 
-            return View(pagedProducts);
+                var sortedProducts = productsQuery
+                    .Where(p => !p.UserRole.Any(ur => ur.Role.Name == "Customer")) // Loại bỏ người dùng có vai trò "Customer"
+                    .ToList();
+
+                if (searchName != null)
+                {
+                    ViewBag.SearchName = searchName;
+                }
+                else
+                {
+                    ViewBag.SearchName = ""; // Hoặc gán một giá trị mặc định khác nếu cần thiết
+                }
+
+                IPagedList<UserModelViewDto> pagedProducts = sortedProducts
+                    .Select(e => new UserModelViewDto
+                    {
+                        Id = e.Id,
+                        MaNguoiDung = e.MaNguoiDung,
+                        HoTen = e.userDetail.HoTen,
+                        Email = e.Email,
+                        VaiTro = e.UserRole
+                            .Select(ur => ur.Role.Name)
+                            .FirstOrDefault()
+                    })
+                    .ToPagedList(pageNumber, pageSize);
+
+                return View(pagedProducts);
+            }catch (Exception ex)
+            {
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
+
+            }
         }
         public IActionResult Create()
         {
