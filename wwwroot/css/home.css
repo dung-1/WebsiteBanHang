@@ -334,8 +334,8 @@ i.bi.bi-facebook {
     text-align: center;
     z-index: 10;
     position: fixed;
-    bottom: 40px;
-    left: 50px;
+    bottom: 100px;
+    left: 30px;
 }
 
 .chat-bar-close {
@@ -343,8 +343,8 @@ i.bi.bi-facebook {
     z-index: 10;
     text-align: center;
     position: fixed;
-    bottom: 40px;
-    left: 50px;
+    bottom: 80px;
+    left: 30px;
 }
 
     .chat-bar-open .close,

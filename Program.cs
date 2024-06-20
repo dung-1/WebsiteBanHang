@@ -2,19 +2,13 @@
 using WebsiteBanHang.Areas.Admin.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.Extensions.Configuration;
 using WebsiteBanHang.Models;
 using System.Reflection;
 using WebsiteBanHang.HubSignalR;
 using OfficeOpenXml;
-using System.Configuration;
-using System.ComponentModel;
 using LicenseContext = OfficeOpenXml.LicenseContext;
 using WebsiteBanHang.Areas.Admin.Controllers;
 using WebsiteBanHang.Areas.Admin.Common;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
-using static System.Web.Razor.Parser.SyntaxConstants;
-using Stripe;
 
 
 namespace WebsiteBanHang
@@ -94,10 +88,11 @@ namespace WebsiteBanHang
             builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("StripeSettings"));
 
             //đăng ký test cho chức năng login google gmail StripSettings
-            //builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+            //builder.Services.AddAuthentication().AddGoogle(options =>
             //{
-            //    googleOptions.ClientId = configuration["Authentication:Google:ClientId"];
-            //    googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+            //    IConfigurationSection googleAuthNSection = builder.Configuration.GetSection("Authentication:Google");
+            //    options.ClientId = googleAuthNSection["ClientId"];
+            //    options.ClientSecret = googleAuthNSection["ClientSecret"];
             //});
 
             builder.Services.AddControllers().AddNewtonsoftJson(options =>
@@ -111,6 +106,7 @@ namespace WebsiteBanHang
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+            app.UseStatusCodePagesWithReExecute("/StatusCode/{0}");
 
             app.UseRequestLocalization();
 

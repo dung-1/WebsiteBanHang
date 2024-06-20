@@ -22,7 +22,7 @@
     <link href="~/css/hover.css" type="text/css" rel="stylesheet">
     <link href="~/css/home.css" type="text/css" rel="stylesheet">
     <link href="~/css/reponsive.css" type="text/css" rel="stylesheet">
-
+    <link rel="stylesheet" href="~/css/phone-ring.css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="Tab icon" href="assets/images/sparrow favicon.png"type="image/png" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
@@ -49,7 +49,7 @@
 
     <!-- _Footer -->
     @await Html.PartialAsync("_Footer.cshtml")
-
+    @await Html.PartialAsync("_CallMe.cshtml")
     <a href="#" id="back-to-top" title="Back to top"> <i class="fa-sharp fa-solid fa-circle-up"></i> </a>
     <style>
         #back-to-top {
@@ -100,7 +100,8 @@
     <script src="~/js/chat.js"></script>
     <script src="~/lib/signalr.js/jquery.signalr.js"></script>
     <script src="~/lib/microsoft-signalr/signalr.js"></script>
-    <script src="~/js/notification-mail.js"></script>
+     <script src="~/js/notification-mail.js"></script>
+    <script src="~/js/chathub-send-admin.js"></script>
     <script src="~/js/cart.js"></script>
 </body>
 
