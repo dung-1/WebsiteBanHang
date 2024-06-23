@@ -25,17 +25,16 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         {
             _context = context;
         }
-
         public async Task<IActionResult> Index(int? selectedYear)
-
         {
-
             try
             {
                 if (!selectedYear.HasValue)
                 {
                     selectedYear = DateTime.Now.Year;
                 }
+
+                int currentMonth = DateTime.Now.Year == selectedYear ? DateTime.Now.Month : 12;
 
                 // Query for monthly revenue data
                 IQueryable<OrdersModel> query = _context.Order.Where(o => o.ngayBan.Year == selectedYear && o.trangThai == "Hoàn Thành");
@@ -58,32 +57,54 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 ViewBag.AvailableYears = availableYears;
                 ViewBag.SelectedYear = selectedYear;
 
-                // Prepare data for chart
-                var labels = monthlyRevenueData.Select(x => $"{x.Month}/{x.Year}").ToList();
-                var data = monthlyRevenueData.Select(x => x.TotalRevenue).ToList();
+                // Prepare data for the revenue chart
+                var revenueLabels = monthlyRevenueData.Select(x => $"{x.Month}/{x.Year}").ToList();
+                var revenueData = monthlyRevenueData.Select(x => (decimal)x.TotalRevenue).ToList();
 
-                ViewBag.Labels = labels;
-                ViewBag.Data = data;
+                // Query for product quantity by status
+                var productQuantityByStatus = await _context.Order
+                    .Where(o => o.ngayBan.Year == selectedYear)
+                    .GroupBy(o => new { o.trangThai, o.ngayBan.Month })
+                    .Select(g => new { Status = g.Key.trangThai, Month = g.Key.Month, TotalQuantity = g.SelectMany(o => o.ctdh).Sum(d => d.soLuong) })
+                    .ToListAsync();
+
+                // Prepare data for the status chart
+                var statuses = productQuantityByStatus.Select(x => x.Status).Distinct().ToList();
+                var months = Enumerable.Range(1, currentMonth).Select(i => i.ToString()).ToList();
+
+                var statusChartData = statuses.Select(status => new
+                {
+                    Status = status,
+                    Data = months.Select(month => (decimal)productQuantityByStatus
+                        .Where(x => x.Status == status && x.Month.ToString() == month)
+                        .Sum(x => x.TotalQuantity)).ToList()
+                }).Cast<dynamic>().ToList();
 
                 // Query for additional statistics data (including TotalProductsSold)
-                var additionalStatisticsData =
-                    await _context.Order
-                        .Where(o => o.ngayBan.Year == selectedYear && o.trangThai == "Hoàn Thành")
-                        .GroupBy(o => new { o.ngayBan.Year })
-                        .Select(g => new StatisticsViewDto
-                        {
-                            TotalRevenue = (decimal)g.SelectMany(o => o.ctdh).Sum(d => d.gia),
-                            TotalOrdersCount = g.Select(o => o.MaHoaDon).Distinct().Count(),
-                            TotalProductsSold = g.SelectMany(o => o.ctdh).Sum(d => d.soLuong)
-                        })
-                        .ToListAsync();
+                var additionalStatisticsData = await _context.Order
+                    .Where(o => o.ngayBan.Year == selectedYear && o.trangThai == "Hoàn Thành")
+                    .GroupBy(o => new { o.ngayBan.Year })
+                    .Select(g => new StatisticsViewDto
+                    {
+                        TotalRevenue = (decimal)g.SelectMany(o => o.ctdh).Sum(d => d.gia),
+                        TotalOrdersCount = g.Select(o => o.MaHoaDon).Distinct().Count(),
+                        TotalProductsSold = g.SelectMany(o => o.ctdh).Sum(d => d.soLuong)
+                    })
+                    .ToListAsync();
 
                 // Create the view model
-                var model = new StatisticsViewDto
+                var model = new DashboardViewModel
                 {
-                    TotalRevenue = additionalStatisticsData.Sum(x => x.TotalRevenue),
-                    TotalOrdersCount = additionalStatisticsData.Sum(x => x.TotalOrdersCount),
-                    TotalProductsSold = additionalStatisticsData.Sum(x => x.TotalProductsSold)
+                    Statistics = new StatisticsViewDto
+                    {
+                        TotalRevenue = additionalStatisticsData.Sum(x => x.TotalRevenue),
+                        TotalOrdersCount = additionalStatisticsData.Sum(x => x.TotalOrdersCount),
+                        TotalProductsSold = additionalStatisticsData.Sum(x => x.TotalProductsSold)
+                    },
+                    RevenueLabels = revenueLabels,
+                    RevenueData = revenueData,
+                    Months = months,
+                    ChartData = statusChartData
                 };
 
                 return View(model);
@@ -91,10 +112,9 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             catch (Exception ex)
             {
                 return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
-
             }
-
         }
+
         public byte[] ExporttoExcel<T>(List<T> table, string filename)
         {
             using ExcelPackage pack = new ExcelPackage();
