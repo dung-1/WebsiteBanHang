@@ -11,12 +11,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Quản Lý Người Dùng</h1>
+                    <h1>Quản Lý Tài Khoản</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Trang Chủ</a></li>
-                        <li class="breadcrumb-item active">Quản Lý Người Dùng</li>
+                        <li class="breadcrumb-item active">Quản Lý Tài Khoản</li>
                     </ol>
                 </div>
             </div>
@@ -33,7 +33,7 @@
                             @if (User.IsInRole("Admin"))
                             {
                                 <button type="button" class="btn btn-info create-user">
-                                    <i class="fa-solid fa-plus"></i> Thêm Người Dùng
+                                    <i class="fa-solid fa-plus"></i> Thêm Tài Khoản
                                 </button>
                             }
                             <div class="modal fade" id="Create_User" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -54,7 +54,7 @@
                             <table id="example1" class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
-                                        <th> Mã Người Dùng </th>
+                                        <th> Mã Tài Khoản </th>
                                         <th> Họ Tên </th>
                                         <th> Email</th>
                                         <th> Vai Trò</th>
@@ -87,7 +87,7 @@
                                             </td>
                                             @if (User.IsInRole("Admin"))
                                             {
-                                                <td>
+                                                <td width ="10%">
                                                     <a data-id="@item.Id" class="btn btn-sm btn-warning edit-user"><i class="bi bi-pencil-square"></i><i class="fa-solid fa-pen-to-square"></i> Sửa</a>&nbsp;
                                                 </td>
 

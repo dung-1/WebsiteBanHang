@@ -65,7 +65,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 var productQuantityByStatus = await _context.Order
                     .Where(o => o.ngayBan.Year == selectedYear)
                     .GroupBy(o => new { o.trangThai, o.ngayBan.Month })
-                    .Select(g => new { Status = g.Key.trangThai, Month = g.Key.Month, TotalQuantity = g.SelectMany(o => o.ctdh).Sum(d => d.soLuong) })
+                    .Select(g => new { Status = g.Key.trangThai, Month = g.Key.Month, InvoiceCount = g.Count() })
                     .ToListAsync();
 
                 // Prepare data for the status chart
@@ -77,7 +77,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                     Status = status,
                     Data = months.Select(month => (decimal)productQuantityByStatus
                         .Where(x => x.Status == status && x.Month.ToString() == month)
-                        .Sum(x => x.TotalQuantity)).ToList()
+                        .Sum(x => x.InvoiceCount)).ToList()
                 }).Cast<dynamic>().ToList();
 
                 // Query for additional statistics data (including TotalProductsSold)
@@ -87,8 +87,29 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                     .Select(g => new StatisticsViewDto
                     {
                         TotalRevenue = (decimal)g.SelectMany(o => o.ctdh).Sum(d => d.gia),
-                        TotalOrdersCount = g.Select(o => o.MaHoaDon).Distinct().Count(),
+                        TotalOrdersCount = g.Count(),
                         TotalProductsSold = g.SelectMany(o => o.ctdh).Sum(d => d.soLuong)
+                    })
+                    .ToListAsync();
+
+                // Query for inventory category percentages
+                var totalInventory = await _context.Inventory.SumAsync(i => i.SoLuong);
+                var inventoryCategoryPercentages = await _context.Inventory
+                    .GroupBy(i => i.product.Category.TenLoai)
+                    .Select(g => new InventoryCategoryPercentageDto
+                    {
+                        CategoryName = g.Key,
+                        Percentage = (decimal)g.Sum(i => i.SoLuong) / totalInventory * 100
+                    })
+                    .ToListAsync();
+
+                // Query for product inventories
+                var productInventories = await _context.Inventory
+                    .GroupBy(i => i.product.TenSanPham)
+                    .Select(g => new ProductInventoryDto
+                    {
+                        ProductName = g.Key,
+                        Quantity = g.Sum(i => i.SoLuong)
                     })
                     .ToListAsync();
 
@@ -104,7 +125,9 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                     RevenueLabels = revenueLabels,
                     RevenueData = revenueData,
                     Months = months,
-                    ChartData = statusChartData
+                    ChartData = statusChartData,
+                    InventoryCategoryPercentages = inventoryCategoryPercentages,
+                    ProductInventories = productInventories
                 };
 
                 return View(model);
@@ -114,6 +137,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
             }
         }
+
 
         public byte[] ExporttoExcel<T>(List<T> table, string filename)
         {
