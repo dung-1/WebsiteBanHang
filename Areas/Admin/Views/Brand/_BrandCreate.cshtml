@@ -19,7 +19,9 @@
 
         <div class="mb-3">
             <label asp-for="XuatXu" class="control-label"></label>
-            <input asp-for="XuatXu" class="form-control" required />
+            <select asp-for="XuatXu" id="XuatXu" class="form-control">
+                <option value="">--Chọn Quốc Gia--</option>
+            </select>
             <span asp-validation-for="XuatXu" class="text-danger"></span>
         </div>
 

@@ -31,7 +31,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
                 var productsQuery = _context.Inventory
                     .Include(p => p.product)
-                    .OrderByDescending(p => p.Id);
+                    .OrderByDescending(p => p.ModifiedTime);
 
                 if (!string.IsNullOrEmpty(searchName))
                 {
@@ -100,6 +100,9 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 if (product != null)
                 {
                     empobj.product = product;
+                    empobj.CreatedTime = DateTime.Now;
+                    empobj.ModifiedTime = DateTime.Now;
+             
                     _context.Inventory.Add(empobj);
                     _context.SaveChanges();
 
@@ -172,6 +175,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 {
 
                     empobj.product = brand;
+                    empobj.ModifiedTime = DateTime.Now;
                     _context.Inventory.Update(empobj);
                     _context.SaveChanges();
                     return RedirectToAction("Index");

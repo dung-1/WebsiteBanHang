@@ -206,9 +206,8 @@ namespace WebsiteBanHang.Controllers
                 new Claim(ClaimTypes.Name, customer.Email),
                 new Claim(ClaimTypes.Email, customer.CustomerDetail?.HoTen),
                 new Claim(ClaimTypes.StreetAddress, customer.CustomerDetail?.DiaChi),
-                new Claim(ClaimTypes.MobilePhone, customer.CustomerDetail?.SoDienThoai)
-
-
+                new Claim(ClaimTypes.MobilePhone, customer.CustomerDetail?.SoDienThoai),
+                new Claim("UserId", customer.Id.ToString()) // Add UserId claim
             };
 
                     foreach (var role in customerRoles)
@@ -220,6 +219,8 @@ namespace WebsiteBanHang.Controllers
                     var userPrincipal = new ClaimsPrincipal(userIdentity);
 
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal);
+
+                    ViewBag.UserId = customer.Id; // Set UserId in ViewBag
 
                     if (customerRoles.Contains("Admin") || customerRoles.Contains("Employee"))
                     {
@@ -242,7 +243,8 @@ namespace WebsiteBanHang.Controllers
                 var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.Email),
-            new Claim(ClaimTypes.Email, user.userDetail?.HoTen) // Assuming userDetail is a navigation property
+            new Claim(ClaimTypes.Email, user.userDetail?.HoTen), // Assuming userDetail is a navigation property
+            new Claim("UserId", user.Id.ToString()) // Add UserId claim
         };
 
                 foreach (var role in userRoles)
@@ -254,6 +256,8 @@ namespace WebsiteBanHang.Controllers
                 var userPrincipal = new ClaimsPrincipal(userIdentity);
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal);
+
+                ViewBag.AdminId = user.Id; // Set UserId in ViewBag
 
                 if (userRoles.Contains("Admin") || userRoles.Contains("Employee"))
                 {
