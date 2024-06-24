@@ -20,10 +20,15 @@ namespace WebsiteBanHang.Areas.Admin.Models
         [StringLength(20)]
         public string XuatXu { get; set; } // Thêm thuộc tính Xuất Xứ
 
-        [Display(Name = "Ngày Xuất Xứ")] 
+        [Display(Name = "Ngày Xuất Xứ")]
         [DataType(DataType.Date)]
         public DateTime NgaySanXuat { get; set; } // Thêm thuộc tính Ngày Xuất Xứ
 
+        [DataType(DataType.Date)]
+        public DateTime CreatedTime { get; set; } // Thêm thuộc tính thời gian tạo
+
+        [DataType(DataType.Date)]
+        public DateTime ModifiedTime { get; set; } // Thêm thuộc tính thời gian cập nhật
         public ICollection<ProductModel> Prodcut { get; } = new List<ProductModel>(); // Collection navigation containing dependents
     }
 }

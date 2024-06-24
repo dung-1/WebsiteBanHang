@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebsiteBanHang.Areas.Admin.Data;
 
@@ -11,9 +12,10 @@ using WebsiteBanHang.Areas.Admin.Data;
 namespace WebsiteBanHang.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240621085159_update_message")]
+    partial class update_message
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,16 +32,10 @@ namespace WebsiteBanHang.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("MaHang")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
-
-                    b.Property<DateTime>("ModifiedTime")
-                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("NgaySanXuat")
                         .HasColumnType("datetime2");
@@ -111,16 +107,10 @@ namespace WebsiteBanHang.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("MaLoai")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
-
-                    b.Property<DateTime>("ModifiedTime")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("TenLoai")
                         .IsRequired()
@@ -236,16 +226,10 @@ namespace WebsiteBanHang.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("MaKho")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
-
-                    b.Property<DateTime>("ModifiedTime")
-                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("NgayNhap")
                         .HasColumnType("datetime2");
@@ -390,9 +374,6 @@ namespace WebsiteBanHang.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<decimal>("GiaBan")
                         .HasColumnType("decimal(18,2)");
 
@@ -418,9 +399,6 @@ namespace WebsiteBanHang.Migrations
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
-
-                    b.Property<DateTime>("ModifiedTime")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("TenSanPham")
                         .IsRequired()

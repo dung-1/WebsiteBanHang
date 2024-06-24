@@ -36,6 +36,12 @@ namespace WebsiteBanHang.Areas.Admin.Models
         [Column(TypeName = "nvarchar(max)")]
         public string? ThongTinSanPham { get; set; }
 
+        [DataType(DataType.Date)]
+        public DateTime CreatedTime { get; set; } // Thêm thuộc tính thời gian tạo
+
+        [DataType(DataType.Date)]
+        public DateTime ModifiedTime { get; set; } // Thêm thuộc tính thời gian cập nhật
+
         public ICollection<OrderDetaiModel> Order_Detai { get; } = new List<OrderDetaiModel>(); // Collection navigation containing dependents
 
         public ICollection<InventoriesModel> Inventory { get; set; } = new List<InventoriesModel>(); // Collection navigation containing dependents

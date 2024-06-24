@@ -43,7 +43,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 var productsQuery = _context.Product
                     .Include(p => p.Brand)
                     .Include(p => p.Category)
-                    .OrderByDescending(p => p.Id);
+                    .OrderByDescending(p => p.ModifiedTime);
 
                 if (!string.IsNullOrEmpty(searchName))
                 {
@@ -150,6 +150,8 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                         // Gán hãng sản phẩm và loại sản phẩm cho sản phẩm
                         product.Brand = brand;
                         product.Category = category;
+                        product.CreatedTime = DateTime.Now;
+                        product.ModifiedTime = DateTime.Now;
 
                         // Thêm sản phẩm vào cơ sở dữ liệu
                         _context.Product.Add(product);
@@ -267,7 +269,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                     existingProduct.LoaiId = updatedProduct.LoaiId;
                     updatedProduct.Brand = brand;
                     updatedProduct.Category = category;
-
+                    existingProduct.ModifiedTime = DateTime.Now;
                     _context.Product.Update(existingProduct);
                     _context.SaveChanges();
                     return RedirectToAction("Index");
