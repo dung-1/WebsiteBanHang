@@ -1,4 +1,9 @@
-﻿@using Microsoft.AspNetCore.Localization
+﻿@{
+    ViewData["Title"] = "Customer Chat";
+    var userId = User.FindFirst("UserId")?.Value; // Truy xuất UserId từ Claims
+}
+
+@using Microsoft.AspNetCore.Localization
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @{
     var languageCookie = HttpContextAccessor.HttpContext.Request.Cookies[CookieRequestCultureProvider.DefaultCookieName];
@@ -253,36 +258,20 @@
     </div>
 </div>
 
-<!-- chat chat-window 2 -->
-<div class="chat-window2" id="chat-window2">
+<div class="chat-window2" id="chat-window2" data-user-id="@userId">
     <div class="message-box" id="messageBox">
-        <div class="hi-there">
-            <p class="p1">Hi There</p>
-            <br />
-            <p class="p2">The team typically replies in few minutes.</p>
-        </div>
-        <div class="first-chat">
-            <p>Is there any offlines versions available for Maxeon Player?</p>
-            <div class="arrow"></div>
-        </div>
-        <div class="second-chat">
-            <div class="circle"></div>
-            <p>Currently we don't have but we will launch soon.</p>
-            <div class="arrow"></div>
+        <div id="chatWindow">
+            <ul id="messagesList"></ul>
         </div>
     </div>
     <div class="input-box">
-        <div class="surveysparrow">
-            <img src="~/img/sparrow favicon.png" />
-            <p>we run on surveysparrow</p>
-        </div>
         <div class="write-reply">
-            <input class="inputText" type="text" id="textInput" placeholder="Write a reply..." />
+            <input type="text" id="messageInput" placeholder="Nhập tin nhắn" />
         </div>
         <div class="send-button">
-            <button type="submit" class="send-message" id="send" onclick="userResponse()">
-                <i class="material-icons-outlined"> send </i>
-            </button>
+            <button id="sendButton">Gửi</button>
         </div>
     </div>
 </div>
+
+

@@ -647,3 +647,55 @@ i.bi.bi-facebook {
         margin-left: 41px;
     }
 }
+
+/* Style for message list */
+#messagesList {
+    list-style-type: none;
+    padding: 0;
+}
+
+    /* Style for individual messages */
+    #messagesList li {
+        display: block; /* Ensure each message is displayed in its own row */
+        background-color: #5261f7; /* Light blue background */
+        border-radius: 10px;
+        padding: 5px;
+        width: 60%;
+        margin-bottom: 10px;
+        text-align: left; /* Align text to the left */
+        max-width: fit-content; /* Width adjusts based on content */
+        word-wrap: break-word;
+        margin-left: auto; /* Align to the right */
+        color: white;
+        font-size: 12px;
+    }
+
+/* Optional: Style for the chat window container */
+.chat-window2 {
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+/* Style for the input box and send button */
+
+#messageInput {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#sendButton {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+    #sendButton:hover {
+        background-color: #45a049;
+    }

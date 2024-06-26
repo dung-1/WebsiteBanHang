@@ -119,10 +119,10 @@
 <section class="section-content mb-4">
     <div class="container">
         <div class="row">
-            <div class="col">
+            <div class="col>
                 <h3 class="pb-2">Mô tả sản phẩm</h3>
                 <p>
-                    @Model.ThongTinSanPham
+                    @Html.Raw(Model.ThongTinSanPham)
                 </p>
             </div>
         </div>
@@ -245,3 +245,8 @@
 
 
 <!-- section-content.// -->
+@section Scripts
+{
+    <script src="~/js/chathub-send-admin.js"></script>
+    <script src="~/js/notification-mail.js"></script>
+}
