@@ -2,7 +2,7 @@
     .withUrl("/chathub")
     .withAutomaticReconnect()
     .build();
-
+let selectedCustomerId = null;
 Chatconnection.on("UpdateCustomerList", function (customers) {
     updateCustomerList(customers);
 });
@@ -54,6 +54,7 @@ function updateCustomerList(customers) {
 }
 function loadCustomerMessages(customerId) {
     console.log("Invoking GetMessages with customerId:", customerId);
+    selectedCustomerId = customerId; // Lưu trữ customerId khi khách hàng được chọn
     Chatconnection.invoke("GetMessages", customerId)
         .then(function (messages) {
             updateMessageList(messages, customerId);
@@ -65,20 +66,23 @@ function loadCustomerMessages(customerId) {
 
 function updateMessageList(messages, customerId) {
     const chatBody = document.querySelector(".chat-body");
+
+    // Clear current chat body
     chatBody.innerHTML = "";
 
-    messages.forEach(message => {
+    // Append messages to chat body in reverse order (latest message first)
+    messages.reverse().forEach(message => {
         const isCustomerMessage = message.senderId === customerId;
         const messageElement = document.createElement("div");
         messageElement.className = isCustomerMessage ? "flex flex-row justify-start" : "flex flex-row justify-start";
 
         messageElement.innerHTML = `
             <div class="w-8 h-8 relative flex flex-shrink-0 ${isCustomerMessage ? 'ml-4' : 'mr-4'}">
-                <img class="shadow-md rounded-full w-full h-full object-cover" src="https://randomuser.me/api/portraits/${isCustomerMessage ?   'men/97.jpg' :'women/33.jpg'}" alt="" />
+                <img class="shadow-md rounded-full w-full h-full object-cover" src="https://randomuser.me/api/portraits/${isCustomerMessage ? 'men/97.jpg' : 'women/33.jpg'}" alt="" />
             </div>
-            <div class="messages text-sm text-${isCustomerMessage ?  'white':'gray-700' } grid grid-flow-row gap-2">
+            <div class="messages text-sm text-${isCustomerMessage ? 'white' : 'gray-700'} grid grid-flow-row gap-2">
                 <div class="flex items-center group">
-                    <p class="px-6 py-3 rounded-t-full rounded-${isCustomerMessage ?  'l':'r'}-full bg-${isCustomerMessage ?  'blue-700': 'gray-800 text-gray-200'} max-w-xs lg:max-w-md">
+                    <p class="px-6 py-3 rounded-t-full rounded-${isCustomerMessage ? 'l' : 'r'}-full bg-${isCustomerMessage ? 'blue-700' : 'gray-800 text-gray-200'} max-w-xs lg:max-w-md">
                         ${message.content}
                     </p>
                     <button type="button" class="option-message">
@@ -101,7 +105,9 @@ function updateMessageList(messages, customerId) {
                 </div>
             </div>
         `;
-        chatBody.appendChild(messageElement);
+
+        // Insert messageElement at the beginning of chatBody
+        chatBody.insertAdjacentHTML('afterbegin', messageElement.outerHTML);
     });
 }
 
@@ -172,3 +178,50 @@ function updateCustomerTimeAgo() {
         });
     }, 60000); // Update every minute
 }
+
+// Event listener for send button click
+document.getElementById("sendButton").addEventListener("click", event => {
+    const message = document.getElementById("messageInput").value;
+
+    if (!message) {
+        console.error("Message is empty.");
+        return;
+    }
+
+    if (!selectedCustomerId) {
+        console.error("No customer selected.");
+        return;
+    }
+
+    console.log("Sending message to customer with ID:", selectedCustomerId);
+
+    sendMessageToCustomer(selectedCustomerId, message); // Truyền selectedCustomerId vào hàm gửi tin nhắn
+    document.getElementById("messageInput").value = '';
+});
+
+// Function to send message to customer
+function sendMessageToCustomer(customerId, message) {
+    if (Chatconnection.state === signalR.HubConnectionState.Connected) {
+        Chatconnection.invoke("SendMessageToCustomer", customerId, message)
+            .then(() => {
+                // Optionally update UI or handle success
+            })
+            .catch(err => console.error("Error sending message:", err.toString()));
+    } else {
+        console.log("Connection is not established. Message not sent.");
+    }
+}
+
+// Event listener for enter key press in message input
+document.getElementById("messageInput").addEventListener("keypress", event => {
+    if (event.key === "Enter") {
+        const message = event.target.value.trim();
+
+        if (message) {
+            sendMessageToCustomer(customerId, message); // Thay đổi tên hàm và truyền customerId
+            event.target.value = '';
+        } else {
+            console.error("Message is empty.");
+        }
+    }
+});

@@ -110,6 +110,52 @@ namespace WebsiteBanHang.HubSignalR
             }
         }
 
+        public async Task SendMessageToCustomer(int customerId, string message)
+        {
+            try
+            {
+                var senderConnectionId = Context.ConnectionId;
+
+                // Logging customerId to ensure it's being received correctly
+                Console.WriteLine($"SendMessageToCustomer called with customerId: {customerId}");
+
+                var customer = await _context.Customer
+                    .Include(u => u.ChatConnection) // eager load ChatConnection
+                    .FirstOrDefaultAsync(u => u.Id == customerId);
+
+                if (customer == null)
+                {
+                    Console.WriteLine("Customer not found.");
+                    throw new Exception("Customer not found.");
+                }
+
+                if (customer.ChatConnection == null)
+                {
+                    Console.WriteLine("Customer does not have a valid chat connection.");
+                    throw new Exception("Customer does not have a valid chat connection.");
+                }
+
+                var chatMessage = new ChatMessage
+                {
+                    Content = message,
+                    SentAt = DateTime.Now,
+                    ConnectionIdFrom = senderConnectionId,
+                    ConnectionIdTo = customer.ChatConnection.ConnectionId
+                };
+
+                _context.ChatMessage.Add(chatMessage);
+                await _context.SaveChangesAsync();
+
+                await Clients.Client(customer.ChatConnection.ConnectionId).SendAsync("ReceiveMessages", senderConnectionId, message, chatMessage.SentAt);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                Console.WriteLine($"Error in SendMessageToCustomer: {ex.Message}");
+                throw;
+            }
+        }
+
         public async Task<List<ChatMessageModel>> GetChatHistory(int userId)
         {
             try
