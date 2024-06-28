@@ -2,7 +2,7 @@
 
 namespace WebsiteBanHang.Areas.Admin.Models
 {
-    public class UserModel :User
+    public class UserModel : User
     {
         public ICollection<UserRoleModel> UserRole { get; } = new List<UserRoleModel>(); // Collection navigation containing dependents
         public ICollection<OrdersModel> Order { get; } = new List<OrdersModel>(); // Collection navigation containing dependents
@@ -12,4 +12,3 @@ namespace WebsiteBanHang.Areas.Admin.Models
 
     }
 }
-    

@@ -6,6 +6,7 @@
         public string Name { get; set; }
         public string LastMessage { get; set; }
         public DateTime LastMessageTimeAgo { get; set; }
+        public string LastMessageTimeAgoFormatted { get; internal set; }
     }
 
 }

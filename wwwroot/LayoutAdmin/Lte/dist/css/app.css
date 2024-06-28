@@ -825,7 +825,8 @@ video {
 }
 
 .justify-start {
-  justify-content: flex-start;
+    justify-content: flex-start;
+    margin: 7px;
 }
 
 .justify-end {
