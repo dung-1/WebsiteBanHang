@@ -172,13 +172,14 @@ namespace WebsiteBanHang.HubSignalR
                 }
 
                 var messages = await _context.ChatMessage
-                    .Where(m => connectionIds.Contains(m.ConnectionIdFrom)) // Lọc tin nhắn tới các ConnectionId của người dùng
+                    .Where(m => connectionIds.Contains(m.ConnectionIdFrom) || connectionIds.Contains(m.ConnectionIdTo))
                     .OrderBy(m => m.SentAt)
                     .Select(m => new ChatMessageModel
                     {
                         SenderId = m.ConnectionIdFrom,
                         Message = m.Content,
-                        SentAt = m.SentAt
+                        SentAt = m.SentAt,
+                        IsFromAdmin = connectionIds.All(id => m.ConnectionIdFrom != id) // Check if sender is not in customer's connections
                     })
                     .ToListAsync();
 
@@ -190,6 +191,9 @@ namespace WebsiteBanHang.HubSignalR
                 throw;
             }
         }
+
+
+
 
         public async Task<List<CustomerViewModel>> GetCustomerList()
 

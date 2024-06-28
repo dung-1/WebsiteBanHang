@@ -1,21 +1,19 @@
-﻿var Adminconnection = new signalR.HubConnectionBuilder()
+﻿const Customerconnection = new signalR.HubConnectionBuilder()
     .withUrl("/chathub")
-    .withAutomaticReconnect() // Automatically retry initial start and reconnect if connection drops
+    .withAutomaticReconnect()
     .build();
 
 // Start the connection initially
-Adminconnection.start().then(async () => {
-    const userId = parseInt(document.querySelector('.chat-window2').getAttribute('data-user-id'), 10); // Lấy id của user từ thuộc tính data-user-id trong HTML và chuyển thành kiểu số nguyên
-    const messages = await Adminconnection.invoke("GetChatHistory", userId);
+Customerconnection.start().then(async () => {
+    const userId = parseInt(document.querySelector('.chat-window2').getAttribute('data-user-id'), 10);
+    const messages = await Customerconnection.invoke("GetChatHistory", userId);
     updateMessageList(messages);
 });
 
 // Handle connection closure
-Adminconnection.onclose(() => {
+Customerconnection.onclose(() => {
     console.error("Connection closed. Attempting to reconnect...");
 });
-
-
 
 document.getElementById("sendButton").addEventListener("click", event => {
     const message = document.getElementById("messageInput").value;
@@ -30,44 +28,64 @@ document.getElementById("sendButton").addEventListener("click", event => {
 });
 
 function sendMessageToAdmin(message) {
-    if (Adminconnection.state === signalR.HubConnectionState.Connected) {
-        Adminconnection.invoke("SendMessageToAdmin", message)
+    if (Customerconnection.state === signalR.HubConnectionState.Connected) {
+        Customerconnection.invoke("SendMessageToAdmin", message)
             .then(() => {
-                // Add the message to the UI immediately after sending
-                addMessageToUI({ senderId: Adminconnection.connectionId, message: message });
+                addMessageToUI({
+                    senderId: Customerconnection.connectionId,
+                    message: message,
+                    isFromAdmin: false
+                });
             })
             .catch(err => console.error("Error sending message:", err.toString()));
     } else {
         console.log("Connection is not established. Message not sent.");
     }
 }
-    
-    Adminconnection.on("ReceiveMessage", (senderConnectionId, message) => {
-        addMessageToUI({ senderId: senderConnectionId, message: message });
+
+Customerconnection.on("ReceiveMessage", (senderConnectionId, message, sentAt) => {
+    addMessageToUI({
+        senderId: senderConnectionId,
+        message: message,
+        sentAt: new Date(sentAt),
+        isFromAdmin: senderConnectionId !== Customerconnection.connectionId
     });
+});
 
-    function formatMessage(message) {
-        return ` ${message.message}`;
+function formatMessage(message) {
+    return `${message.message}`;
+}
+
+function addMessageToUI(message) {
+    const messageBox = document.getElementById("messageBox");
+    const div = document.createElement("div");
+
+    if (message.isFromAdmin) {
+        div.className = "second-chat";
+        div.innerHTML = `
+            <div class="circle"></div>
+            <p>${message.message}</p>
+            <div class="arrow"></div>
+        `;
+    } else {
+        div.className = "first-chat";
+        div.innerHTML = `
+            <p>${message.message}</p>
+            <div class="arrow"></div>
+        `;
     }
 
-    function updateMessageList(messages) {
-        const messageList = document.getElementById("messagesList");
-        messageList.innerHTML = ""; // Clear existing messages
+    messageBox.appendChild(div);
+}
 
-        for (const message of messages) {
-            const li = document.createElement("li");
-            // Format message based on sender and content
-            li.textContent = formatMessage(message);
-            messageList.appendChild(li);
-        }
-    }
+function updateMessageList(messages) {
+    const messageBox = document.getElementById("messageBox");
+    messageBox.innerHTML = ""; // Clear existing messages
 
-    function addMessageToUI(message) {
-        const messageList = document.getElementById("messagesList");
-        const li = document.createElement("li");
-        li.textContent = formatMessage(message);
-        messageList.appendChild(li);
+    for (const message of messages) {
+        addMessageToUI(message);
     }
+}
 
 
     let audio1 = new Audio(
