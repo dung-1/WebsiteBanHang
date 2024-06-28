@@ -70,19 +70,22 @@ function updateMessageList(messages, customerId) {
     // Clear current chat body
     chatBody.innerHTML = "";
 
-    // Append messages to chat body in reverse order (latest message first)
-    messages.reverse().forEach(message => {
-        const isCustomerMessage = message.senderId === customerId;
+    // Append messages to chat body
+    messages.forEach(message => {
         const messageElement = document.createElement("div");
-        messageElement.className = isCustomerMessage ? "flex flex-row justify-start" : "flex flex-row justify-start";
+        if (message.isAdminMessage) {
+            messageElement.className = "flex flex-row justify-end"; // Tin nhắn của admin
+        } else {
+            messageElement.className = "flex flex-row justify-start"; // Tin nhắn của khách hàng
+        }
 
         messageElement.innerHTML = `
-            <div class="w-8 h-8 relative flex flex-shrink-0 ${isCustomerMessage ? 'ml-4' : 'mr-4'}">
-                <img class="shadow-md rounded-full w-full h-full object-cover" src="https://randomuser.me/api/portraits/${isCustomerMessage ? 'men/97.jpg' : 'women/33.jpg'}" alt="" />
+            <div class="w-8 h-8 relative flex flex-shrink-0 ${message.isAdminMessage ? 'mr-4' : 'ml-4'}">
+                <img class="shadow-md rounded-full w-full h-full object-cover" src="https://randomuser.me/api/portraits/${message.isAdminMessage ? 'women/33.jpg' : 'men/97.jpg'}" alt="" />
             </div>
-            <div class="messages text-sm text-${isCustomerMessage ? 'white' : 'gray-700'} grid grid-flow-row gap-2">
+            <div class="messages text-sm text-${message.isAdminMessage ? 'white' : 'gray-700'} grid grid-flow-row gap-2">
                 <div class="flex items-center group">
-                    <p class="px-6 py-3 rounded-t-full rounded-${isCustomerMessage ? 'l' : 'r'}-full bg-${isCustomerMessage ? 'blue-700' : 'gray-800 text-gray-200'} max-w-xs lg:max-w-md">
+                    <p class="px-6 py-3 rounded-t-full rounded-${message.isAdminMessage ? 'l' : 'r'}-full bg-${message.isAdminMessage ? 'blue-700' : 'gray-800 text-gray-200'} max-w-xs lg:max-w-md">
                         ${message.content}
                     </p>
                     <button type="button" class="option-message">
@@ -106,8 +109,8 @@ function updateMessageList(messages, customerId) {
             </div>
         `;
 
-        // Insert messageElement at the beginning of chatBody
-        chatBody.insertAdjacentHTML('afterbegin', messageElement.outerHTML);
+        // Insert messageElement into chatBody
+        chatBody.appendChild(messageElement);
     });
 }
 

@@ -219,18 +219,23 @@ namespace WebsiteBanHang.HubSignalR
 
         public async Task<List<ChatMessageViewModel>> GetMessages(int customerId)
         {
-           
-
             try
             {
+                // Lấy userId của admin
+                int adminUserId = 8; // Đây là ví dụ, bạn cần thay thế bằng cách lấy userId của admin trong hệ thống của bạn
+
                 var messages = await _context.ChatMessage
-                    .Where(m => m.FromConnection.UserId == customerId || m.ToConnection.UserId == customerId)
+                    .Where(m =>
+                        (m.FromConnection.UserId == customerId && m.ToConnection.UserId == adminUserId) || // Tin nhắn từ khách hàng tới admin
+                        (m.FromConnection.UserId == adminUserId && m.ToConnection.UserId == customerId)   // Tin nhắn từ admin tới khách hàng
+                    )
                     .OrderBy(m => m.SentAt)
                     .Select(m => new ChatMessageViewModel
                     {
                         Content = m.Content,
                         SentAt = m.SentAt,
-                        SenderId = m.ConnectionIdFrom,
+                        SenderId = m.ConnectionIdFrom, // Id người gửi tin nhắn
+                        IsAdminMessage = m.FromConnection.UserId == adminUserId // Đánh dấu tin nhắn của admin
                     })
                     .ToListAsync();
 
@@ -238,11 +243,12 @@ namespace WebsiteBanHang.HubSignalR
             }
             catch (Exception ex)
             {
-                // Logging the error
+                // Ghi log lỗi
                 Console.WriteLine($"Error in GetMessages: {ex.Message}");
                 throw;
             }
         }
+
 
         private async Task SendCustomerListToAdmin()
         {
