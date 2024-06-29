@@ -72,48 +72,53 @@ function updateMessageList(messages, customerId) {
 
     // Append messages to chat body
     messages.forEach(message => {
-        const messageElement = document.createElement("div");
-        if (message.isAdminMessage) {
-            messageElement.className = "flex flex-row justify-end"; // Tin nhắn của admin
-        } else {
-            messageElement.className = "flex flex-row justify-start"; // Tin nhắn của khách hàng
-        }
-
-        messageElement.innerHTML = `
-            <div class="w-8 h-8 relative flex flex-shrink-0 ${message.isAdminMessage ? 'mr-4' : 'ml-4'}">
-                <img class="shadow-md rounded-full w-full h-full object-cover" src="https://randomuser.me/api/portraits/${message.isAdminMessage ? 'women/33.jpg' : 'men/97.jpg'}" alt="" />
-            </div>
-            <div class="messages text-sm text-${message.isAdminMessage ? 'white' : 'gray-700'} grid grid-flow-row gap-2">
-                <div class="flex items-center group">
-                    <p class="px-6 py-3 rounded-t-full rounded-${message.isAdminMessage ? 'l' : 'r'}-full bg-${message.isAdminMessage ? 'blue-700' : 'gray-800 text-gray-200'} max-w-xs lg:max-w-md">
-                        ${message.content}
-                    </p>
-                    <button type="button" class="option-message">
-                        <svg viewBox="0 0 20 20" class="w-full h-full fill-current">
-                            <path d="M10.001,7.8C8.786,7.8,7.8,8.785,7.8,10s0.986,2.2,2.201,2.2S12.2,11.215,12.2,10S11.216,7.8,10.001,7.8z
-                            M3.001,7.8C1.786,7.8,0.8,8.785,0.8,10s0.986,2.2,2.201,2.2S5.2,11.214,5.2,10S4.216,7.8,3.001,7.8z M17.001,7.8
-                            C15.786,7.8,14.8,8.785,14.8,10s0.986,2.2,2.201,2.2S19.2,11.215,19.2,10S18.216,7.8,17.001,7.8z" />
-                        </svg>
-                    </button>
-                    <button type="button" class="option-message">
-                        <svg viewBox="0 0 20 20" class="w-full h-full fill-current">
-                            <path d="M19,16.685c0,0-2.225-9.732-11-9.732V2.969L1,9.542l7,6.69v-4.357C12.763,11.874,16.516,12.296,19,16.685z" />
-                        </svg>
-                    </button>
-                    <button type="button" class="option-message">
-                        <svg viewBox="0 0 24 24" class="w-full h-full fill-current">
-                            <path d="M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-3.54-4.46a1 1 0 0 1 1.42-1.42 3 3 0 0 0 4.24 0 1 1 0 0 1 1.42 1.42 5 5 0 0 1-7.08 0zM9 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm6 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        `;
-
-        // Insert messageElement into chatBody
-        chatBody.appendChild(messageElement);
+        addMessageToUI(message);
     });
 }
 
+function addMessageToUI(message) {
+    const chatBody = document.querySelector(".chat-body");
+    const messageElement = document.createElement("div");
+
+    if (message.isAdminMessage) {
+        messageElement.className = "flex flex-row justify-end"; // Tin nhắn của admin
+    } else {
+        messageElement.className = "flex flex-row justify-start"; // Tin nhắn của khách hàng
+    }
+
+    messageElement.innerHTML = `
+        <div class="w-8 h-8 relative flex flex-shrink-0 ${message.isAdminMessage ? 'mr-4' : 'ml-4'}">
+            <img class="shadow-md rounded-full w-full h-full object-cover" src="https://randomuser.me/api/portraits/${message.isAdminMessage ? 'women/33.jpg' : 'men/97.jpg'}" alt="" />
+        </div>
+        <div class="messages text-sm text-${message.isAdminMessage ? 'white' : 'gray-700'} grid grid-flow-row gap-2">
+            <div class="flex items-center group">
+                <p class="px-6 py-3 rounded-t-full rounded-${message.isAdminMessage ? 'l' : 'r'}-full bg-${message.isAdminMessage ? 'blue-700' : 'gray-800 text-gray-200'} max-w-xs lg:max-w-md">
+                    ${message.content}
+                </p>
+                <button type="button" class="option-message">
+                    <svg viewBox="0 0 20 20" class="w-full h-full fill-current">
+                        <path d="M10.001,7.8C8.786,7.8,7.8,8.785,7.8,10s0.986,2.2,2.201,2.2S12.2,11.215,12.2,10S11.216,7.8,10.001,7.8z
+                        M3.001,7.8C1.786,7.8,0.8,8.785,0.8,10s0.986,2.2,2.201,2.2S5.2,11.214,5.2,10S4.216,7.8,3.001,7.8z M17.001,7.8
+                        C15.786,7.8,14.8,8.785,14.8,10s0.986,2.2,2.201,2.2S19.2,11.215,19.2,10S18.216,7.8,17.001,7.8z" />
+                    </svg>
+                </button>
+                <button type="button" class="option-message">
+                    <svg viewBox="0 0 20 20" class="w-full h-full fill-current">
+                        <path d="M19,16.685c0,0-2.225-9.732-11-9.732V2.969L1,9.542l7,6.69v-4.357C12.763,11.874,16.516,12.296,19,16.685z" />
+                    </svg>
+                </button>
+                <button type="button" class="option-message">
+                    <svg viewBox="0 0 24 24" class="w-full h-full fill-current">
+                        <path d="M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-3.54-4.46a1 1 0 0 1 1.42-1.42 3 3 0 0 0 4.24 0 1 1 0 0 1 1.42 1.42 5 5 0 0 1-7.08 0zM9 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm6 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    `;
+
+    // Insert messageElement into chatBody
+    chatBody.appendChild(messageElement);
+}
 function updateCustomerMessage(userId, message, sentAt) {
     const customerElement = document.querySelector(`#customer-${userId}`);
     if (customerElement) {
@@ -182,32 +187,18 @@ function updateCustomerTimeAgo() {
     }, 60000); // Update every minute
 }
 
-// Event listener for send button click
-document.getElementById("sendButton").addEventListener("click", event => {
-    const message = document.getElementById("messageInput").value;
 
-    if (!message) {
-        console.error("Message is empty.");
-        return;
-    }
-
-    if (!selectedCustomerId) {
-        console.error("No customer selected.");
-        return;
-    }
-
-    console.log("Sending message to customer with ID:", selectedCustomerId);
-
-    sendMessageToCustomer(selectedCustomerId, message); // Truyền selectedCustomerId vào hàm gửi tin nhắn
-    document.getElementById("messageInput").value = '';
-});
 
 // Function to send message to customer
 function sendMessageToCustomer(customerId, message) {
     if (Chatconnection.state === signalR.HubConnectionState.Connected) {
         Chatconnection.invoke("SendMessageToCustomer", customerId, message)
             .then(() => {
-                // Optionally update UI or handle success
+                // Cập nhật UI ngay sau khi gửi tin nhắn thành công
+                addMessageToUI({
+                    isAdminMessage: true, // Đánh dấu đây là tin nhắn từ admin
+                    content: message
+                });
             })
             .catch(err => console.error("Error sending message:", err.toString()));
     } else {
@@ -215,16 +206,43 @@ function sendMessageToCustomer(customerId, message) {
     }
 }
 
-// Event listener for enter key press in message input
-document.getElementById("messageInput").addEventListener("keypress", event => {
-    if (event.key === "Enter") {
-        const message = event.target.value.trim();
+document.addEventListener('DOMContentLoaded', function () {
+    // Event listener for send button click
+    const sendButton = document.getElementById("sendButton");
+    const messageInput = document.getElementById("messageInput");
 
-        if (message) {
-            sendMessageToCustomer(customerId, message); // Thay đổi tên hàm và truyền customerId
-            event.target.value = '';
-        } else {
-            console.error("Message is empty.");
-        }
+    if (sendButton && messageInput) {
+        sendButton.addEventListener("click", event => {
+            const message = messageInput.value;
+
+            if (!message) {
+                console.error("Message is empty.");
+                return;
+            }
+
+            if (!selectedCustomerId) {
+                console.error("No customer selected.");
+                return;
+            }
+
+            console.log("Sending message to customer with ID:", selectedCustomerId);
+
+            sendMessageToCustomer(selectedCustomerId, message); // Truyền selectedCustomerId vào hàm gửi tin nhắn
+            messageInput.value = '';
+        });
+    } else {
+        console.error("Send button or message input not found.");
     }
+
+    Chatconnection.start().then(function () {
+        console.log("Connected to SignalR hub");
+        Chatconnection.invoke("GetCustomerList").then(function (customers) {
+            updateCustomerList(customers);
+            updateCustomerTimeAgo(); // Start updating time ago continuously
+        }).catch(function (err) {
+            console.error("Error invoking GetCustomerList:", err.toString());
+        });
+    }).catch(function (err) {
+        console.error("Error starting SignalR connection:", err.toString());
+    });
 });

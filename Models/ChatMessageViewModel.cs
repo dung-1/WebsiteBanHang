@@ -9,6 +9,7 @@
         public string SenderAvatar { get; set; } // URL ảnh đại diện của người gửi
         public bool IsRead { get; set; } // Trạng thái đọc tin nhắn
         public string MessageType { get; set; } // Loại tin nhắn (text, image, video, etc.)
+        public bool IsAdminMessage { get; internal set; }
     }
 
 }
