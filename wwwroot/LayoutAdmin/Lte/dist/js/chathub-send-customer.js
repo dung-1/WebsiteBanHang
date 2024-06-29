@@ -1,13 +1,20 @@
 ﻿const Chatconnection = new signalR.HubConnectionBuilder()
     .withUrl("/chathub")
     .withAutomaticReconnect()
+    .configureLogging(signalR.LogLevel.Information)
     .build();
+Chatconnection.serverTimeoutInMilliseconds = 300000;
 let selectedCustomerId = null;
 Chatconnection.on("UpdateCustomerList", function (customers) {
     updateCustomerList(customers);
 });
-Chatconnection.on("ReceiveMessages", function (userId, message, sentAt) {
-    updateCustomerMessage(userId, message, new Date(sentAt));
+Chatconnection.on("ReceiveMessages", function (customerId, message, sentAt) {
+    updateCustomerMessage(customerId, message, new Date(sentAt));
+    // Cập nhật giao diện chat nếu đang mở
+    addMessageToCustomerUI({
+        isAdminMessage: false, 
+        content: message
+    });
 });
 
 Chatconnection.start().then(function () {
@@ -21,6 +28,7 @@ Chatconnection.start().then(function () {
 }).catch(function (err) {
     console.error("Error starting SignalR connection:", err.toString());
 });
+
 
 function updateCustomerList(customers) {
     const customerList = document.getElementById("customerList");
@@ -52,6 +60,7 @@ function updateCustomerList(customers) {
         customerList.appendChild(customerElement);
     });
 }
+
 function loadCustomerMessages(customerId) {
     console.log("Invoking GetMessages with customerId:", customerId);
     selectedCustomerId = customerId; // Lưu trữ customerId khi khách hàng được chọn
@@ -64,6 +73,7 @@ function loadCustomerMessages(customerId) {
         });
 }
 
+
 function updateMessageList(messages, customerId) {
     const chatBody = document.querySelector(".chat-body");
 
@@ -72,11 +82,11 @@ function updateMessageList(messages, customerId) {
 
     // Append messages to chat body
     messages.forEach(message => {
-        addMessageToUI(message);
+        addMessageToCustomerUI(message);
     });
 }
 
-function addMessageToUI(message) {
+function addMessageToCustomerUI(message) {
     const chatBody = document.querySelector(".chat-body");
     const messageElement = document.createElement("div");
 
@@ -119,8 +129,9 @@ function addMessageToUI(message) {
     // Insert messageElement into chatBody
     chatBody.appendChild(messageElement);
 }
-function updateCustomerMessage(userId, message, sentAt) {
-    const customerElement = document.querySelector(`#customer-${userId}`);
+function updateCustomerMessage(customerId, message, sentAt) {
+    selectedCustomerId = customerId; 
+    const customerElement = document.querySelector(`#customer-${selectedCustomerId}`);
     if (customerElement) {
         const lastMessageElement = customerElement.querySelector('.truncate');
         const timeAgoElement = customerElement.querySelector('.whitespace-no-wrap');
@@ -132,8 +143,6 @@ function updateCustomerMessage(userId, message, sentAt) {
         const customerList = document.getElementById("customerList");
         customerList.insertBefore(customerElement, customerList.firstChild);
 
-        // Cập nhật giao diện chat nếu đang mở
-        updateChatInterface(userId, message, sentAt);
     } else {
         // Fetch danh sách khách hàng mới nếu không tìm thấy khách hàng hiện tại
         Chatconnection.invoke("GetCustomerList").catch(function (err) {
@@ -195,7 +204,7 @@ function sendMessageToCustomer(customerId, message) {
         Chatconnection.invoke("SendMessageToCustomer", customerId, message)
             .then(() => {
                 // Cập nhật UI ngay sau khi gửi tin nhắn thành công
-                addMessageToUI({
+                addMessageToCustomerUI({
                     isAdminMessage: true, // Đánh dấu đây là tin nhắn từ admin
                     content: message
                 });
@@ -233,16 +242,4 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
         console.error("Send button or message input not found.");
     }
-
-    Chatconnection.start().then(function () {
-        console.log("Connected to SignalR hub");
-        Chatconnection.invoke("GetCustomerList").then(function (customers) {
-            updateCustomerList(customers);
-            updateCustomerTimeAgo(); // Start updating time ago continuously
-        }).catch(function (err) {
-            console.error("Error invoking GetCustomerList:", err.toString());
-        });
-    }).catch(function (err) {
-        console.error("Error starting SignalR connection:", err.toString());
-    });
 });

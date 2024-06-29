@@ -73,12 +73,37 @@ namespace WebsiteBanHang.HubSignalR
 
 
         }
+        private async Task<int?> GetCustomerIdFromConnectionId(string connectionId)
+        {
+            var chatConnection = await _context.ChatConnection
+                .Include(cc => cc.User)
+                .FirstOrDefaultAsync(cc => cc.ConnectionId == connectionId);
 
-        public async Task SendMessageToAdmin( string message)
+            if (chatConnection == null)
+            {
+                return null;
+            }
+
+            if (chatConnection.User is CustomerModel customer)
+            {
+                return customer.Id;
+            }
+
+            return null;
+        }
+
+        public async Task SendMessageToAdmin(string message)
         {
             try
             {
                 var senderConnectionId = Context.ConnectionId;
+
+                // Lấy CustomerId từ ConnectionId
+                var customerId = await GetCustomerIdFromConnectionId(senderConnectionId);
+                if (customerId == null)
+                {
+                    throw new Exception("Không tìm thấy CustomerId cho kết nối này.");
+                }
 
                 var adminUser = await _context.User
                     .Include(u => u.ChatConnection) // eager load ChatConnection
@@ -100,7 +125,7 @@ namespace WebsiteBanHang.HubSignalR
                 _context.ChatMessage.Add(chatMessage);
                 await _context.SaveChangesAsync();
 
-                await Clients.Client(AdminConnectionId).SendAsync("ReceiveMessages", senderConnectionId, message, chatMessage.SentAt);
+                await Clients.Client(adminUser.ChatConnection.ConnectionId).SendAsync("ReceiveMessages", customerId, message, chatMessage.SentAt);
             }
             catch (Exception ex)
             {
@@ -109,6 +134,7 @@ namespace WebsiteBanHang.HubSignalR
                 throw;
             }
         }
+
 
         public async Task SendMessageToCustomer(int customerId, string message)
         {
@@ -146,7 +172,7 @@ namespace WebsiteBanHang.HubSignalR
                 _context.ChatMessage.Add(chatMessage);
                 await _context.SaveChangesAsync();
 
-                await Clients.Client(customer.ChatConnection.ConnectionId).SendAsync("ReceiveMessages", senderConnectionId, message, chatMessage.SentAt);
+                await Clients.Client(customer.ChatConnection.ConnectionId).SendAsync("ReceiveMessage", senderConnectionId, message, chatMessage.SentAt);
             }
             catch (Exception ex)
             {

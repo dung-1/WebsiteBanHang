@@ -1,8 +1,9 @@
 ﻿const Customerconnection = new signalR.HubConnectionBuilder()
     .withUrl("/chathub")
     .withAutomaticReconnect()
+    .configureLogging(signalR.LogLevel.Information)
     .build();
-
+Customerconnection.serverTimeoutInMilliseconds = 300000;
 // Start the connection initially
 Customerconnection.start().then(async () => {
     const userId = parseInt(document.querySelector('.chat-window2').getAttribute('data-user-id'), 10);
@@ -31,7 +32,7 @@ function sendMessageToAdmin(message) {
     if (Customerconnection.state === signalR.HubConnectionState.Connected) {
         Customerconnection.invoke("SendMessageToAdmin", message)
             .then(() => {
-                addMessageToUI({
+                addMessageToAdminUI({
                     senderId: Customerconnection.connectionId,
                     message: message,
                     isFromAdmin: false
@@ -44,7 +45,7 @@ function sendMessageToAdmin(message) {
 }
 
 Customerconnection.on("ReceiveMessage", (senderConnectionId, message, sentAt) => {
-    addMessageToUI({
+    addMessageToAdminUI({
         senderId: senderConnectionId,
         message: message,
         sentAt: new Date(sentAt),
@@ -56,7 +57,7 @@ function formatMessage(message) {
     return `${message.message}`;
 }
 
-function addMessageToUI(message) {
+function addMessageToAdminUI(message) {
     const messageBox = document.getElementById("messageBox");
     const div = document.createElement("div");
 
@@ -83,7 +84,7 @@ function updateMessageList(messages) {
     messageBox.innerHTML = ""; // Clear existing messages
 
     for (const message of messages) {
-        addMessageToUI(message);
+        addMessageToAdminUI(message);
     }
 }
 
