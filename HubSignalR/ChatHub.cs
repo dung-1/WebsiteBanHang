@@ -149,18 +149,6 @@ namespace WebsiteBanHang.HubSignalR
                     .Include(u => u.ChatConnection) // eager load ChatConnection
                     .FirstOrDefaultAsync(u => u.Id == customerId);
 
-                if (customer == null)
-                {
-                    Console.WriteLine("Customer not found.");
-                    throw new Exception("Customer not found.");
-                }
-
-                if (customer.ChatConnection == null)
-                {
-                    Console.WriteLine("Customer does not have a valid chat connection.");
-                    throw new Exception("Customer does not have a valid chat connection.");
-                }
-
                 var chatMessage = new ChatMessage
                 {
                     Content = message,
@@ -171,8 +159,8 @@ namespace WebsiteBanHang.HubSignalR
 
                 _context.ChatMessage.Add(chatMessage);
                 await _context.SaveChangesAsync();
-
-                await Clients.Client(customer.ChatConnection.ConnectionId).SendAsync("ReceiveMessage", senderConnectionId, message, chatMessage.SentAt);
+                //đây là đăng gửi cho tất cả vì dùng clients.All chứ nếu nhắn 1-1 dùng clients.client()
+                await Clients.All.SendAsync("ReceiveMessagetoCustomer", senderConnectionId, message, chatMessage.SentAt);
             }
             catch (Exception ex)
             {

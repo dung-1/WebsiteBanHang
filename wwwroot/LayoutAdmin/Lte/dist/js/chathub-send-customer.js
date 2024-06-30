@@ -203,6 +203,13 @@ function sendMessageToCustomer(customerId, message) {
     if (Chatconnection.state === signalR.HubConnectionState.Connected) {
         Chatconnection.invoke("SendMessageToCustomer", customerId, message)
             .then(() => {
+                // Gọi server để cập nhật danh sách khách hàng mới nhất
+                Chatconnection.invoke("GetCustomerList").then(function (customers) {
+                    updateCustomerList(customers);
+                }).catch(function (err) {
+                    console.error("Error invoking GetCustomerList:", err.toString());
+                });
+
                 // Cập nhật UI ngay sau khi gửi tin nhắn thành công
                 addMessageToCustomerUI({
                     isAdminMessage: true, // Đánh dấu đây là tin nhắn từ admin
@@ -214,6 +221,7 @@ function sendMessageToCustomer(customerId, message) {
         console.log("Connection is not established. Message not sent.");
     }
 }
+
 
 document.addEventListener('DOMContentLoaded', function () {
     // Event listener for send button click
