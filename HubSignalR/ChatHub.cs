@@ -210,11 +210,10 @@ namespace WebsiteBanHang.HubSignalR
 
 
         public async Task<List<CustomerViewModel>> GetCustomerList()
-
         {
             var customers = await _context.ChatConnection
                 .Where(cc => cc.User is CustomerModel) // Lọc các kết nối là khách hàng
-                .GroupBy(cc => cc.UserId) // Nhóm theo UserId để chỉ lấy một kết nối duy nhất cho mỗi khách hàng
+                .GroupBy(cc => cc.UserId)  // Nhóm theo UserId để chỉ lấy một kết nối duy nhất cho mỗi khách hàng
                 .Select(group => new CustomerViewModel
                 {
                     Id = group.Key,
@@ -228,12 +227,25 @@ namespace WebsiteBanHang.HubSignalR
                         .Where(cm => cm.ConnectionIdTo == cc.ConnectionId || cm.ConnectionIdFrom == cc.ConnectionId))
                         .OrderByDescending(cm => cm.SentAt)
                         .Select(cm => cm.SentAt) // Trả về DateTime của tin nhắn cuối cùng
-                        .FirstOrDefault()
+                        .FirstOrDefault(),
+                    LastActive = group.Max(cc => cc.LastActive), // Lấy thời gian hoạt động cuối cùng của khách hàng
+                    IsActive = group.OrderByDescending(cc => cc.LastActive).FirstOrDefault().Connected // Kiểm tra trạng thái hoạt động dựa trên kết nối gần nhất
                 })
+               .OrderByDescending(customer => customer.LastMessageTimeAgo) // Sắp xếp theo tin nhắn cuối cùng giảm dần
+
                 .ToListAsync();
+
+            foreach (var customer in customers)
+            {
+                // Định dạng thời gian tin nhắn cuối cùng
+                customer.LastMessageTimeAgoFormatted = customer.LastMessageTimeAgo != default(DateTime)
+                    ? customer.LastMessageTimeAgo.ToString("dd/MM/yyyy HH:mm:ss")
+                    : "No messages";
+            }
 
             return customers;
         }
+
 
         public async Task<List<ChatMessageViewModel>> GetMessages(int customerId)
         {
@@ -242,6 +254,13 @@ namespace WebsiteBanHang.HubSignalR
                 // Lấy userId của admin
                 int adminUserId = 8; // Đây là ví dụ, bạn cần thay thế bằng cách lấy userId của admin trong hệ thống của bạn
 
+                // Lấy thông tin trạng thái hoạt động và thời gian hoạt động của khách hàng
+                var customerConnection = await _context.ChatConnection
+                    .Where(c => c.UserId == customerId)
+                    .OrderByDescending(c => c.LastActive)
+                    .FirstOrDefaultAsync();
+
+                // Lấy tin nhắn và thông tin trạng thái
                 var messages = await _context.ChatMessage
                     .Where(m =>
                         (m.FromConnection.UserId == customerId && m.ToConnection.UserId == adminUserId) || // Tin nhắn từ khách hàng tới admin
@@ -250,12 +269,28 @@ namespace WebsiteBanHang.HubSignalR
                     .OrderBy(m => m.SentAt)
                     .Select(m => new ChatMessageViewModel
                     {
+                        SenderName = m.FromConnection.User.Email,
                         Content = m.Content,
                         SentAt = m.SentAt,
-                        SenderId = m.ConnectionIdFrom, // Id người gửi tin nhắn
+                        SenderId = m.FromConnection.User.Id, // Id người gửi tin nhắn
                         IsAdminMessage = m.FromConnection.UserId == adminUserId // Đánh dấu tin nhắn của admin
                     })
                     .ToListAsync();
+
+                // Cập nhật trạng thái hoạt động và thời gian đăng nhập hiện tại của khách hàng
+                if (customerConnection != null)
+                {
+                    var now = DateTime.Now;
+                    var isActive = customerConnection.Connected;
+                    var lastActive = isActive ? now : customerConnection.LastActive;
+
+                    // Gán thông tin trạng thái hoạt động và thời gian hoạt động cho từng tin nhắn
+                    foreach (var message in messages)
+                    {
+                        message.IsActive = isActive;
+                        message.LastActive = lastActive;
+                    }
+                }
 
                 return messages;
             }
@@ -266,6 +301,8 @@ namespace WebsiteBanHang.HubSignalR
                 throw;
             }
         }
+
+
 
 
         private async Task SendCustomerListToAdmin()

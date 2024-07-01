@@ -5,10 +5,16 @@
     .build();
 Customerconnection.serverTimeoutInMilliseconds = 300000;
 // Start the connection initially
-Customerconnection.start().then(async () => {
+Customerconnection.start().then(function () {
+    console.log("Connected to SignalR hub");
     const userId = parseInt(document.querySelector('.chat-window2').getAttribute('data-user-id'), 10);
-    const messages = await Customerconnection.invoke("GetChatHistory", userId);
-    updateMessageList(messages);
+    Customerconnection.invoke("GetChatHistory", userId).then(function (messages) {
+        updateMessageList(messages);
+    }).catch(function (err) {
+        console.error("Error invoking GetChatHistory:", err.toString());
+    });
+}).catch(function (err) {
+    console.error("Error starting SignalR connection:", err.toString());
 });
 
 // Handle connection closure
@@ -44,7 +50,7 @@ function sendMessageToAdmin(message) {
     }
 }
 
-Customerconnection.on("ReceiveMessage", (senderConnectionId, message, sentAt) => {
+Customerconnection.on("ReceiveMessagetoCustomer", function (senderConnectionId, message, sentAt)  {
     addMessageToAdminUI({
         senderId: senderConnectionId,
         message: message,

@@ -1,4 +1,4 @@
-/*
+﻿/*
 ! tailwindcss v3.1.6 | MIT License | https://tailwindcss.com
 */
 
@@ -780,7 +780,8 @@ video {
 }
 
 .flex-shrink-0 {
-  flex-shrink: 0;
+    flex-shrink: 0;
+    margin: inherit;
 }
 
 .flex-grow {
@@ -827,6 +828,7 @@ video {
 .justify-start {
     justify-content: flex-start;
     margin: 7px;
+    margin-left: auto
 }
 
 .justify-end {
@@ -1000,6 +1002,8 @@ video {
 .py-3 {
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
+  margin:7px;
+  margin-right:auto;
 }
 
 .pr-6 {
@@ -1265,4 +1269,32 @@ video {
   .lg\:max-w-md {
     max-width: 28rem;
   }
+}
+
+.chat-header, .chat-footer {
+    display: none;
+}
+.chat_body_content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* Đảm bảo các phần tử con căn giữa theo chiều dọc */
+    height: 100%; /* Đảm bảo chat-body chiếm toàn bộ chiều cao của parent */
+    padding: 4rem; /* Căn lề nếu cần */
+    overflow-y: scroll; /* Cho phép cuộn nếu nội dung vượt quá chiều cao */
+}
+
+.chat-to {
+    font-size: 1rem; /* Kích thước font */
+    text-align: center; /* Căn giữa nội dung */
+}
+
+.brand-text {
+    font-weight: lighter; /* Font nhẹ */
+    /* Nếu cần thêm kiểu khác cho brand-text */
+}
+
+.activity {
+    width: max-content;
+    font-size: x-small;
 }

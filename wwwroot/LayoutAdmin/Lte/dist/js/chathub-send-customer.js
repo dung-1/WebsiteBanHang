@@ -12,7 +12,7 @@ Chatconnection.on("ReceiveMessages", function (customerId, message, sentAt) {
     updateCustomerMessage(customerId, message, new Date(sentAt));
     // Cập nhật giao diện chat nếu đang mở
     addMessageToCustomerUI({
-        isAdminMessage: false, 
+        isAdminMessage: false,
         content: message
     });
 });
@@ -21,7 +21,8 @@ Chatconnection.start().then(function () {
     console.log("Connected to SignalR hub");
     Chatconnection.invoke("GetCustomerList").then(function (customers) {
         updateCustomerList(customers);
-        updateCustomerTimeAgo(); // Start updating time ago continuously
+        updateCustomerTimeAgo();
+        updateCustomerTimelastActiveAgo();// Start updating time ago continuously
     }).catch(function (err) {
         console.error("Error invoking GetCustomerList:", err.toString());
     });
@@ -38,12 +39,25 @@ function updateCustomerList(customers) {
         const customerElement = document.createElement("div");
         customerElement.className = "flex justify-between items-center p-3 hover:bg-gray-800 rounded-lg relative cursor-pointer";
         customerElement.id = `customer-${customer.id}`;
-        customerElement.innerHTML = `
-            <div class="w-16 h-16 relative flex flex-shrink-0">
-                <img class="shadow-md rounded-full w-full h-full object-cover" src="https://randomuser.me/api/portraits/men/97.jpg" alt="" />
+        let activityStatusHtml = '';
+        if (customer.isActive) {
+            activityStatusHtml = `
                 <div class="absolute bg-gray-900 p-1 rounded-full bottom-0 right-0">
                     <div class="bg-green-500 rounded-full w-3 h-3"></div>
                 </div>
+            `;
+        } else {
+            activityStatusHtml = `
+                <div class="absolute bg-gray-900 p-1 rounded-full bottom-0 right-0 activity "data-time="${customer.lastActive}">
+                  ${timeAgo(new Date(customer.lastActive))}
+                </div>
+            `;
+        }
+
+        customerElement.innerHTML = `
+            <div class="w-16 h-16 relative flex flex-shrink-0">
+                <img class="shadow-md rounded-full w-full h-full object-cover" src="https://randomuser.me/api/portraits/men/97.jpg" alt="" />
+                 ${activityStatusHtml}
             </div>
             <div class="flex-auto min-w-0 ml-4 mr-6 hidden md:block group-hover:block">
                 <p class="font-bold">${customer.name}</p>
@@ -54,9 +68,18 @@ function updateCustomerList(customers) {
                     <p class="ml-2 whitespace-no-wrap" data-time="${customer.lastMessageTimeAgo}">${timeAgo(new Date(customer.lastMessageTimeAgo))}</p>
                 </div>
             </div>
-            <div class="bg-blue-700 w-3 h-3 rounded-full flex flex-shrink-0 hidden md:block group-hover:block"></div>
         `;
-        customerElement.addEventListener('click', () => loadCustomerMessages(customer.id));
+        customerElement.addEventListener('click', () => {
+            // Load messages for the selected customer
+            loadCustomerMessages(customer.id);
+
+            // Show the header and footer
+            document.querySelector(".chat-header").style.display = "block";
+            document.querySelector(".chat-footer").style.display = "block";
+        });
+        // Show the header and footer
+
+
         customerList.appendChild(customerElement);
     });
 }
@@ -67,10 +90,24 @@ function loadCustomerMessages(customerId) {
     Chatconnection.invoke("GetMessages", customerId)
         .then(function (messages) {
             updateMessageList(messages, customerId);
+            updateActiveNameCustomer(messages);
         })
         .catch(function (err) {
             console.error("Error invoking GetMessages:", err.toString());
         });
+}
+
+function updateActiveNameCustomer(messages) {
+    const chat_header = document.querySelector(".chat-header");
+
+    // Clear current chat body
+    chat_header.innerHTML = "";
+
+    // Append messages to chat body
+    messages.forEach(message => {
+        addMessageActiveNameCustomer(message);
+    });
+
 }
 
 
@@ -86,6 +123,51 @@ function updateMessageList(messages, customerId) {
     });
 }
 
+function addMessageActiveNameCustomer(message) {
+    const chatHeader = document.querySelector(".chat-header");
+
+    // Xóa hết các tin nhắn hiện tại trong chatHeader
+    chatHeader.innerHTML = '';
+
+    const messageElement = document.createElement("div");
+    let activityStatusHtml = '';
+    let activityStatus = '';
+    if (message.isActive) {
+        activityStatusHtml = `
+            <div class="absolute bg-gray-900 p-1 rounded-full bottom-0 right-0">
+                <div class="bg-green-500 rounded-full w-3 h-3"></div>
+            </div>
+        `;
+    }
+    if (message.isActive) {
+        activityStatus = `
+           <div class="text-sm">
+                <p class="font-bold">${message.senderName}</p>
+                <p>Đang hoạt động</p>
+            </div>
+        `;
+    } else {
+        activityStatus = `
+         <div class="text-sm activity" data-time="${message.lastActive}">
+                <p class="font-bold">${message.senderName}</p>
+                     Hoạt động ${timeAgo(new Date(message.lastActive))}
+            </div>
+        `;
+    }
+    messageElement.innerHTML = `
+        <div class="flex">
+            <div class="w-12 h-12 mr-4 relative flex flex-shrink-0">
+                <img class="shadow-md rounded-full w-full h-full object-cover" src="https://randomuser.me/api/portraits/women/33.jpg" alt="" />
+                ${activityStatusHtml}
+            </div>
+           ${activityStatus}
+        </div>
+    `;
+
+    // Chèn messageElement vào chatHeader
+    chatHeader.appendChild(messageElement);
+}
+
 function addMessageToCustomerUI(message) {
     const chatBody = document.querySelector(".chat-body");
     const messageElement = document.createElement("div");
@@ -97,11 +179,12 @@ function addMessageToCustomerUI(message) {
     }
 
     messageElement.innerHTML = `
-        <div class="w-8 h-8 relative flex flex-shrink-0 ${message.isAdminMessage ? 'mr-4' : 'ml-4'}">
-            <img class="shadow-md rounded-full w-full h-full object-cover" src="https://randomuser.me/api/portraits/${message.isAdminMessage ? 'women/33.jpg' : 'men/97.jpg'}" alt="" />
-        </div>
+  <div class="w-8 h-8 relative flex flex-shrink-0 ${message.isAdminMessage ? 'mr-4' : 'ml-4'}">
+    ${message.isAdminMessage ? '' : `<img class="shadow-md rounded-full w-full h-full object-cover" src="https://randomuser.me/api/portraits/women/33.jpg" alt="" />`}
+</div>
+
         <div class="messages text-sm text-${message.isAdminMessage ? 'white' : 'gray-700'} grid grid-flow-row gap-2">
-            <div class="flex items-center group">
+            <div class="flex items-center group ${message.isAdminMessage ? 'flex-row-reverse' : ''}">
                 <p class="px-6 py-3 rounded-t-full rounded-${message.isAdminMessage ? 'l' : 'r'}-full bg-${message.isAdminMessage ? 'blue-700' : 'gray-800 text-gray-200'} max-w-xs lg:max-w-md">
                     ${message.content}
                 </p>
@@ -130,7 +213,7 @@ function addMessageToCustomerUI(message) {
     chatBody.appendChild(messageElement);
 }
 function updateCustomerMessage(customerId, message, sentAt) {
-    selectedCustomerId = customerId; 
+    selectedCustomerId = customerId;
     const customerElement = document.querySelector(`#customer-${selectedCustomerId}`);
     if (customerElement) {
         const lastMessageElement = customerElement.querySelector('.truncate');
@@ -173,21 +256,36 @@ function formatTime(date) {
 function timeAgo(date) {
     const now = new Date();
     const diff = now - date;
-    const minutes = Math.floor(diff / 60000);
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
 
-    if (minutes < 1) return 'Ngay bây giờ';
+    if (seconds < 60) return `${seconds} giây trước`;
     if (minutes < 60) return `${minutes} phút trước`;
-    if (hours < 24) return `${hours} h trước`;
+    if (hours < 24) return `${hours} giờ trước`;
     return `${days} ngày trước`;
 }
+
 
 function updateCustomerTimeAgo() {
     setInterval(() => {
         const customerElements = document.querySelectorAll('[id^=customer-]');
         customerElements.forEach(customerElement => {
             const timeAgoElement = customerElement.querySelector('.whitespace-no-wrap');
+            const lastMessageTime = new Date(timeAgoElement.getAttribute('data-time'));
+            if (!isNaN(lastMessageTime)) {
+                timeAgoElement.textContent = timeAgo(lastMessageTime);
+            }
+        });
+    }, 60000); // Update every minute
+}
+
+function updateCustomerTimelastActiveAgo() {
+    setInterval(() => {
+        const customerElements = document.querySelectorAll('[id^=customer-]');
+        customerElements.forEach(customerElement => {
+            const timeAgoElement = customerElement.querySelector('.activity');
             const lastMessageTime = new Date(timeAgoElement.getAttribute('data-time'));
             if (!isNaN(lastMessageTime)) {
                 timeAgoElement.textContent = timeAgo(lastMessageTime);
