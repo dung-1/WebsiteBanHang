@@ -91,6 +91,7 @@ $(document).on("click", ".create-brand", function (e) {
         success: function (data) {
             $('#Create_Brand').find('.modal-content').html(data)
             $('#Create_Brand').modal('show');
+            fetchCountries();
         }
     })
 });

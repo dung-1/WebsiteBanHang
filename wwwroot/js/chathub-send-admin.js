@@ -1,0 +1,218 @@
+﻿const Customerconnection = new signalR.HubConnectionBuilder()
+    .withUrl("/chathub")
+    .withAutomaticReconnect()
+    .configureLogging(signalR.LogLevel.Information)
+    .build();
+Customerconnection.serverTimeoutInMilliseconds = 300000;
+// Start the connection initially
+Customerconnection.start().then(function () {
+    console.log("Connected to SignalR hub");
+    const userId = parseInt(document.querySelector('.chat-window2').getAttribute('data-user-id'), 10);
+    Customerconnection.invoke("GetChatHistory", userId).then(function (messages) {
+        updateMessageList(messages);
+    }).catch(function (err) {
+        console.error("Error invoking GetChatHistory:", err.toString());
+    });
+}).catch(function (err) {
+    console.error("Error starting SignalR connection:", err.toString());
+});
+
+// Handle connection closure
+Customerconnection.onclose(() => {
+    console.error("Connection closed. Attempting to reconnect...");
+});
+
+document.getElementById("sendButton").addEventListener("click", event => {
+    const message = document.getElementById("messageInput").value;
+
+    if (!message) {
+        console.error("Message is empty.");
+        return;
+    }
+
+    sendMessageToAdmin(message);
+    document.getElementById("messageInput").value = '';
+});
+
+function sendMessageToAdmin(message) {
+    const sentAt = new Date().toISOString(); // Lấy thời gian hiện tại và định dạng thành chuỗi ISO
+
+    if (Customerconnection.state === signalR.HubConnectionState.Connected) {
+        Customerconnection.invoke("SendMessageToAdmin", message)
+            .then(() => {
+                addMessageToAdminUI({
+                    senderId: Customerconnection.connectionId,
+                    message: message,
+                    sentAt: new Date(sentAt), // Tạo đối tượng Date từ chuỗi ISO
+                    isFromAdmin: false
+                });
+            })
+            .catch(err => console.error("Error sending message:", err.toString()));
+    } else {
+        console.log("Connection is not established. Message not sent.");
+    }
+}
+
+
+
+Customerconnection.on("ReceiveMessagetoCustomer", function (senderConnectionId, message, sentAt) {
+    addMessageToAdminUI({
+        senderId: senderConnectionId,
+        message: message,
+        sentAt: new Date(sentAt), // Tạo đối tượng Date từ chuỗi ISO
+        isFromAdmin: senderConnectionId !== Customerconnection.connectionId
+    });
+});
+
+
+function formatMessage(message) {
+    return `${message.message}`;
+}
+
+let lastMessageDateAdmin = null;
+
+function addMessageToAdminUI(message) {
+    const messageBox = document.getElementById("messageBox");
+    const messageDate = new Date(message.sentAt);
+    const formattedDate = messageDate.toLocaleDateString('vi-VN');
+    const formattedTime = messageDate.toLocaleTimeString('vi-VN');
+
+    // Tạo mốc thời gian theo ngày nếu ngày hiện tại khác với ngày của tin nhắn trước đó
+    if (lastMessageDateAdmin !== formattedDate) {
+        const dateMarkerElement = document.createElement("p");
+        dateMarkerElement.className = "p-4 text-center text-sm text-gray-500";
+        dateMarkerElement.innerText = formattedDate;
+        messageBox.appendChild(dateMarkerElement);
+        lastMessageDateAdmin = formattedDate;
+    }
+
+    // Tạo phần tử hiển thị tin nhắn
+    const div = document.createElement("div");
+
+    if (message.isFromAdmin) {
+        div.className = "second-chat";
+        div.innerHTML = `
+            <div class="circle"></div>
+            <p class="conten-message-customer">${message.message}</p>
+            <p class="time-messages">${formattedTime}</p>
+            <div class="arrow"></div>
+        `;
+    } else {
+        div.className = "first-chat";
+        div.innerHTML = `
+            <p class="conten-message-admin">${message.message}</p>
+            <p class="time-messages">${formattedTime}</p>
+        `;
+    }
+
+    // Chèn div vào messageBox
+    messageBox.appendChild(div);
+}
+
+
+function updateMessageList(messages) {
+    const messageBox = document.getElementById("messageBox");
+    messageBox.innerHTML = ""; // Clear existing messages
+
+    for (const message of messages) {
+        addMessageToAdminUI(message);
+    }
+}
+
+
+    let audio1 = new Audio(
+        "https://s3-us-west-2.amazonaws.com/s.cdpn.io/242518/clickUp.mp3"
+    );
+
+    function chatOpen() {
+        document.getElementById("chat-open").style.display = "none";
+        document.getElementById("chat-close").style.display = "block";
+        document.getElementById("chat-window1").style.display = "block";
+
+        audio1.load();
+        audio1.play();
+    }
+
+    function chatClose() {
+        document.getElementById("chat-open").style.display = "block";
+        document.getElementById("chat-close").style.display = "none";
+        document.getElementById("chat-window1").style.display = "none";
+        document.getElementById("chat-window2").style.display = "none";
+
+        audio1.load();
+        audio1.play();
+    }
+
+    function openConversation() {
+        document.getElementById("chat-window2").style.display = "block";
+        document.getElementById("chat-window1").style.display = "none";
+
+        audio1.load();
+        audio1.play();
+    }
+
+    //Gets the text from the input box(user)
+    function userResponse() {
+        console.log("response");
+        let userText = document.getElementById("textInput").value;
+
+        if (userText == "") {
+            alert("Please type something!");
+        } else {
+            document.getElementById("messageBox").innerHTML += `<div class="first-chat">
+      <p>${userText}</p>
+      <div class="arrow"></div>
+        </div>`;
+            let audio3 = new Audio(
+                "https://prodigits.co.uk/content/ringtones/tone/2020/alert/preview/4331e9c25345461.mp3"
+            );
+            audio3.load();
+            audio3.play();
+
+            document.getElementById("textInput").value = "";
+            var objDiv = document.getElementById("messageBox");
+            objDiv.scrollTop = objDiv.scrollHeight;
+
+            setTimeout(() => {
+                adminResponse();
+            }, 1000);
+        }
+    }
+
+    //press enter on keyboard and send message
+    addEventListener("keypress", (e) => {
+        if (e.keyCode === 13) {
+            const e = document.getElementById("textInput");
+            if (e === document.activeElement) {
+                userResponse();
+            }
+    }
+    });
+    //admin Respononse to user's message
+    function adminResponse() {
+        fetch("https://api.adviceslip.com/advice")
+            .then((response) => {
+                return response.json();
+            })
+            .then((adviceData) => {
+                let Adviceobj = adviceData.slip;
+                document.getElementById(
+                    "messageBox"
+                ).innerHTML += `<div class="second-chat">
+          <div class="circle" id="circle-mar"></div>
+          <p>${Adviceobj.advice}</p>
+          <div class="arrow"></div>
+        </div>`;
+                let audio3 = new Audio(
+                    "https://downloadwap.com/content2/mp3-ringtones/tone/2020/alert/preview/56de9c2d5169679.mp3"
+                );
+                audio3.load();
+                audio3.play();
+
+                var objDiv = document.getElementById("messageBox");
+                objDiv.scrollTop = objDiv.scrollHeight;
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }

@@ -136,13 +136,14 @@ namespace WebsiteBanHang
                    pattern: "Category/Index/{categoryid?}",
                    defaults: new { controller = "Category", action = "Index" });
 
+                endpoints.MapHub<ChatHub>("/chathub");
+                endpoints.MapHub<NotificationHub>("/notificationHub");
+                endpoints.MapControllers();
                 // Cuối cùng, đặt route mặc định cho Home controller
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}"
                 );
-                endpoints.MapHub<NotificationHub>("/notificationHub");
-                endpoints.MapHub<ChatHub>("/chathub");
             });
             app.Run();
         }

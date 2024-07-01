@@ -175,12 +175,13 @@ namespace WebsiteBanHang.Areas.Admin.Data
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // Cấu hình mối quan hệ cho ChatConnection với User và Admin
             modelBuilder.Entity<ChatConnection>()
               .HasOne(cc => cc.User) // Kết nối tới User
               .WithMany() // Một User có thể có nhiều kết nối chat
               .HasForeignKey(cc => cc.UserId) // Khóa ngoại của User trong ChatConnection
-              .IsRequired()
-              .OnDelete(DeleteBehavior.Restrict);
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Cấu hình mối quan hệ cho ChatMessage
             modelBuilder.Entity<ChatMessage>()
@@ -197,11 +198,20 @@ namespace WebsiteBanHang.Areas.Admin.Data
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
+
             modelBuilder.Entity<UserRoleModel>()
-                .HasKey(ur => new { ur.User_ID, ur.Role_ID });
+                    .HasKey(ur => new
+                    {
+                        ur.User_ID,
+                        ur.Role_ID
+                    });
 
             modelBuilder.Entity<CustomerRoleModel>()
-                .HasKey(ur => new { ur.Customer_ID, ur.Role_ID });
+                .HasKey(ur => new
+                {
+                    ur.Customer_ID,
+                    ur.Role_ID
+                });
 
             modelBuilder.Entity<PermissionRoleModel>()
                 .HasKey(ur => new { ur.Permission_ID, ur.Role_ID });

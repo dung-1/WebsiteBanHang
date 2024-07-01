@@ -28,7 +28,7 @@ namespace WebsiteBanHang.Controllers
         public async Task<IActionResult> Index(int? page, string searchName, string selectedCategory)
         {
             var pageNumber = page ?? 1;
-            int pageSize = 12;
+            int pageSize = 8;
 
             var products = _context.Product
                    .Select(p => new ProductModel
