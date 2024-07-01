@@ -12,6 +12,7 @@ Chatconnection.on("ReceiveMessages", function (customerId, message, sentAt) {
     updateCustomerMessage(customerId, message, new Date(sentAt));
     // Cập nhật giao diện chat nếu đang mở
     addMessageToCustomerUI({
+        sentAt: new Date(sentAt), // Tạo đối tượng Date từ chuỗi ISO
         isAdminMessage: false,
         content: message
     });
@@ -56,7 +57,7 @@ function updateCustomerList(customers) {
 
         customerElement.innerHTML = `
             <div class="w-16 h-16 relative flex flex-shrink-0">
-                <img class="shadow-md rounded-full w-full h-full object-cover" src="https://randomuser.me/api/portraits/men/97.jpg" alt="" />
+                <img class="shadow-md rounded-full w-full h-full object-cover" src="/img/image_user.png" alt="" />
                  ${activityStatusHtml}
             </div>
             <div class="flex-auto min-w-0 ml-4 mr-6 hidden md:block group-hover:block">
@@ -157,7 +158,7 @@ function addMessageActiveNameCustomer(message) {
     messageElement.innerHTML = `
         <div class="flex">
             <div class="w-12 h-12 mr-4 relative flex flex-shrink-0">
-                <img class="shadow-md rounded-full w-full h-full object-cover" src="https://randomuser.me/api/portraits/women/33.jpg" alt="" />
+                <img class="shadow-md rounded-full w-full h-full object-cover" src="/img/image_user.png" alt="" />
                 ${activityStatusHtml}
             </div>
            ${activityStatus}
@@ -168,10 +169,27 @@ function addMessageActiveNameCustomer(message) {
     chatHeader.appendChild(messageElement);
 }
 
+let lastMessageDate = null;
+
 function addMessageToCustomerUI(message) {
     const chatBody = document.querySelector(".chat-body");
     const messageElement = document.createElement("div");
 
+    // Định dạng thời gian gửi tin nhắn
+    const messageDate = new Date(message.sentAt);
+    const formattedDate = messageDate.toLocaleDateString('vi-VN');
+    const formattedTime = messageDate.toLocaleTimeString('vi-VN');
+
+    // Tạo mốc thời gian theo ngày nếu ngày hiện tại khác với ngày của tin nhắn trước đó
+    if (lastMessageDate !== formattedDate) {
+        const dateMarkerElement = document.createElement("p");
+        dateMarkerElement.className = "p-4 text-center text-sm text-gray-500";
+        dateMarkerElement.innerText = formattedDate;
+        chatBody.appendChild(dateMarkerElement);
+        lastMessageDate = formattedDate;
+    }
+
+    // Tạo phần tử hiển thị tin nhắn
     if (message.isAdminMessage) {
         messageElement.className = "flex flex-row justify-end"; // Tin nhắn của admin
     } else {
@@ -179,39 +197,24 @@ function addMessageToCustomerUI(message) {
     }
 
     messageElement.innerHTML = `
-  <div class="w-8 h-8 relative flex flex-shrink-0 ${message.isAdminMessage ? 'mr-4' : 'ml-4'}">
-    ${message.isAdminMessage ? '' : `<img class="shadow-md rounded-full w-full h-full object-cover" src="https://randomuser.me/api/portraits/women/33.jpg" alt="" />`}
-</div>
+        <div class="w-8 h-8 relative flex flex-shrink-0 ${message.isAdminMessage ? 'mr-4' : 'ml-4'}">
+            ${message.isAdminMessage ? '' : `<img class="shadow-md rounded-full w-full h-full object-cover" src="/img/image_user.png" alt="" />`}
+        </div>
 
         <div class="messages text-sm text-${message.isAdminMessage ? 'white' : 'gray-700'} grid grid-flow-row gap-2">
             <div class="flex items-center group ${message.isAdminMessage ? 'flex-row-reverse' : ''}">
                 <p class="px-6 py-3 rounded-t-full rounded-${message.isAdminMessage ? 'l' : 'r'}-full bg-${message.isAdminMessage ? 'blue-700' : 'gray-800 text-gray-200'} max-w-xs lg:max-w-md">
                     ${message.content}
                 </p>
-                <button type="button" class="option-message">
-                    <svg viewBox="0 0 20 20" class="w-full h-full fill-current">
-                        <path d="M10.001,7.8C8.786,7.8,7.8,8.785,7.8,10s0.986,2.2,2.201,2.2S12.2,11.215,12.2,10S11.216,7.8,10.001,7.8z
-                        M3.001,7.8C1.786,7.8,0.8,8.785,0.8,10s0.986,2.2,2.201,2.2S5.2,11.214,5.2,10S4.216,7.8,3.001,7.8z M17.001,7.8
-                        C15.786,7.8,14.8,8.785,14.8,10s0.986,2.2,2.201,2.2S19.2,11.215,19.2,10S18.216,7.8,17.001,7.8z" />
-                    </svg>
-                </button>
-                <button type="button" class="option-message">
-                    <svg viewBox="0 0 20 20" class="w-full h-full fill-current">
-                        <path d="M19,16.685c0,0-2.225-9.732-11-9.732V2.969L1,9.542l7,6.69v-4.357C12.763,11.874,16.516,12.296,19,16.685z" />
-                    </svg>
-                </button>
-                <button type="button" class="option-message">
-                    <svg viewBox="0 0 24 24" class="w-full h-full fill-current">
-                        <path d="M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-3.54-4.46a1 1 0 0 1 1.42-1.42 3 3 0 0 0 4.24 0 1 1 0 0 1 1.42 1.42 5 5 0 0 1-7.08 0zM9 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm6 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
-                    </svg>
-                </button>
             </div>
+            <p class="time-messages">${formattedTime}</p>
         </div>
     `;
 
-    // Insert messageElement into chatBody
+    // Chèn messageElement vào chatBody
     chatBody.appendChild(messageElement);
 }
+
 function updateCustomerMessage(customerId, message, sentAt) {
     selectedCustomerId = customerId;
     const customerElement = document.querySelector(`#customer-${selectedCustomerId}`);
@@ -298,6 +301,8 @@ function updateCustomerTimelastActiveAgo() {
 
 // Function to send message to customer
 function sendMessageToCustomer(customerId, message) {
+    const sentAt = new Date().toISOString(); // Lấy thời gian hiện tại và định dạng thành chuỗi ISO
+
     if (Chatconnection.state === signalR.HubConnectionState.Connected) {
         Chatconnection.invoke("SendMessageToCustomer", customerId, message)
             .then(() => {
@@ -311,7 +316,9 @@ function sendMessageToCustomer(customerId, message) {
                 // Cập nhật UI ngay sau khi gửi tin nhắn thành công
                 addMessageToCustomerUI({
                     isAdminMessage: true, // Đánh dấu đây là tin nhắn từ admin
-                    content: message
+                    content: message,
+                    sentAt: new Date(sentAt), // Tạo đối tượng Date từ chuỗi ISO
+
                 });
             })
             .catch(err => console.error("Error sending message:", err.toString()));

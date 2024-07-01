@@ -703,28 +703,36 @@ i.bi.bi-facebook {
     .message-box .first-chat {
         max-width: 80%; /* Giới hạn chiều rộng tối đa */
         float: right;
-        background-color: #4c5aa1;
-        padding: 5px;
-        margin: 5px 0px;
-        border-radius: 10px;
-        color: white;
         display: inline-grid; /* Đảm bảo chiều rộng tự động theo nội dung */
         height: auto; /* Đảm bảo chiều cao tự động theo nội dung */
         clear: both; /* Đảm bảo mỗi tin nhắn nằm trên một hàng riêng */
     
     }
 
-        .message-box .first-chat p {
-            font-size: 12px;
-            overflow-wrap: break-word;
-            margin: 0; /* Loại bỏ khoảng cách thừa xung quanh đoạn văn */
-        }
+.first-chat .conten-message-admin {
+    background-color: #5a3cfe;
+    color: white;
+    padding: 5px;
+    margin: 5px 0px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+
+
+
+
+
+.message-box .first-chat p {
+    overflow-wrap: break-word;
+    margin: 0; /* Loại bỏ khoảng cách thừa xung quanh đoạn văn */
+}
 
     .message-box .second-chat {
         display: inline-block;
     }
         .message-box .second-chat .circle {
-            background-image: url('../img/vietnam.png');
+            background-image: url('../img/Administrator.png');
             border-radius: 50%;
             float: left;
             padding: 16px;
@@ -736,17 +744,23 @@ i.bi.bi-facebook {
         }
 
         .message-box .second-chat p {
-            font-size: 12px;
             overflow-wrap: break-word;
         }
 
         .message-box .second-chat p {
             width: 180px;
             float: left;
-            background-color: #ecf1fb;
             padding: 12px;
             margin: 0px 5px;
             border-radius: 10px;
             color: #000;
             display: inline-flex;
         }
+
+.conten-message-customer {
+    background-color: #f1f1f1;
+    font-size: 14px;
+}
+.time-messages {
+    font-size: 10px;
+}

@@ -1298,3 +1298,6 @@ video {
     width: max-content;
     font-size: x-small;
 }
+.time-messages {
+    margin: auto;
+}
