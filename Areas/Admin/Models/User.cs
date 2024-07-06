@@ -18,6 +18,7 @@ namespace WebsiteBanHang.Areas.Admin.Models
         [StringLength(32)]
         public string? MatKhau { get; set; }
         public DateTime NgayTao { get; set; }
+        public ICollection<CommentModel> Comments { get; set; } = new List<CommentModel>();
 
     }
 }
