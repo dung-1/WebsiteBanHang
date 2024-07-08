@@ -5,6 +5,12 @@
 
 @using Microsoft.AspNetCore.Localization
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Options
+@using System.Security.Claims
+@inject LanguageService language
 @{
     var languageCookie = HttpContextAccessor.HttpContext.Request.Cookies[CookieRequestCultureProvider.DefaultCookieName];
     var currentLanguage = "vi-VN"; // Ngôn ngữ mặc định
@@ -19,7 +25,7 @@
     <div class="tintuc-footer hide-mobile hide-tablet">
         <div class="container">
             <div class="main-title">
-                <p>TIN TỨC CÔNG NGHỆ MỚI</p>
+                <p>  @language.GetKey("New Technology News")</p>
             </div>
             <!-- end_main_title -->
             <div class="list-tintuc">
@@ -112,11 +118,11 @@
                     <ul class="list-unstyled">
                         <li>
                             <b>
-                                CÔNG TY TNHH TIN HỌC CÔNG NGHỆ AZ VIỆT NAM
+                                @language.GetKey("AZ VIETNAM TECHNOLOGY INFORMATICS COMPANY LIMITED")
                             </b>
                         </li>
-                        <li>Địa chỉ: Số 18, ngõ 121, Thái Hà, Đống Đa, Hà Nội</li>
-                        <li>Hotline: 0825 233 233</li>
+                        <li>  @language.GetKey("Address: No. 18, Lane 121, Thai Ha, Dong Da, Hanoi")</li>
+                        <li> @language.GetKey("Hotline"): 0825 233 233</li>
                         <li>Email: hotrolaptopaz@gmail.com</li>
                         <li class="share mt-2">
                             <a href="https://www.facebook.com/laptopaz.vn" target="_blank"><i class="bi bi-facebook"></i></a>
@@ -129,12 +135,12 @@
                     <ul class="list-unstyled">
                         <li>
                             <b>
-                                THÔNG TIN CÔNG TY
+                                @language.GetKey("COMPANY INFORMATION")
                             </b>
                         </li>
-                        <li>Giới thiệu công ty</li>
-                        <li>Tuyển dụng</li>
-                        <li>Gửi góp ý, khiếu nại</li>
+                        <li>@language.GetKey("Company Introduction")</li>
+                        <li>@language.GetKey("Recruitment")</li>
+                        <li>@language.GetKey("Send comments and complaints")</li>
                         <li class="baohanh-item mt-3">
                             <a href="http://www.online.gov.vn/Home/WebDetails/76577?AspxAutoDetectCookieSupport=1" class="thongbaobct">
                                 <img src="~/img/footer-icon.png">
@@ -146,27 +152,27 @@
                     <ul class="list-unstyled">
                         <li>
                             <b>
-                                CHÍNH SÁCH CÔNG TY
+                                @language.GetKey("COMPANY POLICY")
                             </b>
                         </li>
-                        <li>Chính sách chất lượng</li>
-                        <li>Chính sách bảo hành</li>
-                        <li>Chính sách đổi trả </li>
-                        <li>Chính sách bảo mật thông tin</li>
-                        <li>Chính sách vận chuyển</li>
-                        <li>Hướng dẫn mua hàng- thanh toán</li>
+                        <li>@language.GetKey("Quality Policy")</li>
+                        <li>@language.GetKey("Warranty Policy")</li>
+                        <li>@language.GetKey("Return policy") </li>
+                        <li>@language.GetKey("Information security policy")</li>
+                        <li>@language.GetKey("Shipping policy")</li>
+                        <li>@language.GetKey("Instructions for purchasing and payment")</li>
                     </ul>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <ul class="list-unstyled">
                         <li>
                             <b>
-                                HỆ THỐNG CỬA HÀNG LAPTOPAZ
+                                @language.GetKey("LAPTOPAZ SHOP SYSTEM")
                             </b>
                         </li>
-                        <li>Số 18, ngõ 121, Thái Hà, Đống Đa, Hà Nội</li>
-                        <li>Bán hàng: Từ 8h30 - 21h30</li>
-                        <li>Kỹ thuật: Từ 8h30 - 12h & 13h30 - 17h30</li>
+                        <li>@language.GetKey("No. 18, Lane 121, Thai Ha, Dong Da, Hanoi")</li>
+                        <li>@language.GetKey("Sales: From 8:30 a.m. - 9:30 p.m")</li>
+                        <li>@language.GetKey("Technical: From 8:30 a.m. - 12:00 p.m. & 1:30 p.m. - 5:30 p.m.")</li>
                         <li class="mt-3">
                             <div class="dropdown">
                                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -190,12 +196,12 @@
                                 <ul class="dropdown-menu">
                                     <li>
                                         <a class="dropdown-item" asp-controller="Home" asp-action="changeLanguage" asp-route-language="vi-VN">
-                                            <img src="~/img/vietnam.png" /> Việt Nam
+                                            <img src="~/img/vietnam.png" /> @language.GetKey("Vietnam")
                                         </a>
                                     </li>
                                     <li>
                                         <a class="dropdown-item" asp-controller="Home" asp-action="changeLanguage" asp-route-language="en-US">
-                                            <img src="~/img/united-kingdom.png" /> Tiếng Anh
+                                            <img src="~/img/united-kingdom.png" /> @language.GetKey("English")
                                         </a>
                                     </li>
                                 </ul>
@@ -212,8 +218,7 @@
     <!-- end_footer_link -->
     <div class="footer-bottom">
         <p>
-            Công ty TNHH Tin học Công nghệ AZ Việt Nam. MST số 0108956087 cấp ngày 23/10/2019  Laptopaz. All Rights
-            Reserved
+            @language.GetKey("AZ Vietnam Technology Informatics Company Limited. Tax code number 0108956087 issued on October 23, 2019 Laptopaz. All Rights Reserved Reserved")
         </p>
     </div>
 </footer>

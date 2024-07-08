@@ -302,7 +302,40 @@ namespace WebsiteBanHang.Controllers
                             trangThai = "Đang xử lý",
                             LoaiHoaDon = "Mua hàng"
                         };
+                        foreach (var cartItem in cartItems)
+                        {
+                            float price = 0;
+                            if (cartItem.Product.GiaGiam != 0)
+                            {
+                                var giamgia = cartItem.Product.GiaBan - ((cartItem.Product.GiaBan * cartItem.Product.GiaGiam) / 100);
+                                price = (float)Convert.ToDouble(cartItem.Quantity * giamgia);
+                            }
+                            else
+                            {
+                                price = (float)Convert.ToDouble(cartItem.Quantity * cartItem.Product.GiaBan);
+                            }
+                            total += price;
 
+                            // Create an order detail for each item in the cart
+                            var orderDetail = new OrderDetaiModel
+                            {
+                                ProductId = cartItem.ProductId, // Sử dụng ProductId thay vì cartItem.Product.Id
+                                soLuong = cartItem.Quantity,
+                                gia = price // Sử dụng giá được tính toán ở trên
+                            };
+
+                            // Reduce the quantity of the product in the inventory
+                            var inventoryItem = _context.Inventory.FirstOrDefault(i => i.ProductId == cartItem.ProductId);
+                            if (inventoryItem != null)
+                            {
+                                inventoryItem.SoLuong -= cartItem.Quantity;
+                            }
+                            // Add the order detail to the order
+                            order.ctdh.Add(orderDetail);
+                        }
+
+                        // Assign total value after calculating
+                        order.tongTien = total;
                         // Save the order temporarily without committing to database
                         _context.Order.Add(order);
                         _context.SaveChanges(); // Lưu tạm vào database để có ID của order
@@ -323,7 +356,7 @@ namespace WebsiteBanHang.Controllers
                         {
                             PaymentMethodTypes = new List<string> { "card" },
                             LineItems = new List<SessionLineItemOptions>
-                    {
+                       {
                         new SessionLineItemOptions
                         {
                             PriceData = new SessionLineItemPriceDataOptions
@@ -337,8 +370,8 @@ namespace WebsiteBanHang.Controllers
                                 }
                             },
                             Quantity = 1
-                        }
-                    },
+                          }
+                            },
                             Mode = "payment",
                             SuccessUrl = Url.Action("PaymentSuccess", "Cart", new { orderId = order.id }, Request.Scheme),
                             CancelUrl = Url.Action("PaymentCancel", "Cart", null, Request.Scheme)
@@ -361,7 +394,40 @@ namespace WebsiteBanHang.Controllers
                             trangThai = "Đang xử lý",
                             LoaiHoaDon = "Mua hàng"
                         };
+                        foreach (var cartItem in cartItems)
+                        {
+                            float price = 0;
+                            if (cartItem.Product.GiaGiam != 0)
+                            {
+                                var giamgia = cartItem.Product.GiaBan - ((cartItem.Product.GiaBan * cartItem.Product.GiaGiam) / 100);
+                                price = (float)Convert.ToDouble(cartItem.Quantity * giamgia);
+                            }
+                            else
+                            {
+                                price = (float)Convert.ToDouble(cartItem.Quantity * cartItem.Product.GiaBan);
+                            }
+                            total += price;
 
+                            // Create an order detail for each item in the cart
+                            var orderDetail = new OrderDetaiModel
+                            {
+                                ProductId = cartItem.ProductId, // Sử dụng ProductId thay vì cartItem.Product.Id
+                                soLuong = cartItem.Quantity,
+                                gia = price // Sử dụng giá được tính toán ở trên
+                            };
+
+                            // Reduce the quantity of the product in the inventory
+                            var inventoryItem = _context.Inventory.FirstOrDefault(i => i.ProductId == cartItem.ProductId);
+                            if (inventoryItem != null)
+                            {
+                                inventoryItem.SoLuong -= cartItem.Quantity;
+                            }
+                            // Add the order detail to the order
+                            order.ctdh.Add(orderDetail);
+                        }
+
+                        // Assign total value after calculating
+                        order.tongTien = total;
                         // Save the order temporarily without committing to database
                         _context.Order.Add(order);
                         _context.SaveChanges(); // Lưu tạm vào database để có ID của order

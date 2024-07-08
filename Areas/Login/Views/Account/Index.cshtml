@@ -1,37 +1,42 @@
-﻿
+﻿@using System.Security.Claims
+@using WebsiteBanHang.Models
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@using System.Globalization;
+@inject LanguageService language
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Areas/Login/Shared/_LayoutLogin.cshtml";
 }
 
 <div class="form-body">
-    <h3 class="title fw-bold text-uppercase ">Đăng Ký</h3>
+    <h3 class="title fw-bold text-uppercase ">@language.GetKey("Register")</h3>
     <form asp-area="Login" asp-controller="Account" asp-action="formSignUp" method="post" onsubmit="return validateForm()" class="the-form">
 
         <label for="inputEmail" class="form-label ">Email</label>
         <input type="email" id="inputEmail" name="email" placeholder="Nhập Email Của Bạn">
         <span id="emailError" class="text-danger"></span>
 
-        <label for="inputName" class="form-label ">Họ tên</label>
+        <label for="inputName" class="form-label ">@language.GetKey("Name")</label>
         <input type="text" id="inputName" name="fullname" placeholder="Nhập Tên Của Bạn">
         <span id="fullnameError" class="text-danger"></span>
 
 
-        <label for="inputPhoneNumber" class="form-label ">Số điện thoại</label>
+        <label for="inputPhoneNumber" class="form-label ">@language.GetKey("Phone number")</label>
         <input type="number" id="inputPhoneNumber" name="phoneNumber" placeholder="Nhập Số Điện Thoại Của Bạn">
         <span id="phoneNumberError" class="text-danger"></span>
 
 
-        <label for="inputAddress" class="form-label ">Địa chỉ</label>
+        <label for="inputAddress" class="form-label ">@language.GetKey("Address")</label>
         <input type="text" id="inputAddress" name="address" placeholder="Nhập Địa Chỉ Của Bạn">
         <span id="addressError" class="text-danger"></span>
 
 
-        <label for="inputPassword" class="form-label ">Mật khẩu</label>
+        <label for="inputPassword" class="form-label ">@language.GetKey("Password")</label>
         <input type="password" id="inputPassword" name="password" placeholder="Nhập password Của Bạn">
         <span id="passwordError" class="text-danger"></span>
 
-        <input type="submit" value="Đăng Ký">
+        <input type="submit" value="@language.GetKey("Register")">
     </form>
 
 
@@ -39,7 +44,7 @@
 
 <div class="form-footer">
     <div>
-        <span class="text-center mt-4">Đã có tài khoản? <a asp-area="Login" asp-controller="" asp-action="Login">Đăng nhập</a></span>
+        <span class="text-center mt-4">@language.GetKey("Already have an account?") <a asp-area="Login" asp-controller="" asp-action="Login">@language.GetKey("Log in")</a></span>
     </div>
 </div><!-- FORM FOOTER -->
 

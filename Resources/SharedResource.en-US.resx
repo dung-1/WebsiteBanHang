@@ -117,8 +117,32 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Account" xml:space="preserve">
+    <value>Account</value>
+  </data>
   <data name="Accout" xml:space="preserve">
     <value>Accout</value>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="Address: No. 18, Lane 121, Thai Ha, Dong Da, Hanoi" xml:space="preserve">
+    <value>Address: No. 18, Lane 121, Thai Ha, Dong Da, Hanoi</value>
+  </data>
+  <data name="AddToCartSuccess" xml:space="preserve">
+    <value>AddToCartSuccess</value>
+  </data>
+  <data name="Already have an account?" xml:space="preserve">
+    <value>Already have an account?</value>
+  </data>
+  <data name="Approved" xml:space="preserve">
+    <value>Approved</value>
+  </data>
+  <data name="AZ VIETNAM TECHNOLOGY INFORMATICS COMPANY LIMITED" xml:space="preserve">
+    <value>AZ VIETNAM TECHNOLOGY INFORMATICS COMPANY LIMITED</value>
   </data>
   <data name="Bill" xml:space="preserve">
     <value>Bill</value>
@@ -126,14 +150,83 @@
   <data name="Buy Now" xml:space="preserve">
     <value>Buy Now</value>
   </data>
+  <data name="Cancel order" xml:space="preserve">
+    <value>Cancel order</value>
+  </data>
+  <data name="Cancellation Form" xml:space="preserve">
+    <value>Cancellation Form</value>
+  </data>
   <data name="Cart" xml:space="preserve">
     <value>Cart</value>
+  </data>
+  <data name="Change Password" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="Checkout" xml:space="preserve">
+    <value>Checkout</value>
+  </data>
+  <data name="Code orders" xml:space="preserve">
+    <value>Code orders</value>
+  </data>
+  <data name="COMPANY INFORMATION" xml:space="preserve">
+    <value>COMPANY INFORMATION</value>
+  </data>
+  <data name="Company Introduction" xml:space="preserve">
+    <value>Company Introduction</value>
+  </data>
+  <data name="COMPANY POLICY" xml:space="preserve">
+    <value>COMPANY POLICY</value>
+  </data>
+  <data name="Complete" xml:space="preserve">
+    <value>Complete</value>
+  </data>
+  <data name="Continue shopping" xml:space="preserve">
+    <value>Continue shopping</value>
+  </data>
+  <data name="Date of purchase" xml:space="preserve">
+    <value>Date of purchase</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Delivering" xml:space="preserve">
+    <value>Delivering</value>
+  </data>
+  <data name="Do not have an account?" xml:space="preserve">
+    <value>Do not have an account?</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Enter current password" xml:space="preserve">
+    <value>Enter current password</value>
+  </data>
+  <data name="Enter the new password again" xml:space="preserve">
+    <value>Enter the new password again</value>
+  </data>
+  <data name="Enter your new password" xml:space="preserve">
+    <value>Enter your new password</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Forgot password ?" xml:space="preserve">
+    <value>Forgot password ?</value>
   </data>
   <data name="Hotline" xml:space="preserve">
     <value>Hotline</value>
   </data>
+  <data name="Information security policy" xml:space="preserve">
+    <value>Information security policy</value>
+  </data>
   <data name="Installment Payment" xml:space="preserve">
     <value>Installment Payment</value>
+  </data>
+  <data name="Instructions for purchasing and payment" xml:space="preserve">
+    <value>Instructions for purchasing and payment</value>
+  </data>
+  <data name="LAPTOPAZ SHOP SYSTEM" xml:space="preserve">
+    <value>LAPTOPAZ SHOP SYSTEM</value>
   </data>
   <data name="List of products" xml:space="preserve">
     <value>List of products</value>
@@ -141,11 +234,53 @@
   <data name="Log In" xml:space="preserve">
     <value>Log In</value>
   </data>
+  <data name="Log out" xml:space="preserve">
+    <value>Log out</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Họ tên</value>
+  </data>
   <data name="New Laptops" xml:space="preserve">
     <value>New Laptops</value>
   </data>
+  <data name="New Technology News" xml:space="preserve">
+    <value>New Technology News</value>
+  </data>
   <data name="Next" xml:space="preserve">
     <value>Next</value>
+  </data>
+  <data name="No orders yet" xml:space="preserve">
+    <value>No orders yet</value>
+  </data>
+  <data name="No. 18, Lane 121, Thai Ha, Dong Da, Hanoi" xml:space="preserve">
+    <value>No. 18, Lane 121, Thai Ha, Dong Da, Hanoi</value>
+  </data>
+  <data name="Or" xml:space="preserve">
+    <value>Or</value>
+  </data>
+  <data name="Order" xml:space="preserve">
+    <value>Order</value>
+  </data>
+  <data name="Order confirmation" xml:space="preserve">
+    <value>Order confirmation</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Payment on delivery" xml:space="preserve">
+    <value>Payment on delivery</value>
+  </data>
+  <data name="Payment via card" xml:space="preserve">
+    <value>Payment via card</value>
+  </data>
+  <data name="Payments" xml:space="preserve">
+    <value>Payments</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="Phone number" xml:space="preserve">
+    <value>Phone number</value>
   </data>
   <data name="Please input the product you want to find" xml:space="preserve">
     <value>Please input the product you want to find</value>
@@ -153,8 +288,26 @@
   <data name="Previous" xml:space="preserve">
     <value>Previous</value>
   </data>
+  <data name="Price" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="Product" xml:space="preserve">
+    <value>Product</value>
+  </data>
   <data name="Product List" xml:space="preserve">
     <value>Product List</value>
+  </data>
+  <data name="Provisional" xml:space="preserve">
+    <value>Provisional</value>
+  </data>
+  <data name="Quality Policy" xml:space="preserve">
+    <value>Quality Policy</value>
+  </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>Quantity</value>
+  </data>
+  <data name="Recruitment" xml:space="preserve">
+    <value>Recruitment</value>
   </data>
   <data name="Register" xml:space="preserve">
     <value>Register</value>
@@ -162,10 +315,55 @@
   <data name="Remaining" xml:space="preserve">
     <value>Remaining</value>
   </data>
+  <data name="Return policy" xml:space="preserve">
+    <value>Return policy</value>
+  </data>
   <data name="Sale" xml:space="preserve">
     <value>Sale</value>
   </data>
+  <data name="Sales: From 8:30 a.m. - 9:30 p.m" xml:space="preserve">
+    <value>Sales: From 8:30 a.m. - 9:30 p.m</value>
+  </data>
+  <data name="Send comments and complaints" xml:space="preserve">
+    <value>Send comments and complaints</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Shipping policy" xml:space="preserve">
+    <value>Shipping policy</value>
+  </data>
+  <data name="Single state" xml:space="preserve">
+    <value>Single state</value>
+  </data>
   <data name="Sold out" xml:space="preserve">
     <value>Sold out</value>
+  </data>
+  <data name="Technical: From 8:30 a.m. - 12:00 p.m. &amp; 1:30 p.m. - 5:30 p.m." xml:space="preserve">
+    <value>Technical: From 8:30 a.m. - 12:00 p.m. &amp; 1:30 p.m. - 5:30 p.m.</value>
+  </data>
+  <data name="There are no products in the cart yet" xml:space="preserve">
+    <value>There are no products in the cart yet</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="Transport fee" xml:space="preserve">
+    <value>Transport fee</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="Vietnam" xml:space="preserve">
+    <value>Vietnam</value>
+  </data>
+  <data name="View orders" xml:space="preserve">
+    <value>View orders</value>
+  </data>
+  <data name="Warranty Policy" xml:space="preserve">
+    <value>Warranty Policy</value>
+  </data>
+  <data name="You need to login" xml:space="preserve">
+    <value>You need to login</value>
   </data>
 </root>

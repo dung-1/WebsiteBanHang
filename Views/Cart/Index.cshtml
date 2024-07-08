@@ -34,9 +34,9 @@
                             <table class="cart-table table table-borderless">
                                 <thead class="text-muted">
                                     <tr class="small text-uppercase">
-                                        <th scope="col" style="min-width: 280px;">Sản phẩm</th>
-                                        <th scope="col" width="150" style="min-width: 150px;">Giá</th>
-                                        <th scope="col" width="150" style="min-width: 150px;">Số lượng</th>
+                                        <th scope="col" style="min-width: 280px;">@language.GetKey("Product")</th>
+                                        <th scope="col" width="150" style="min-width: 150px;">@language.GetKey("Price")</th>
+                                        <th scope="col" width="150" style="min-width: 150px;">@language.GetKey("Quantity")</th>
                                         <th scope="col" width="100" style="min-width: 100px;"></th>
                                     </tr>
                                 </thead>
@@ -80,10 +80,10 @@
                                                     <button class="btn btn-success updatecartitem"
                                                             data-productid="@cartitem.Product.Id">
                                                         <i class="fa-solid fa-square-pen"></i>
-                                                        Cập nhật
+                                                        @language.GetKey("Update")
                                                     </button>
                                                     <a asp-controller="Cart" asp-action="RemoveFromCart" asp-route-id="@cartitem.Product.Id" class="btn btn-danger ms-1 delete-item">
-                                                        <i class="fa-solid fa-delete-left"></i> Xóa
+                                                        <i class="fa-solid fa-delete-left"></i> @language.GetKey("Delete")
                                                     </a>
                                                 </td>
                                             </tr>
@@ -111,10 +111,10 @@
                                                     <button class="btn btn-success updatecartitem"
                                                             data-productid="@cartitem.Product.Id">
                                                         <i class="fa-solid fa-square-pen"></i>
-                                                        Cập nhật
+                                                        @language.GetKey("Update")
                                                     </button>
                                                     <a asp-controller="Cart" asp-action="RemoveFromCart" asp-route-id="@cartitem.Product.Id" class="btn btn-danger ms-1 delete-item">
-                                                        <i class="fa-solid fa-delete-left"></i> Xóa
+                                                        <i class="fa-solid fa-delete-left"></i> @language.GetKey("Delete")
                                                     </a>
                                                 </td>
                                             </tr>
@@ -128,7 +128,7 @@
 
                         <div class="card-body border-top">
                             @*<a asp-controller="cart" asp-action="checkout" class="btn btn-primary float-end create-checkout"> <i class="fa-solid fa-receipt"></i> mua hàng</a>*@
-                            <a asp-controller="User" asp-action="Index" class="btn btn-secondary"><i class="fa-solid fa-circle-left"></i> Tiếp tục mua sắm</a>
+                            <a asp-controller="User" asp-action="Index" class="btn btn-secondary"><i class="fa-solid fa-circle-left"></i> @language.GetKey("Continue shopping")</a>
                         </div> <!-- card-body.// -->
 
                     </div> <!-- card.// -->
@@ -138,28 +138,28 @@
                     <div class="card">
                         <div class="card-body">
                             <dl class="row mb-0">
-                                <dt class="col-xxl-6 col-lg-12 col-6">Tạm tính:</dt>
+                                <dt class="col-xxl-6 col-lg-12 col-6">@language.GetKey("Provisional"):</dt>
                                 <dd class="col-xxl-6 col-lg-12 col-6 text-end mb-3"> @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", total)</dd>
-                                <dt class="col-xxl-6 col-lg-12 col-6">Phí vận chuyển:</dt>
+                                <dt class="col-xxl-6 col-lg-12 col-6">@language.GetKey("Transport fee"):</dt>
                                 <dd class="col-xxl-6 col-lg-12 col-6 text-end mb-3">0₫</dd>
-                                <dt class="col-xxl-6 col-lg-12 col-6">Tổng cộng:</dt>
+                                <dt class="col-xxl-6 col-lg-12 col-6">@language.GetKey("Total"):</dt>
                                 <dd class="col-xxl-6 col-lg-12 col-6 text-end mb-3"><strong> @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", total)</strong></dd>
                             </dl>
                         </div> <!-- card-body.// -->
                     </div> <!-- card.// -->
                     <div class="card mb-3">
                         <div class="card-body">
-                            <p class="card-title">Hình thức thanh toán</p>
+                            <p class="card-title">@language.GetKey("Payments")</p>
                             <form method="post" asp-controller="Cart" asp-action="Checkout">
                                 <div class="form-check mb-2">
                                     <input class="form-check-input" type="radio" name="delivery_method" id="delivery_method_1" value="cod" checked>
-                                    <label class="form-check-label" for="delivery_method_1">Thanh toán khi nhận hàng</label>
+                                    <label class="form-check-label" for="delivery_method_1">@language.GetKey("Payment on delivery")</label>
                                 </div>
                                 <div class="form-check mb-2">
                                     <input class="form-check-input" type="radio" name="delivery_method" id="delivery_method_2" value="card">
-                                    <label class="form-check-label" for="delivery_method_2">Thanh toán qua thẻ</label>
+                                    <label class="form-check-label" for="delivery_method_2">@language.GetKey("Payment via card")</label>
                                 </div>
-                                <button type="submit" class="btn btn-info">Checkout</button>
+                                <button type="submit" class="btn btn-info">@language.GetKey("Checkout")</button>
                             </form>
 
 
@@ -175,7 +175,7 @@ else
 {
     <section class="section-pagetop bg-light">
         <div class="container">
-            <h2 class="title-page text-capitalize">Giỏ hàng</h2>
+            <h2 class="title-page text-capitalize">@language.GetKey("Cart")</h2>
 
             <div class="m-b-16 m-b-sm-12 align-items-center " style="display: grid;
                                                                          justify-content: center;
@@ -187,7 +187,7 @@ else
                                                                          border-radius: 12px;
                                                                          margin: 32px auto 0;">
                 <img src="~/img/empty-cart.png" width="296" />
-                <p class="css-8uyn92 text-red-5 px-16 md:px-0 text-danger fs-5">Chưa có sản phẩm nào trong giỏ hàng</p>
+                <p class="css-8uyn92 text-red-5 px-16 md:px-0 text-danger fs-5">@language.GetKey("There are no products in the cart yet")</p>
                 <div class="cart-status_btn m-b-32 cart-empty_cart-status_btn__yWtjL">
                     <a href="/" class="btn btn-danger border-2" style="border-radius:10%">
                         <span>  @language.GetKey("Buy Now")</span>

@@ -18,12 +18,10 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
     public class ChatChitController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly IHubContext<ChatHub_ToAdmin> _hub;
 
-        public ChatChitController(ApplicationDbContext context, IHubContext<ChatHub_ToAdmin> hub)
+        public ChatChitController(ApplicationDbContext context)
         {
             _context = context;
-            _hub = hub;
         }
         public IActionResult Index()
         {

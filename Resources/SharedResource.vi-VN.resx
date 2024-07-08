@@ -117,8 +117,36 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Account" xml:space="preserve">
+    <value>Tài khoản</value>
+  </data>
   <data name="Accout" xml:space="preserve">
     <value>Tài Khoản</value>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>Thao tác</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Địa chỉ</value>
+  </data>
+  <data name="Address: No. 18, Lane 121, Thai Ha, Dong Da, Hanoi" xml:space="preserve">
+    <value>Địa chỉ: Số 18, ngõ 121, Thái Hà, Đống Đa, Hà Nội</value>
+  </data>
+  <data name="AddToCartSuccess" xml:space="preserve">
+    <value>Thêm sản phẩm thành công</value>
+  </data>
+  <data name="Already have an account?" xml:space="preserve">
+    <value>Đã có tài khoản?</value>
+  </data>
+  <data name="Approved" xml:space="preserve">
+    <value>Đã duyệt</value>
+  </data>
+  <data name="AZ VIETNAM TECHNOLOGY INFORMATICS COMPANY LIMITED" xml:space="preserve">
+    <value>CÔNG TY TNHH TIN HỌC CÔNG NGHỆ AZ VIỆT NAM</value>
+  </data>
+  <data name="AZ Vietnam Technology Informatics Company Limited. Tax code number 0108956087 issued on October 23, 2019 Laptopaz. All Rights Reserved&#xD;&#xA; Reserved" xml:space="preserve">
+    <value>Công ty TNHH Tin học Công nghệ AZ Việt Nam. MST số 0108956087 cấp ngày 23/10/2019  Laptopaz. All Rights
+ Reserved</value>
   </data>
   <data name="Bill" xml:space="preserve">
     <value>Hóa Đơn</value>
@@ -126,14 +154,83 @@
   <data name="Buy Now" xml:space="preserve">
     <value>Mua Ngay</value>
   </data>
+  <data name="Cancel order" xml:space="preserve">
+    <value>Hủy đơn hàng</value>
+  </data>
+  <data name="Cancellation Form" xml:space="preserve">
+    <value>Đơn Hủy</value>
+  </data>
   <data name="Cart" xml:space="preserve">
     <value>Giỏ Hàng</value>
+  </data>
+  <data name="Change Password" xml:space="preserve">
+    <value>Đổi mật khẩu</value>
+  </data>
+  <data name="Checkout" xml:space="preserve">
+    <value>Thanh toán</value>
+  </data>
+  <data name="Code orders" xml:space="preserve">
+    <value>Mã đơn hàng</value>
+  </data>
+  <data name="COMPANY INFORMATION" xml:space="preserve">
+    <value>THÔNG TIN CÔNG TY</value>
+  </data>
+  <data name="Company Introduction" xml:space="preserve">
+    <value>Giới thiệu công ty</value>
+  </data>
+  <data name="COMPANY POLICY" xml:space="preserve">
+    <value>CHÍNH SÁCH CÔNG TY</value>
+  </data>
+  <data name="Complete" xml:space="preserve">
+    <value>Hoàn Thành</value>
+  </data>
+  <data name="Continue shopping" xml:space="preserve">
+    <value>Tiếp tục mua sắm</value>
+  </data>
+  <data name="Date of purchase" xml:space="preserve">
+    <value>Ngày mua</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Xóa</value>
+  </data>
+  <data name="Delivering" xml:space="preserve">
+    <value>Đang giao hàng</value>
+  </data>
+  <data name="Do not have an account?" xml:space="preserve">
+    <value>Bạn chưa có tài khoản?</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>Tiếng Anh</value>
+  </data>
+  <data name="Enter current password" xml:space="preserve">
+    <value>Nhập mật khẩu hiện tại</value>
+  </data>
+  <data name="Enter the new password again" xml:space="preserve">
+    <value>Nhập mật khẩu mới một lần nữa</value>
+  </data>
+  <data name="Enter your new password" xml:space="preserve">
+    <value>Nhập mật khẩu mới</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Lỗi</value>
+  </data>
+  <data name="Forgot password ?" xml:space="preserve">
+    <value>Quên mật khẩu ?</value>
   </data>
   <data name="Hotline" xml:space="preserve">
     <value>Gọi Ngay</value>
   </data>
+  <data name="Information security policy" xml:space="preserve">
+    <value>Chính sách bảo mật thông tin</value>
+  </data>
   <data name="Installment Payment" xml:space="preserve">
     <value>TRẢ GÓP</value>
+  </data>
+  <data name="Instructions for purchasing and payment" xml:space="preserve">
+    <value>Hướng dẫn mua hàng- thanh toán</value>
+  </data>
+  <data name="LAPTOPAZ SHOP SYSTEM" xml:space="preserve">
+    <value>HỆ THỐNG CỬA HÀNG LAPTOPAZ</value>
   </data>
   <data name="List of products" xml:space="preserve">
     <value>Danh Sách Sản phẩm</value>
@@ -141,11 +238,53 @@
   <data name="Log In" xml:space="preserve">
     <value>Đăng nhập</value>
   </data>
+  <data name="Log out" xml:space="preserve">
+    <value>Đăng xuất</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
   <data name="New Laptops" xml:space="preserve">
     <value>LAPTOP MỚI</value>
   </data>
+  <data name="New Technology News" xml:space="preserve">
+    <value>Tin Tức Công Nghệ Mới</value>
+  </data>
   <data name="Next" xml:space="preserve">
     <value>Sau</value>
+  </data>
+  <data name="No orders yet" xml:space="preserve">
+    <value>Chưa có đơn hàng</value>
+  </data>
+  <data name="No. 18, Lane 121, Thai Ha, Dong Da, Hanoi" xml:space="preserve">
+    <value>Số 18, ngõ 121, Thái Hà, Đống Đa, Hà Nội</value>
+  </data>
+  <data name="Or" xml:space="preserve">
+    <value>Hoặc</value>
+  </data>
+  <data name="Order" xml:space="preserve">
+    <value>Đơn hàng</value>
+  </data>
+  <data name="Order confirmation" xml:space="preserve">
+    <value>Xác nhận đơn hàng</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Mật Khẩu</value>
+  </data>
+  <data name="Payment on delivery" xml:space="preserve">
+    <value>Thanh toán khi nhận hàng</value>
+  </data>
+  <data name="Payment via card" xml:space="preserve">
+    <value>Thanh toán qua thẻ</value>
+  </data>
+  <data name="Payments" xml:space="preserve">
+    <value>Hình thức thanh toán</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>Đang chờ xử lý</value>
+  </data>
+  <data name="Phone number" xml:space="preserve">
+    <value>Số điện thoại</value>
   </data>
   <data name="Please input the product you want to find" xml:space="preserve">
     <value>Nhập sản phẩm cần tìm</value>
@@ -153,8 +292,26 @@
   <data name="Previous" xml:space="preserve">
     <value>Trước</value>
   </data>
+  <data name="Price" xml:space="preserve">
+    <value>Giá</value>
+  </data>
+  <data name="Product" xml:space="preserve">
+    <value>Sản phẩm</value>
+  </data>
   <data name="Product List" xml:space="preserve">
     <value>Danh mục sản phẩm</value>
+  </data>
+  <data name="Provisional" xml:space="preserve">
+    <value>Tạm tính</value>
+  </data>
+  <data name="Quality Policy" xml:space="preserve">
+    <value>Chính sách chất lượng</value>
+  </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>Số lượng</value>
+  </data>
+  <data name="Recruitment" xml:space="preserve">
+    <value>Tuyển dụng</value>
   </data>
   <data name="Register" xml:space="preserve">
     <value>Đăng ký</value>
@@ -162,10 +319,55 @@
   <data name="Remaining" xml:space="preserve">
     <value>Còn lại</value>
   </data>
+  <data name="Return policy" xml:space="preserve">
+    <value>Chính sách đổi trả</value>
+  </data>
   <data name="Sale" xml:space="preserve">
     <value>KHUYẾN MÃI</value>
   </data>
+  <data name="Sales: From 8:30 a.m. - 9:30 p.m" xml:space="preserve">
+    <value>Bán hàng: Từ 8h30 - 21h30</value>
+  </data>
+  <data name="Send comments and complaints" xml:space="preserve">
+    <value>Gửi góp ý, khiếu nại</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Thiết đặt</value>
+  </data>
+  <data name="Shipping policy" xml:space="preserve">
+    <value>Chính sách vận chuyển</value>
+  </data>
+  <data name="Single state" xml:space="preserve">
+    <value>Trạng thái đơn hàn</value>
+  </data>
   <data name="Sold out" xml:space="preserve">
     <value>Đã Hết</value>
+  </data>
+  <data name="Technical: From 8:30 a.m. - 12:00 p.m. &amp; 1:30 p.m. - 5:30 p.m." xml:space="preserve">
+    <value>Kỹ thuật: Từ 8h30 - 12h &amp; 13h30 - 17h30</value>
+  </data>
+  <data name="There are no products in the cart yet" xml:space="preserve">
+    <value>Chưa có sản phẩm nào trong giỏ hàng</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>Tổng cộng</value>
+  </data>
+  <data name="Transport fee" xml:space="preserve">
+    <value>Phí vận chuyển</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Cập nhật</value>
+  </data>
+  <data name="Vietnam" xml:space="preserve">
+    <value>Việt Nam</value>
+  </data>
+  <data name="View orders" xml:space="preserve">
+    <value>Xem đơn hàng</value>
+  </data>
+  <data name="Warranty Policy" xml:space="preserve">
+    <value>Chính sách bảo hành</value>
+  </data>
+  <data name="You need to login" xml:space="preserve">
+    <value>Bạn cần phải đăng nhập</value>
   </data>
 </root>

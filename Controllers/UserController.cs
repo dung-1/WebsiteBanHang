@@ -120,7 +120,7 @@ namespace WebsiteBanHang.Controllers
                 Comments = product.Comments.Select(c => new CommentDTO
                 {
                     UserName = c.User.Email, // Giả sử MaNguoiDung là tên người dùng
-                    Content = c.Content,    
+                    Content = c.Content,
                     Rating = c.Rating,
                     CommentDate = c.CommentDate
                 }).ToList()

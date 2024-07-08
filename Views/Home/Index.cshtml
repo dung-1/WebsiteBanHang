@@ -216,3 +216,12 @@
     </div> <!-- container.// -->
 </section>
 
+<script>
+    var translations = {
+        "Error": "@language.GetKey("Error")",
+        "Youneedtologin": "@language.GetKey("You need to login")",
+    };
+    function getTranslation(key) {
+        return translations[key] || key;
+    }
+</script>

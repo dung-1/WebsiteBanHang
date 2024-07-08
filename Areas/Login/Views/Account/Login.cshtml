@@ -1,10 +1,16 @@
-﻿@{
+﻿@using System.Security.Claims
+@using WebsiteBanHang.Models
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@using System.Globalization;
+@inject LanguageService language
+@{
     ViewData["Title"] = "Login";
     Layout = "~/Areas/Login/Shared/_LayoutLogin.cshtml";
 }
 @model WebsiteBanHang.Areas.Admin.Models.UserModel
 <div class="form-body">
-    <h3 class="title text-uppercase fw-bold">Đăng Nhập</h3>
+    <h3 class="title text-uppercase fw-bold">@language.GetKey("Log in")</h3>
     <div class="social-login">
         <ul>
             <li class="google"><a href="#">Google</a></li>
@@ -12,27 +18,27 @@
         </ul>
     </div><!-- SOCIAL LOGIN -->
 
-    <div class="_or">Hoặc</div>
+    <div class="_or">@language.GetKey("Or")</div>
 
     <form asp-area="Login" asp-controller="Account" asp-action="Login" method="post" class="the-form">
 
         <label for="email">Email</label>
         <input type="email" name="email" id="email" asp-for="Email" placeholder="Nhập Email Của Bạn">
 
-        <label for="password">Password</label>
+        <label for="password">@language.GetKey("Password")</label>
         <input asp-for="MatKhau" type="password" class="form-control" placeholder="Nhập Mật Khẩu Của Bạn" />
 
 
-        <input type="submit" value="Đăng Nhập">
+        <input type="submit" value="@language.GetKey("Log in")">
 
     </form>
 
-    <a asp-area="Login" asp-controller="Account" asp-action="ForgotPassword" class="text-black bg-dark">Quên mật khẩu ?</a>
+    <a asp-area="Login" asp-controller="Account" asp-action="ForgotPassword" class="text-black bg-dark">@language.GetKey("Forgot password ?")</a>
 
 </div><!-- FORM BODY-->
 
 <div class="form-footer">
     <div>
-        <span>Bạn chưa có tài khoản?</span> <a asp-area="Login" asp-controller="Account" asp-action="Index">Đăng Ký</a>
+        <span>@language.GetKey("Do not have an account?")</span> <a asp-area="Login" asp-controller="Account" asp-action="Index">@language.GetKey("Register")</a>
     </div>
 </div><!-- FORM FOOTER -->

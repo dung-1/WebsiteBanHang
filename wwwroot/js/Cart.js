@@ -165,14 +165,14 @@ $(document).ready(function () {
                 });
                 Toast.fire({
                     icon: "success",
-                    title: "Thêm sản phẩm vào giỏ hàng thành công!"
+                    title: getTranslation("AddToCartSuccess"),
                 }).then(function () {
                     location.reload();
                 });
             },
             error: function () {
                 // Xử lý lỗi nếu có
-                Swal.fire("Lỗi", "Bạn cần phải đăng nhập .", "warning").then(function () {
+                Swal.fire(getTranslation("Error"), getTranslation("Youneedtologin"), "warning").then(function () {
                     window.location.href = "/Login/account/Login";
                 });
             }

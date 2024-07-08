@@ -214,7 +214,15 @@
         <!-- row.// -->
     </div> <!-- container.// -->
 </section>
-
+<script>
+    var translations = {
+        "AddToCartSuccess": "@language.GetKey("AddToCartSuccess")",
+        // Thêm các chuỗi khác ở đây
+    };
+    function getTranslation(key) {
+        return translations[key] || key;
+    }
+</script>
 @section Scripts
 {
     <script src="~/js/chathub-send-admin.js"></script>
