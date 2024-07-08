@@ -93,11 +93,11 @@
 
                                 </span>
                             </span>
-                            <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id"  class="img-wrap text-center">
-                                <img class="img-fluid" src="@product.Image">
+                            <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id" class="img-wrap text-center">
+                                <img class="img-fluid" src="/@product.Image">
                             </a>
                             <figcaption class="info-wrap mt-2">
-                                <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id"  class="title text-capitalize">@product.TenSanPham</a>
+                                <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id" class="title text-capitalize">@product.TenSanPham</a>
                                 <div class="row">
                                     <div class="col-6 price mt-1 fw-bold text-danger">
                                         @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", giamgia)
@@ -142,11 +142,11 @@
 
                     <div class="col-lg-3 col-md-6">
                         <div class="card p-3 mb-4 hvr-float">
-                            <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id"  class="img-wrap text-center">
-                                <img class="img-fluid" src="@product.Image">
+                            <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id" class="img-wrap text-center">
+                                <img class="img-fluid" src="/@product.Image">
                             </a>
                             <figcaption class="info-wrap mt-2">
-                                <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id"  class="title text-capitalize">@product.TenSanPham</a>
+                                <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id" class="title text-capitalize">@product.TenSanPham</a>
                                 <div class="row">
                                     <div class="col-6 price mt-1 fw-bold text-danger">
                                         @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @product.GiaBan)
@@ -199,13 +199,13 @@
                         if (i >= Model.PageNumber - 1 && i <= Model.PageNumber + 1)
                         {
                             <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                                <a class="page-link" href="@Url.Action("Index", new { page = i, searchName = ViewBag.SearchName })">@i</a>
+                                <a class="page-link" href="@Url.Action("ListProductSale", new { page = i, searchName = ViewBag.SearchName })">@i</a>
                             </li>
                         }
                     }
 
                     <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
-                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1, searchName = ViewBag.SearchName })" aria-label="Next">
+                        <a class="page-link" href="@Url.Action("ListProductSale", new { page = Model.PageNumber + 1, searchName = ViewBag.SearchName })" aria-label="Next">
                             <span aria-hidden="true">  @language.GetKey("Next") &raquo;</span>
                         </a>
                     </li>

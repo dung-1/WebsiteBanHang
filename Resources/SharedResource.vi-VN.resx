@@ -126,14 +126,14 @@
   <data name="Action" xml:space="preserve">
     <value>Thao tác</value>
   </data>
+  <data name="Added product to cart successfully" xml:space="preserve">
+    <value>Thêm sản phẩm vào giỏ hàng thành công</value>
+  </data>
   <data name="Address" xml:space="preserve">
     <value>Địa chỉ</value>
   </data>
   <data name="Address: No. 18, Lane 121, Thai Ha, Dong Da, Hanoi" xml:space="preserve">
     <value>Địa chỉ: Số 18, ngõ 121, Thái Hà, Đống Đa, Hà Nội</value>
-  </data>
-  <data name="AddToCartSuccess" xml:space="preserve">
-    <value>Thêm sản phẩm thành công</value>
   </data>
   <data name="Already have an account?" xml:space="preserve">
     <value>Đã có tài khoản?</value>
@@ -192,6 +192,9 @@
   </data>
   <data name="Delete" xml:space="preserve">
     <value>Xóa</value>
+  </data>
+  <data name="Deleted successfully" xml:space="preserve">
+    <value>Xóa thành công</value>
   </data>
   <data name="Delivering" xml:space="preserve">
     <value>Đang giao hàng</value>
@@ -258,6 +261,9 @@
   </data>
   <data name="No. 18, Lane 121, Thai Ha, Dong Da, Hanoi" xml:space="preserve">
     <value>Số 18, ngõ 121, Thái Hà, Đống Đa, Hà Nội</value>
+  </data>
+  <data name="Notification" xml:space="preserve">
+    <value>Thông báo</value>
   </data>
   <data name="Or" xml:space="preserve">
     <value>Hoặc</value>

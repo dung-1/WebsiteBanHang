@@ -56,7 +56,7 @@ $(".delete-item").on("click", function (e) {
                 success: function (data) {
                     if (data.success) {
                         // Hiển thị thông báo xóa thành công
-                        Swal.fire("Xóa thành công", "", "success").then(function () {
+                        Swal.fire(getTranslation("Deletedsuccessfully"), "", "success").then(function () {
                             // Sau khi người dùng đóng thông báo, làm điều gì đó (nếu cần)
                             // Ví dụ: Reload lại trang giỏ hàng
                             location.reload();
@@ -205,14 +205,14 @@ $(document).ready(function () {
                 });
                 Toast.fire({
                     icon: "success",
-                    title: "Thêm sản phẩm vào giỏ hàng thành công!"
+                    title: getTranslation("AddToCartSuccess"),
                 }).then(function () {
                     location.reload();
                 });
             },
             error: function () {
                 // Xử lý lỗi nếu có
-                Swal.fire("Lỗi", "Bạn cần phải đăng nhập.", "warning").then(function () {
+                Swal.fire(getTranslation("Error"), getTranslation("Youneedtologin"), "warning").then(function () {
                     window.location.href = "/Login/account/Login";
                 });
             }
@@ -233,7 +233,7 @@ $(document).ready(function () {
             },
             error: function () {
                 // Người dùng chưa đăng nhập, hiển thị thông báo và chuyển hướng đến trang đăng nhập
-                Swal.fire("Thông báo", "Bạn cần phải đăng nhập .", "warning").then(function () {
+                Swal.fire(getTranslation("Notification"), getTranslation("Youneedtologin"), "warning").then(function () {
                     window.location.href = "/Login/account/Login";
                 });
             }
@@ -252,7 +252,7 @@ $(document).ready(function () {
             },
             error: function () {
                 // Người dùng chưa đăng nhập, hiển thị thông báo và chuyển hướng đến trang đăng nhập
-                Swal.fire("Thông báo", "Bạn cần phải đăng nhập ", "warning").then(function () {
+                Swal.fire(getTranslation("Notification"), getTranslation("Youneedtologin"), "warning").then(function () {
                     window.location.href = "/Login/account/Login";
                 });
             }
@@ -271,7 +271,7 @@ $(document).ready(function () {
             },
             error: function () {
                 // Người dùng chưa đăng nhập, hiển thị thông báo và chuyển hướng đến trang đăng nhập
-                Swal.fire("Thông báo", "Bạn cần phải đăng nhập.", "warning").then(function () {
+                Swal.fire(getTranslation("Notification"), getTranslation("Youneedtologin"), "warning").then(function () {
                     window.location.href = "/Login/account/Login";
                 });
             }

@@ -126,14 +126,14 @@
   <data name="Action" xml:space="preserve">
     <value>Action</value>
   </data>
+  <data name="Added product to cart successfully" xml:space="preserve">
+    <value>Added product to cart successfully</value>
+  </data>
   <data name="Address" xml:space="preserve">
     <value>Address</value>
   </data>
   <data name="Address: No. 18, Lane 121, Thai Ha, Dong Da, Hanoi" xml:space="preserve">
     <value>Address: No. 18, Lane 121, Thai Ha, Dong Da, Hanoi</value>
-  </data>
-  <data name="AddToCartSuccess" xml:space="preserve">
-    <value>AddToCartSuccess</value>
   </data>
   <data name="Already have an account?" xml:space="preserve">
     <value>Already have an account?</value>
@@ -188,6 +188,9 @@
   </data>
   <data name="Delete" xml:space="preserve">
     <value>Delete</value>
+  </data>
+  <data name="Deleted successfully" xml:space="preserve">
+    <value>Deleted successfully</value>
   </data>
   <data name="Delivering" xml:space="preserve">
     <value>Delivering</value>
@@ -254,6 +257,9 @@
   </data>
   <data name="No. 18, Lane 121, Thai Ha, Dong Da, Hanoi" xml:space="preserve">
     <value>No. 18, Lane 121, Thai Ha, Dong Da, Hanoi</value>
+  </data>
+  <data name="Notification" xml:space="preserve">
+    <value>Notification</value>
   </data>
   <data name="Or" xml:space="preserve">
     <value>Or</value>
