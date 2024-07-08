@@ -22,9 +22,12 @@
         <label for="password">Password</label>
         <input asp-for="MatKhau" type="password" class="form-control" placeholder="Nhập Mật Khẩu Của Bạn" />
 
+
         <input type="submit" value="Đăng Nhập">
 
     </form>
+
+    <a asp-area="Login" asp-controller="Account" asp-action="ForgotPassword" class="text-black bg-dark">Quên mật khẩu ?</a>
 
 </div><!-- FORM BODY-->
 

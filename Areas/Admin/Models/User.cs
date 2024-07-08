@@ -19,6 +19,9 @@ namespace WebsiteBanHang.Areas.Admin.Models
         public string? MatKhau { get; set; }
         public DateTime NgayTao { get; set; }
         public ICollection<CommentModel> Comments { get; set; } = new List<CommentModel>();
+        public string? ResetPasswordToken { get; set; }
+
+        public DateTime? ResetPasswordTokenExpiry { get; set; }
 
     }
 }
