@@ -1,4 +1,10 @@
-﻿<div class="hotline-phone-1">
+﻿@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Options
+@using System.Security.Claims
+@inject LanguageService language
+<div class="hotline-phone-1">
     <div class="quick-alo-phone quick-alo-green quick-alo-show d-xl-block" id="quick-alo-phoneIcon">
         <a href="tel:0789752468" title="Gọi ngay" data-wpel-link="internal">
             <div class="quick-alo-ph-circle">
@@ -7,7 +13,7 @@
             </div>
             <div class="quick-alo-ph-img-circle">
             </div>
-            <span class="phone_text">Hotline 0789.75.2468</span>
+            <span class="phone_text">@language.GetKey("Hotline") 0789.75.2468</span>
         </a>
     </div>
 </div>

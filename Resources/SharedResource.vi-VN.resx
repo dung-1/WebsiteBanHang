@@ -129,11 +129,41 @@
   <data name="Cart" xml:space="preserve">
     <value>Giỏ Hàng</value>
   </data>
+  <data name="Hotline" xml:space="preserve">
+    <value>Gọi Ngay</value>
+  </data>
+  <data name="Installment Payment" xml:space="preserve">
+    <value>TRẢ GÓP</value>
+  </data>
+  <data name="List of products" xml:space="preserve">
+    <value>Danh Sách Sản phẩm</value>
+  </data>
+  <data name="Log In" xml:space="preserve">
+    <value>Đăng nhập</value>
+  </data>
+  <data name="New Laptops" xml:space="preserve">
+    <value>LAPTOP MỚI</value>
+  </data>
   <data name="Next" xml:space="preserve">
     <value>Sau</value>
   </data>
+  <data name="Please input the product you want to find" xml:space="preserve">
+    <value>Nhập sản phẩm cần tìm</value>
+  </data>
   <data name="Previous" xml:space="preserve">
     <value>Trước</value>
+  </data>
+  <data name="Product List" xml:space="preserve">
+    <value>Danh mục sản phẩm</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Đăng ký</value>
+  </data>
+  <data name="Remaining" xml:space="preserve">
+    <value>Còn lại</value>
+  </data>
+  <data name="Sale" xml:space="preserve">
+    <value>KHUYẾN MÃI</value>
   </data>
   <data name="Sold out" xml:space="preserve">
     <value>Đã Hết</value>

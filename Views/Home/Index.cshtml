@@ -69,7 +69,9 @@
 <section class="section-content mb-5">
 
     <header class="section-heading py-2 text-light text-uppercase my-3 d-flex justify-content-between bg-primary">
-        <h3 class="section-title container d-flex justify-content-between  ">Danh Sách Sản phẩm</h3>
+        <h3 class="section-title container d-flex justify-content-between  ">
+            @language.GetKey("List of products")
+        </h3>
         @*             <a class="btn btn-secondary" href="#" role="button" style="height: fit-content;">Xem tất cả</a>
         *@
     </header> <!-- section-heading.// -->
@@ -114,7 +116,7 @@
                                             <div class="col-4">
 
                                                 <p style="font-size:14px;">
-                                                    Còn: <span class="text-danger">@inventoryItem.SoLuong</span>
+                                                    @language.GetKey("Remaining"):  <span class="text-danger">@inventoryItem.SoLuong</span>
                                                 </p>
                                             </div>
                                         </div>
@@ -161,7 +163,7 @@
                                             <div class="col-4">
 
                                                 <p style="font-size:14px;">
-                                                    Còn: <span class="text-danger">@inventoryItem.SoLuong</span>
+                                                    @language.GetKey("Remaining"):  <span class="text-danger">@inventoryItem.SoLuong</span>
                                                 </p>
                                             </div>
                                         </div>

@@ -129,11 +129,41 @@
   <data name="Cart" xml:space="preserve">
     <value>Cart</value>
   </data>
+  <data name="Hotline" xml:space="preserve">
+    <value>Hotline</value>
+  </data>
+  <data name="Installment Payment" xml:space="preserve">
+    <value>Installment Payment</value>
+  </data>
+  <data name="List of products" xml:space="preserve">
+    <value>List of products</value>
+  </data>
+  <data name="Log In" xml:space="preserve">
+    <value>Log In</value>
+  </data>
+  <data name="New Laptops" xml:space="preserve">
+    <value>New Laptops</value>
+  </data>
   <data name="Next" xml:space="preserve">
     <value>Next</value>
   </data>
+  <data name="Please input the product you want to find" xml:space="preserve">
+    <value>Please input the product you want to find</value>
+  </data>
   <data name="Previous" xml:space="preserve">
     <value>Previous</value>
+  </data>
+  <data name="Product List" xml:space="preserve">
+    <value>Product List</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Register</value>
+  </data>
+  <data name="Remaining" xml:space="preserve">
+    <value>Remaining</value>
+  </data>
+  <data name="Sale" xml:space="preserve">
+    <value>Sale</value>
   </data>
   <data name="Sold out" xml:space="preserve">
     <value>Sold out</value>

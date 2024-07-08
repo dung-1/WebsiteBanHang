@@ -1,4 +1,10 @@
-﻿<nav class="navbar navbar-main navbar-expand-lg navbar-light border-bottom">
+﻿@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Options
+@using System.Security.Claims
+@inject LanguageService language
+<nav class="navbar navbar-main navbar-expand-lg navbar-light border-bottom">
     <div class="container">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -8,7 +14,7 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-uppercase" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <strong><i class="bi bi-list "></i> Danh mục sản phẩm</strong>
+                        <strong><i class="bi bi-list "></i> @language.GetKey("Product List")</strong>
                     </a>
 
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown" id="categoryDropdown">
@@ -17,18 +23,17 @@
                 </li>
 
                 <li class="nav-item">
-                    <a href="#" class="nav-item nav-link me-2"><i class="bi bi-laptop"></i> LAPTOP MỚI</a>
+                    <a href="#" class="nav-item nav-link me-2"><i class="bi bi-laptop"></i> @language.GetKey("New Laptops")</a>
                 </li>
 
                 <li class="nav-item">
                     <a href="#" class="nav-item nav-link me-2">
                         <i class="bi bi-receipt-cutoff"></i>
-
-                        KHUYẾN MÃI
+                        @language.GetKey("Sale")    
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-item nav-link me-2"><i class="bi bi-cash-coin"></i> TRẢ GÓP</a>
+                    <a href="#" class="nav-item nav-link me-2"><i class="bi bi-cash-coin"></i> @language.GetKey("Installment Payment")</a>
                 </li>
             </ul>
             @if (User.Identity.IsAuthenticated)
@@ -38,8 +43,8 @@
             else
             {
                 <!-- Hiển thị nút đăng ký và đăng nhập -->
-                <a class=" me-2 text-white " asp-area="Login" asp-controller="Account" asp-action="Index" role="button"> <i class="fa-solid fa-user-plus"></i> Đăng ký</a>
-                <a class=" text-white" style="margin-left:15px" asp-area="Login" asp-controller="Account" asp-action="Login" role="button"><i class="fa-solid fa-right-to-bracket"></i> Đăng nhập</a>
+                <a class=" me-2 text-white " asp-area="Login" asp-controller="Account" asp-action="Index" role="button"> <i class="fa-solid fa-user-plus"></i> @language.GetKey("Register")</a>
+                <a class=" text-white" style="margin-left:15px" asp-area="Login" asp-controller="Account" asp-action="Login" role="button"><i class="fa-solid fa-right-to-bracket"></i>@language.GetKey("Log In")</a>
             }
 
         </div>

@@ -28,7 +28,7 @@
                     {
                         <form asp-controller="Home" asp-action="Index">
                             <div class="input-group w-100">
-                                <input type="text" class="form-control" placeholder="Nhập từ khóa cần tìm ..." name="searchName" id="searchName" value="@ViewBag.SearchName">
+                                <input type="text" class="form-control" placeholder=" @language.GetKey("Please input the product you want to find")..." name="searchName" id="searchName" value="@ViewBag.SearchName">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="bi bi-search"></i>
                                 </button>
@@ -39,7 +39,7 @@
                     {
                         <form asp-controller="User" asp-action="Index">
                             <div class="input-group w-100">
-                                <input type="text" class="form-control" placeholder="Nhập từ khóa cần tìm ..." name="searchName" id="searchName" value="@ViewBag.SearchName">
+                                <input type="text" class="form-control" placeholder=" @language.GetKey("Please input the product you want to find")..." name="searchName" id="searchName" value="@ViewBag.SearchName">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="bi bi-search"></i>
                                 </button>
