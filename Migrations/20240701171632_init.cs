@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WebsiteBanHang.Migrations
 {
-    public partial class initit1 : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -18,7 +18,9 @@ namespace WebsiteBanHang.Migrations
                     MaHang = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     TenHang = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     XuatXu = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    NgaySanXuat = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    NgaySanXuat = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -32,27 +34,13 @@ namespace WebsiteBanHang.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     MaLoai = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    TenLoai = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false)
+                    TenLoai = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Category", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Customer",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    MaNguoiDung = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    MatKhau = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: true),
-                    NgayTao = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Customer", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -87,22 +75,6 @@ namespace WebsiteBanHang.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "User",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    MaNguoiDung = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    MatKhau = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: true),
-                    NgayTao = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_User", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Product",
                 columns: table => new
                 {
@@ -112,10 +84,13 @@ namespace WebsiteBanHang.Migrations
                     TenSanPham = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     HangId = table.Column<int>(type: "int", nullable: false),
                     LoaiId = table.Column<int>(type: "int", nullable: false),
-                    Gia = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    GiaNhap = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    GiaBan = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     GiaGiam = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Image = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    ThongTinSanPham = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                    ThongTinSanPham = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -130,50 +105,6 @@ namespace WebsiteBanHang.Migrations
                         name: "FK_Product_Category_LoaiId",
                         column: x => x.LoaiId,
                         principalTable: "Category",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Customer_Details",
-                columns: table => new
-                {
-                    CustomerId = table.Column<int>(type: "int", nullable: false),
-                    HoTen = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
-                    SoDienThoai = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
-                    DiaChi = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Customer_Details", x => x.CustomerId);
-                    table.ForeignKey(
-                        name: "FK_Customer_Details_Customer_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "Customer",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CustomerRole",
-                columns: table => new
-                {
-                    Customer_ID = table.Column<int>(type: "int", nullable: false),
-                    Role_ID = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CustomerRole", x => new { x.Customer_ID, x.Role_ID });
-                    table.ForeignKey(
-                        name: "FK_CustomerRole_Customer_Customer_ID",
-                        column: x => x.Customer_ID,
-                        principalTable: "Customer",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_CustomerRole_Role_Role_ID",
-                        column: x => x.Role_ID,
-                        principalTable: "Role",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -203,6 +134,185 @@ namespace WebsiteBanHang.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Inventory",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MaKho = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    NgayNhap = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    SoLuong = table.Column<int>(type: "int", nullable: false),
+                    CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Inventory", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Inventory_Product_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Product",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Cart_Item",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CartId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cart_Item", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Cart_Item_Product_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Product",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CartModel",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CustomerId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CartModel", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChatConnection",
+                columns: table => new
+                {
+                    ConnectionId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Connected = table.Column<bool>(type: "bit", nullable: false),
+                    LastActive = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChatConnection", x => x.ConnectionId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChatMessage",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SentAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ConnectionIdFrom = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ConnectionIdTo = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ChatConnectionConnectionId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChatMessage", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ChatMessage_ChatConnection_ChatConnectionConnectionId",
+                        column: x => x.ChatConnectionConnectionId,
+                        principalTable: "ChatConnection",
+                        principalColumn: "ConnectionId");
+                    table.ForeignKey(
+                        name: "FK_ChatMessage_ChatConnection_ConnectionIdFrom",
+                        column: x => x.ConnectionIdFrom,
+                        principalTable: "ChatConnection",
+                        principalColumn: "ConnectionId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ChatMessage_ChatConnection_ConnectionIdTo",
+                        column: x => x.ConnectionIdTo,
+                        principalTable: "ChatConnection",
+                        principalColumn: "ConnectionId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "User",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MaNguoiDung = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    MatKhau = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: true),
+                    NgayTao = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ChatConnectionId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserModel_ChatConnectionId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_User", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_User_ChatConnection_ChatConnectionId",
+                        column: x => x.ChatConnectionId,
+                        principalTable: "ChatConnection",
+                        principalColumn: "ConnectionId");
+                    table.ForeignKey(
+                        name: "FK_User_ChatConnection_UserModel_ChatConnectionId",
+                        column: x => x.UserModel_ChatConnectionId,
+                        principalTable: "ChatConnection",
+                        principalColumn: "ConnectionId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Customer_Details",
+                columns: table => new
+                {
+                    CustomerId = table.Column<int>(type: "int", nullable: false),
+                    HoTen = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
+                    SoDienThoai = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    DiaChi = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Customer_Details", x => x.CustomerId);
+                    table.ForeignKey(
+                        name: "FK_Customer_Details_User_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CustomerRole",
+                columns: table => new
+                {
+                    Customer_ID = table.Column<int>(type: "int", nullable: false),
+                    Role_ID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CustomerRole", x => new { x.Customer_ID, x.Role_ID });
+                    table.ForeignKey(
+                        name: "FK_CustomerRole_Role_Role_ID",
+                        column: x => x.Role_ID,
+                        principalTable: "Role",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CustomerRole_User_Customer_ID",
+                        column: x => x.Customer_ID,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Order",
                 columns: table => new
                 {
@@ -220,9 +330,9 @@ namespace WebsiteBanHang.Migrations
                 {
                     table.PrimaryKey("PK_Order", x => x.id);
                     table.ForeignKey(
-                        name: "FK_Order_Customer_CustomerID",
+                        name: "FK_Order_User_CustomerID",
                         column: x => x.CustomerID,
-                        principalTable: "Customer",
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -278,28 +388,6 @@ namespace WebsiteBanHang.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Inventory",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    MaKho = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    ProductId = table.Column<int>(type: "int", nullable: false),
-                    NgayNhap = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    SoLuong = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Inventory", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Inventory_Product_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "Product",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Order_Detai",
                 columns: table => new
                 {
@@ -326,6 +414,41 @@ namespace WebsiteBanHang.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Cart_Item_CartId",
+                table: "Cart_Item",
+                column: "CartId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Cart_Item_ProductId",
+                table: "Cart_Item",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CartModel_CustomerId",
+                table: "CartModel",
+                column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatConnection_UserId",
+                table: "ChatConnection",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatMessage_ChatConnectionConnectionId",
+                table: "ChatMessage",
+                column: "ChatConnectionConnectionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatMessage_ConnectionIdFrom",
+                table: "ChatMessage",
+                column: "ConnectionIdFrom");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatMessage_ConnectionIdTo",
+                table: "ChatMessage",
+                column: "ConnectionIdTo");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CustomerRole_Role_ID",
@@ -373,13 +496,57 @@ namespace WebsiteBanHang.Migrations
                 column: "LoaiId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_User_ChatConnectionId",
+                table: "User",
+                column: "ChatConnectionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_User_UserModel_ChatConnectionId",
+                table: "User",
+                column: "UserModel_ChatConnectionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserRole_Role_ID",
                 table: "UserRole",
                 column: "Role_ID");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Cart_Item_CartModel_CartId",
+                table: "Cart_Item",
+                column: "CartId",
+                principalTable: "CartModel",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CartModel_User_CustomerId",
+                table: "CartModel",
+                column: "CustomerId",
+                principalTable: "User",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_ChatConnection_User_UserId",
+                table: "ChatConnection",
+                column: "UserId",
+                principalTable: "User",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_ChatConnection_User_UserId",
+                table: "ChatConnection");
+
+            migrationBuilder.DropTable(
+                name: "Cart_Item");
+
+            migrationBuilder.DropTable(
+                name: "ChatMessage");
+
             migrationBuilder.DropTable(
                 name: "Customer_Details");
 
@@ -402,6 +569,9 @@ namespace WebsiteBanHang.Migrations
                 name: "Users_Details");
 
             migrationBuilder.DropTable(
+                name: "CartModel");
+
+            migrationBuilder.DropTable(
                 name: "Order");
 
             migrationBuilder.DropTable(
@@ -414,16 +584,16 @@ namespace WebsiteBanHang.Migrations
                 name: "Role");
 
             migrationBuilder.DropTable(
-                name: "Customer");
+                name: "Brand");
+
+            migrationBuilder.DropTable(
+                name: "Category");
 
             migrationBuilder.DropTable(
                 name: "User");
 
             migrationBuilder.DropTable(
-                name: "Brand");
-
-            migrationBuilder.DropTable(
-                name: "Category");
+                name: "ChatConnection");
         }
     }
 }

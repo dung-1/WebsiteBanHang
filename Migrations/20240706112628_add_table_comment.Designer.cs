@@ -12,8 +12,8 @@ using WebsiteBanHang.Areas.Admin.Data;
 namespace WebsiteBanHang.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240108165426_update_cart_item")]
-    partial class update_cart_item
+    [Migration("20240706112628_add_table_comment")]
+    partial class add_table_comment
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,10 +32,16 @@ namespace WebsiteBanHang.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("MaHang")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime>("ModifiedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("NgaySanXuat")
                         .HasColumnType("datetime2");
@@ -107,10 +113,16 @@ namespace WebsiteBanHang.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("MaLoai")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime>("ModifiedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("TenLoai")
                         .IsRequired()
@@ -120,6 +132,96 @@ namespace WebsiteBanHang.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Category");
+                });
+
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.ChatConnection", b =>
+                {
+                    b.Property<string>("ConnectionId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("Connected")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastActive")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ConnectionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ChatConnection");
+                });
+
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.ChatMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ChatConnectionConnectionId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ConnectionIdFrom")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ConnectionIdTo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChatConnectionConnectionId");
+
+                    b.HasIndex("ConnectionIdFrom");
+
+                    b.HasIndex("ConnectionIdTo");
+
+                    b.ToTable("ChatMessage");
+                });
+
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.CommentModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("CommentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.Customer_Details", b =>
@@ -142,35 +244,6 @@ namespace WebsiteBanHang.Migrations
                     b.HasKey("CustomerId");
 
                     b.ToTable("Customer_Details");
-                });
-
-            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.CustomerModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("MaNguoiDung")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("MatKhau")
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
-
-                    b.Property<DateTime>("NgayTao")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Customer");
                 });
 
             modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.CustomerRoleModel", b =>
@@ -198,10 +271,16 @@ namespace WebsiteBanHang.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("MaKho")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime>("ModifiedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("NgayNhap")
                         .HasColumnType("datetime2");
@@ -346,10 +425,16 @@ namespace WebsiteBanHang.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<decimal>("Gia")
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("GiaBan")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("GiaGiam")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("GiaNhap")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("HangId")
@@ -369,6 +454,9 @@ namespace WebsiteBanHang.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
+                    b.Property<DateTime>("ModifiedTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("TenSanPham")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -376,8 +464,7 @@ namespace WebsiteBanHang.Migrations
 
                     b.Property<string>("ThongTinSanPham")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -406,13 +493,40 @@ namespace WebsiteBanHang.Migrations
                     b.ToTable("Role");
                 });
 
-            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.UserModel", b =>
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.Session", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("AbsoluteExpiration")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("ExpiresAtTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<long?>("SlidingExpirationInSeconds")
+                        .HasColumnType("bigint");
+
+                    b.Property<byte[]>("Value")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Sessions", (string)null);
+                });
+
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(100)
@@ -433,6 +547,8 @@ namespace WebsiteBanHang.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("User");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("User");
                 });
 
             modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.UserRoleModel", b =>
@@ -475,6 +591,31 @@ namespace WebsiteBanHang.Migrations
                     b.ToTable("Users_Details");
                 });
 
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.CustomerModel", b =>
+                {
+                    b.HasBaseType("WebsiteBanHang.Areas.Admin.Models.User");
+
+                    b.Property<string>("ChatConnectionId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasIndex("ChatConnectionId");
+
+                    b.HasDiscriminator().HasValue("CustomerModel");
+                });
+
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.UserModel", b =>
+                {
+                    b.HasBaseType("WebsiteBanHang.Areas.Admin.Models.User");
+
+                    b.Property<string>("ChatConnectionId")
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("UserModel_ChatConnectionId");
+
+                    b.HasIndex("ChatConnectionId");
+
+                    b.HasDiscriminator().HasValue("UserModel");
+                });
+
             modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.Cart_Item", b =>
                 {
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.CartModel", "Cart")
@@ -503,6 +644,59 @@ namespace WebsiteBanHang.Migrations
                         .IsRequired();
 
                     b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.ChatConnection", b =>
+                {
+                    b.HasOne("WebsiteBanHang.Areas.Admin.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.ChatMessage", b =>
+                {
+                    b.HasOne("WebsiteBanHang.Areas.Admin.Models.ChatConnection", null)
+                        .WithMany("ChatMessages")
+                        .HasForeignKey("ChatConnectionConnectionId");
+
+                    b.HasOne("WebsiteBanHang.Areas.Admin.Models.ChatConnection", "FromConnection")
+                        .WithMany()
+                        .HasForeignKey("ConnectionIdFrom")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("WebsiteBanHang.Areas.Admin.Models.ChatConnection", "ToConnection")
+                        .WithMany()
+                        .HasForeignKey("ConnectionIdTo")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FromConnection");
+
+                    b.Navigation("ToConnection");
+                });
+
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.CommentModel", b =>
+                {
+                    b.HasOne("WebsiteBanHang.Areas.Admin.Models.ProductModel", "Product")
+                        .WithMany("Comments")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebsiteBanHang.Areas.Admin.Models.User", "User")
+                        .WithMany("Comments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.Customer_Details", b =>
@@ -650,6 +844,24 @@ namespace WebsiteBanHang.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.CustomerModel", b =>
+                {
+                    b.HasOne("WebsiteBanHang.Areas.Admin.Models.ChatConnection", "ChatConnection")
+                        .WithMany()
+                        .HasForeignKey("ChatConnectionId");
+
+                    b.Navigation("ChatConnection");
+                });
+
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.UserModel", b =>
+                {
+                    b.HasOne("WebsiteBanHang.Areas.Admin.Models.ChatConnection", "ChatConnection")
+                        .WithMany()
+                        .HasForeignKey("ChatConnectionId");
+
+                    b.Navigation("ChatConnection");
+                });
+
             modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.BrandModel", b =>
                 {
                     b.Navigation("Prodcut");
@@ -665,15 +877,9 @@ namespace WebsiteBanHang.Migrations
                     b.Navigation("Prodcut");
                 });
 
-            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.CustomerModel", b =>
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.ChatConnection", b =>
                 {
-                    b.Navigation("Carts");
-
-                    b.Navigation("CustomerDetail");
-
-                    b.Navigation("CustomerRole");
-
-                    b.Navigation("Order");
+                    b.Navigation("ChatMessages");
                 });
 
             modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.OrdersModel", b =>
@@ -690,6 +896,8 @@ namespace WebsiteBanHang.Migrations
                 {
                     b.Navigation("CartItems");
 
+                    b.Navigation("Comments");
+
                     b.Navigation("Inventory");
 
                     b.Navigation("Order_Detai");
@@ -702,6 +910,22 @@ namespace WebsiteBanHang.Migrations
                     b.Navigation("PermissionRole");
 
                     b.Navigation("UserRole");
+                });
+
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.User", b =>
+                {
+                    b.Navigation("Comments");
+                });
+
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.CustomerModel", b =>
+                {
+                    b.Navigation("Carts");
+
+                    b.Navigation("CustomerDetail");
+
+                    b.Navigation("CustomerRole");
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.UserModel", b =>
