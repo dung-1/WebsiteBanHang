@@ -6,8 +6,14 @@
 @{
     ViewData["Title"] = "ProductDetail";
     Layout = "~/Views/Shared/_Layout.cshtml";
-}
 
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
 <section class="section-pagetop-2 bg-light">
     <div class="container">
         <nav>
@@ -119,7 +125,7 @@
 <section class="section-content mb-4">
     <div class="container">
         <div class="row">
-            <div class="col>
+            <div class="col">
                 <h3 class="pb-2">Mô tả sản phẩm</h3>
                 <p>
                     @Html.Raw(Model.ThongTinSanPham)
@@ -129,6 +135,74 @@
     </div> <!-- container.// -->
 </section> <!-- section-content.// -->
 
+<section class="section-content mb-5">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                @if (Model.Comments != null && Model.Comments.Any())
+                {   
+                    <h3 class="pb-2">Đánh giá sản phẩm</h3>
+                    @foreach (var comment in Model.Comments)
+                    {
+                        <div class="rattings-wrapper mb-5">
+                            <div class="sin-rattings mb-4">
+                                <div class="star-author-all mb-2 clearfix">
+                                    <div class="ratting-author float-start">
+                                        <h5 class="float-start me-3">@comment.UserName</h5>
+                                        <span>@comment.CommentDate.ToString("dd/MM/yyyy HH:mm")</span>
+                                    </div>
+                                    <div class="ratting-star float-end">
+                                        <span class="rating-stars me-2">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                if (i <= comment.Rating)
+                                                {
+                                                    <i class="bi bi-star-fill active"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-star-fill"></i>
+                                                }
+                                            }
+                                        </span>
+                                        <span>(@comment.Rating)</span>
+                                    </div>
+                                </div>
+                                <p>@comment.Content</p>
+                            </div>
+                        </div>
+                    }
+                }
+                <h3 class="pb-2">Thêm đánh giá</h3>
+                <div class="ratting-form-wrapper">
+                    <div class="ratting-form">
+                        <form asp-controller="User" asp-action="AddComment" method="post">
+                            <input type="hidden" name="ProductId" value="@Model.Id" />
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <select class="form-select" name="Rating">
+                                        <option disabled selected>Cho sao</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <textarea class="form-control" name="Content" placeholder="Nội dung đánh giá" rows="3"></textarea>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                        </form>
+                    </div>
+                </div>
+            </div> <!-- col.// -->
+        </div> <!-- row.// -->
+    </div> <!-- container.//  -->
+</section> <!-- section-content.// -->
 <section class="section-content mb-5">
     <div class="container">
         <h3 class="pb-2">Sản phẩm liên quan</h3>

@@ -1,0 +1,18 @@
+﻿@using System.Globalization;
+﻿@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
+@inject LanguageService language
+
+<script>
+    var translations = {
+        "Error": "@language.GetKey("Error")",
+        "Youneedtologin": "@language.GetKey("You need to login")",
+        "AddToCartSuccess": "@language.GetKey("Added product to cart successfully")",
+        "Notification": "@language.GetKey("Notification")",
+        "Deletedsuccessfully": "@language.GetKey("Deleted successfully")",
+        // .....
+    };
+    function getTranslation(key) {
+        return translations[key] || key;
+    }
+</script>

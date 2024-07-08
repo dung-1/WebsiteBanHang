@@ -27,11 +27,41 @@ namespace WebsiteBanHang.Controllers
         {
             return View();
         }
-        public IActionResult Setting()
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword, string newPasswordAgain)
         {
-            return View();
-        }
+            var customerId = User.FindFirst("UserId")?.Value;
+            if (string.IsNullOrEmpty(customerId) || !int.TryParse(customerId, out int id))
+            {
+                return Unauthorized("Người dùng chưa đăng nhập hoặc ID không hợp lệ.");
+            }
 
+            if (newPassword != newPasswordAgain)
+            {
+                ModelState.AddModelError("", "Mật khẩu mới không khớp.");
+                return View();
+            }
+
+            var customer = await _context.Customer
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (customer == null)
+            {
+                return NotFound("Không tìm thấy khách hàng.");
+            }
+
+            var currentPasswordHash = GetMd5Hash(currentPassword);
+            if (customer.MatKhau != currentPasswordHash)
+            {
+                ModelState.AddModelError("", "Mật khẩu hiện tại không đúng.");
+                return View();
+            }
+
+            customer.MatKhau = GetMd5Hash(newPassword);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "User"); // Hoặc trang bạn muốn chuyển hướng sau khi đổi mật khẩu thành công
+        }
 
         private string GetMd5Hash(string input)
         {
@@ -46,5 +76,12 @@ namespace WebsiteBanHang.Controllers
                 return builder.ToString();
             }
         }
+        public IActionResult Setting()
+        {
+            return View();
+        }
+
+
+       
     }
 }

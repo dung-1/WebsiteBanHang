@@ -1,10 +1,15 @@
 ﻿@using System.Globalization
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@using System.Globalization;
+@inject LanguageService language
 @model List<WebsiteBanHang.Areas.Admin.AdminDTO.OrderDto>
 @foreach (var item in Model)
 {
     <section class="section-pagetop bg-light">
         <div class="container">
-            <h2 class="title-page">Thông tin đơn hàng </h2>
+            <h2 class="title-page">@language.GetKey("Order")</h2>
+
         </div> <!-- container.// -->
     </section> <!-- section-pagetop.// -->
 
@@ -14,11 +19,11 @@
 
                 <aside class="col-md-3 mb-md-0 mb-3">
                     <nav class="list-group">
-                        <a class="list-group-item active" asp-controller="CustomerOrder" asp-action="Index"> Đang chờ xử lý</a>
-                        <a class="list-group-item " asp-controller="CustomerOrder" asp-action="Approved"> Đã duyệt </a>
-                        <a class="list-group-item" asp-controller="CustomerOrder" asp-action="Transport"> Đang giao hàng </a>
-                        <a class="list-group-item" asp-controller="CustomerOrder" asp-action="Complete"> Hoàn Thành</a>
-                        <a class="list-group-item" asp-controller="CustomerOrder" asp-action="CancelOrders"> Đơn Hủy</a>
+                        <a class="list-group-item active" asp-controller="CustomerOrder" asp-action="Index">  @language.GetKey("Pending")</a>
+                        <a class="list-group-item " asp-controller="CustomerOrder" asp-action="Approved"> @language.GetKey("Approved") </a>
+                        <a class="list-group-item" asp-controller="CustomerOrder" asp-action="Transport">@language.GetKey("Delivering")  </a>
+                        <a class="list-group-item" asp-controller="CustomerOrder" asp-action="Complete"> @language.GetKey("Complete")</a>
+                        <a class="list-group-item " asp-controller="CustomerOrder" asp-action="CancelOrders">@language.GetKey("Cancellation Form")</a>
 
                     </nav>
                 </aside> <!-- col.// -->

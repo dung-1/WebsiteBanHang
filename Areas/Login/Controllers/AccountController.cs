@@ -12,6 +12,9 @@ using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using WebsiteBanHang.Models;
+using Org.BouncyCastle.Crypto.Generators;
+using WebsiteBanHang.Areas.Admin.AdminDTO;
 
 namespace WebsiteBanHang.Controllers
 {
@@ -26,6 +29,8 @@ namespace WebsiteBanHang.Controllers
         {
             _configuration = configuration;
             _context = context;
+
+
         }
         [Route("account")]
         public IActionResult Index()
@@ -108,7 +113,6 @@ namespace WebsiteBanHang.Controllers
 
         [HttpPost]
         [Route("formCheck_Verification")]
-
         public IActionResult formCheck_Verification(int code)
         {
             int? verificationCode = HttpContext.Session.GetInt32("VerificationCode");
@@ -286,6 +290,77 @@ namespace WebsiteBanHang.Controllers
                 }
                 return builder.ToString();
             }
+        }
+
+        [HttpGet("forgot-password")]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost("forgot-password")]
+        public IActionResult ForgotPassword(string email)
+        {
+            var user = _context.User.FirstOrDefault(u => u.Email == email);
+            if (user == null) return BadRequest("Không tìm thấy người dùng");
+
+            // Tạo token reset mật khẩu
+            user.ResetPasswordToken = Guid.NewGuid().ToString();
+            user.ResetPasswordTokenExpiry = DateTime.UtcNow.AddHours(1);
+            _context.SaveChanges();
+
+            // Gửi email reset mật khẩu
+            var resetLink = Url.Action("ResetPassword", "Account", new { token = user.ResetPasswordToken }, Request.Scheme);
+
+            // Tạo email chứa link reset mật khẩu
+            var emailMessage = new MimeMessage();
+            emailMessage.From.Add(new MailboxAddress("Nguyễn Văn Dụng", _configuration["EmailSettings:Email"]));
+            emailMessage.To.Add(new MailboxAddress("Recipient Name", email));
+            emailMessage.Subject = "Đặt lại mật khẩu của bạn";
+
+            emailMessage.Body = new TextPart(TextFormat.Html)
+            {
+                Text = $"Click <a href='{resetLink}'>đây</a> để đặt lại mật khẩu của bạn"
+            };
+
+            try
+            {
+                using var smtp = new SmtpClient();
+                smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+                smtp.Authenticate(_configuration["EmailSettings:Email"], _configuration["EmailSettings:Password"]);
+                smtp.Send(emailMessage);
+                smtp.Disconnect(true);
+
+                return Ok("Liên kết đặt lại mật khẩu đã được gửi đến email của bạn.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Đã xảy ra lỗi khi gửi email. Vui lòng thử lại sau.");
+            }
+        }
+
+
+        [HttpGet("reset-password")]
+        public IActionResult ResetPassword(string token)
+        {
+            var model = new ResetPasswordDto { Token = token };
+            return View(model);
+        }
+
+
+        [HttpPost("reset-password")]
+        public IActionResult ResetPassword(ResetPasswordDto model)
+        {
+            var user = _context.User.FirstOrDefault(u => u.ResetPasswordToken == model.Token && u.ResetPasswordTokenExpiry > DateTime.UtcNow);
+            if (user == null) return BadRequest("Token không hợp lệ hoặc đã hết hạn");
+
+            // Cập nhật mật khẩu mới với mã hóa MD5
+            user.MatKhau = GetMd5Hash(model.NewPassword);
+            user.ResetPasswordToken = null;
+            user.ResetPasswordTokenExpiry = null;
+            _context.SaveChanges();
+
+            return Ok("Mật khẩu của bạn đã được đặt lại thành công.");
         }
 
     }

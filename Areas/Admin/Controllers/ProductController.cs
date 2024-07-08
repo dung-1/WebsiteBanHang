@@ -347,7 +347,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                             var thongTin = worksheet.Cells[row, 9].Value?.ToString()?.Trim();
 
                             // Validate required fields
-                            if (!string.IsNullOrEmpty(maSanPham) && !string.IsNullOrEmpty(tenSanPham) && !string.IsNullOrEmpty(image) && !string.IsNullOrEmpty(thongTin))
+                            if (!string.IsNullOrEmpty(maSanPham) && !string.IsNullOrEmpty(tenSanPham))
                             {
                                 // Check if product with the same name and code already exists
                                 bool isProductExists = await _context.Product.AnyAsync(p => p.TenSanPham == tenSanPham && p.MaSanPham == maSanPham, cancellationToken);

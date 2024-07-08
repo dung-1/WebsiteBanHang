@@ -4,7 +4,7 @@
 
 namespace WebsiteBanHang.Migrations
 {
-    public partial class updateamazon : Migration
+    public partial class update_state : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

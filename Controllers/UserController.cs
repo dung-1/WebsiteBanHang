@@ -63,9 +63,9 @@ namespace WebsiteBanHang.Controllers
             // Lấy danh sách loại sản phẩm để truyền vào view
             var categories = _context.Category.Select(c => c.TenLoai).Distinct().ToList();
             ViewBag.Categories = categories;
-
             return View(pagedProducts);
         }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
@@ -78,33 +78,31 @@ namespace WebsiteBanHang.Controllers
                 .Include(p => p.Brand)
                 .Include(p => p.Category)
                 .Include(p => p.Inventory)
+                .Include(p => p.Comments)
+                .ThenInclude(c => c.User)
                 .Where(p => p.Id == productid)
                 .FirstOrDefault();
 
             if (product == null)
             {
-                // Xử lý trường hợp không tìm thấy sản phẩm
-                return NotFound(); // Hoặc thực hiện xử lý khác theo yêu cầu của bạn.
+                return NotFound();
             }
 
-            // Lấy ra category của sản phẩm chi tiết
             var categoryId = product.Category.Id;
-
-            // Lấy ra danh sách sản phẩm liên quan có cùng category (loại trừ sản phẩm chi tiết)
             var relatedProducts = _context.Product
-       .Where(p => p.Category.Id == categoryId && p.Id != productid)
-       .Select(p => new ProductDTO
-       {
-           Id = p.Id,
-           MaSanPham = p.MaSanPham,
-           TenSanPham = p.TenSanPham,
-           GiaBan = p.GiaBan,
-           GiaGiam = p.GiaGiam,
-           GiaNhap = p.GiaNhap,
-           SoLuong = p.Inventory.FirstOrDefault().SoLuong,
-           Image = p.Image
-       })
-       .ToList();
+                .Where(p => p.Category.Id == categoryId && p.Id != productid)
+                .Select(p => new ProductDTO
+                {
+                    Id = p.Id,
+                    MaSanPham = p.MaSanPham,
+                    TenSanPham = p.TenSanPham,
+                    GiaBan = p.GiaBan,
+                    GiaGiam = p.GiaGiam,
+                    GiaNhap = p.GiaNhap,
+                    SoLuong = p.Inventory.FirstOrDefault() != null ? p.Inventory.FirstOrDefault().SoLuong : 0,
+                    Image = p.Image
+                })
+                .ToList();
 
             var productView = new ProductViewDTO
             {
@@ -118,10 +116,45 @@ namespace WebsiteBanHang.Controllers
                 MaSanPham = product.MaSanPham,
                 TenSanPham = product.TenSanPham,
                 ThongTinSanPham = product.ThongTinSanPham,
-                RelatedProducts = relatedProducts // Truyền danh sách sản phẩm liên quan vào DTO
+                RelatedProducts = relatedProducts,
+                Comments = product.Comments.Select(c => new CommentDTO
+                {
+                    UserName = c.User.Email, // Giả sử MaNguoiDung là tên người dùng
+                    Content = c.Content,
+                    Rating = c.Rating,
+                    CommentDate = c.CommentDate
+                }).ToList()
             };
 
             return View(productView);
+        }
+        [HttpPost]
+        public IActionResult AddComment(int ProductId, int Rating, string Content)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account"); // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập
+            }
+
+            var userId = User.FindFirst("UserId")?.Value;
+            if (userId == null)
+            {
+                return BadRequest("User not found");
+            }
+
+            var comment = new CommentModel
+            {
+                ProductId = ProductId,
+                UserId = int.Parse(userId),
+                Content = Content,
+                Rating = Rating,
+                CommentDate = DateTime.Now
+            };
+
+            _context.Comments.Add(comment);
+            _context.SaveChanges();
+
+            return RedirectToAction("ProductDetail", new { productid = ProductId });
         }
     }
 }

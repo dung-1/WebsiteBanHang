@@ -12,8 +12,8 @@ using WebsiteBanHang.Areas.Admin.Data;
 namespace WebsiteBanHang.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240612092710_updateamazon")]
-    partial class updateamazon
+    [Migration("20240705091032_update_state")]
+    partial class update_state
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,10 +32,16 @@ namespace WebsiteBanHang.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("MaHang")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime>("ModifiedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("NgaySanXuat")
                         .HasColumnType("datetime2");
@@ -107,10 +113,16 @@ namespace WebsiteBanHang.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("MaLoai")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime>("ModifiedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("TenLoai")
                         .IsRequired()
@@ -151,6 +163,9 @@ namespace WebsiteBanHang.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<string>("ChatConnectionConnectionId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("ConnectionIdFrom")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -166,6 +181,8 @@ namespace WebsiteBanHang.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ChatConnectionConnectionId");
 
                     b.HasIndex("ConnectionIdFrom");
 
@@ -221,10 +238,16 @@ namespace WebsiteBanHang.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("MaKho")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime>("ModifiedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("NgayNhap")
                         .HasColumnType("datetime2");
@@ -369,6 +392,9 @@ namespace WebsiteBanHang.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<decimal>("GiaBan")
                         .HasColumnType("decimal(18,2)");
 
@@ -394,6 +420,9 @@ namespace WebsiteBanHang.Migrations
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime>("ModifiedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("TenSanPham")
                         .IsRequired()
@@ -510,13 +539,10 @@ namespace WebsiteBanHang.Migrations
                 {
                     b.HasBaseType("WebsiteBanHang.Areas.Admin.Models.User");
 
-                    b.Property<string>("ChatConnectionConnectionId")
+                    b.Property<string>("ChatConnectionId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("ChatConnectionId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("ChatConnectionConnectionId");
+                    b.HasIndex("ChatConnectionId");
 
                     b.HasDiscriminator().HasValue("CustomerModel");
                 });
@@ -525,15 +551,11 @@ namespace WebsiteBanHang.Migrations
                 {
                     b.HasBaseType("WebsiteBanHang.Areas.Admin.Models.User");
 
-                    b.Property<string>("ChatConnectionConnectionId")
+                    b.Property<string>("ChatConnectionId")
                         .HasColumnType("nvarchar(450)")
-                        .HasColumnName("UserModel_ChatConnectionConnectionId");
-
-                    b.Property<int?>("ChatConnectionId")
-                        .HasColumnType("int")
                         .HasColumnName("UserModel_ChatConnectionId");
 
-                    b.HasIndex("ChatConnectionConnectionId");
+                    b.HasIndex("ChatConnectionId");
 
                     b.HasDiscriminator().HasValue("UserModel");
                 });
@@ -581,6 +603,10 @@ namespace WebsiteBanHang.Migrations
 
             modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.ChatMessage", b =>
                 {
+                    b.HasOne("WebsiteBanHang.Areas.Admin.Models.ChatConnection", null)
+                        .WithMany("ChatMessages")
+                        .HasForeignKey("ChatConnectionConnectionId");
+
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.ChatConnection", "FromConnection")
                         .WithMany()
                         .HasForeignKey("ConnectionIdFrom")
@@ -747,7 +773,7 @@ namespace WebsiteBanHang.Migrations
                 {
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.ChatConnection", "ChatConnection")
                         .WithMany()
-                        .HasForeignKey("ChatConnectionConnectionId");
+                        .HasForeignKey("ChatConnectionId");
 
                     b.Navigation("ChatConnection");
                 });
@@ -756,7 +782,7 @@ namespace WebsiteBanHang.Migrations
                 {
                     b.HasOne("WebsiteBanHang.Areas.Admin.Models.ChatConnection", "ChatConnection")
                         .WithMany()
-                        .HasForeignKey("ChatConnectionConnectionId");
+                        .HasForeignKey("ChatConnectionId");
 
                     b.Navigation("ChatConnection");
                 });
@@ -774,6 +800,11 @@ namespace WebsiteBanHang.Migrations
             modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.CategoryModel", b =>
                 {
                     b.Navigation("Prodcut");
+                });
+
+            modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.ChatConnection", b =>
+                {
+                    b.Navigation("ChatMessages");
                 });
 
             modelBuilder.Entity("WebsiteBanHang.Areas.Admin.Models.OrdersModel", b =>
