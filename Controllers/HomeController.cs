@@ -28,7 +28,7 @@ namespace WebsiteBanHang.Controllers
         public async Task<IActionResult> Index(int? page, string searchName, string selectedCategory)
         {
             var pageNumber = page ?? 1;
-            int pageSize = 12;
+            int pageSize = 8;
 
             var products = _context.Product
                    .Select(p => new ProductModel
@@ -80,19 +80,17 @@ namespace WebsiteBanHang.Controllers
                 .Include(p => p.Brand)
                 .Include(p => p.Category)
                 .Include(p => p.Inventory)
+                .Include(p => p.Comments)
+                .ThenInclude(c => c.User)
                 .Where(p => p.Id == productid)
                 .FirstOrDefault();
 
             if (product == null)
             {
-                // Xử lý trường hợp không tìm thấy sản phẩm
-                return NotFound(); // Hoặc thực hiện xử lý khác theo yêu cầu của bạn.
+                return NotFound();
             }
 
-            // Lấy ra category của sản phẩm chi tiết
             var categoryId = product.Category.Id;
-
-            // Lấy ra danh sách sản phẩm liên quan có cùng category (loại trừ sản phẩm chi tiết)
             var relatedProducts = _context.Product
                 .Where(p => p.Category.Id == categoryId && p.Id != productid)
                 .Select(p => new ProductDTO
@@ -108,8 +106,6 @@ namespace WebsiteBanHang.Controllers
                 })
                 .ToList();
 
-
-
             var productView = new ProductViewDTO
             {
                 Id = product.Id,
@@ -122,7 +118,14 @@ namespace WebsiteBanHang.Controllers
                 MaSanPham = product.MaSanPham,
                 TenSanPham = product.TenSanPham,
                 ThongTinSanPham = product.ThongTinSanPham,
-                RelatedProducts = relatedProducts // Truyền danh sách sản phẩm liên quan vào DTO
+                RelatedProducts = relatedProducts,
+                Comments = product.Comments.Select(c => new CommentDTO
+                {
+                    UserName = c.User.Email, // Giả sử MaNguoiDung là tên người dùng
+                    Content = c.Content,
+                    Rating = c.Rating,
+                    CommentDate = c.CommentDate
+                }).ToList()
             };
 
             return View(productView);
@@ -145,6 +148,42 @@ namespace WebsiteBanHang.Controllers
                 });
 
             return Redirect(Request.Headers["Referer"].ToString());
+        }
+
+        public async Task<IActionResult> ListProductSale(int? page, string searchName, string selectedCategory)
+        {
+            var pageNumber = page ?? 1;
+            int pageSize = 8;
+
+            var products = _context.Product
+                .Where(p => p.GiaGiam > 0)
+                   .Select(p => new ProductModel
+                   {
+                       Id = p.Id,
+                       MaSanPham = p.MaSanPham,
+                       TenSanPham = p.TenSanPham,
+                       HangId = p.HangId,
+                       Brand = p.Brand,
+                       LoaiId = p.LoaiId,
+                       Category = p.Category,
+                       GiaNhap = p.GiaNhap,
+                       GiaBan = p.GiaBan,
+                       GiaGiam = p.GiaGiam,
+                       Image = p.Image,
+                       ThongTinSanPham = p.ThongTinSanPham,
+                       // Include Inventories navigation property
+                       Inventory = p.Inventory.ToList()
+                   });
+            if (!string.IsNullOrEmpty(searchName))
+            {
+                products = products.Where(p => p.TenSanPham.Contains(searchName));
+            }
+            var pagedProducts = products.ToList();
+
+            IPagedList<ProductModel> pagedProductsList = pagedProducts.ToPagedList(pageNumber, pageSize);
+            ViewBag.SearchName = searchName;
+
+            return View(pagedProductsList);
         }
 
     }

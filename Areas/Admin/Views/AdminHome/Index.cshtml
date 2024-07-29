@@ -5,7 +5,7 @@
 @using Microsoft.Extensions.Options
 
 @inject IViewLocalizer Localizer
-@model WebsiteBanHang.Areas.Admin.AdminDTO.StatisticsViewDto
+@model WebsiteBanHang.Areas.Admin.AdminDTO.DashboardViewModel
 @{
     ViewData["Title"] = "Monthly Revenue Chart";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutLteAdmin.cshtml";
@@ -41,7 +41,7 @@
                         <div class="info-box-content">
                             <span class="info-box-text">Doanh Thu</span>
                             <span class="info-box-number">
-                                @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @Model.TotalRevenue)
+                                @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @Model.Statistics.TotalRevenue)
                             </span>
                         </div>
                         <!-- /.info-box-content -->
@@ -55,7 +55,7 @@
 
                         <div class="info-box-content">
                             <span class="info-box-text">Tổng Hóa Đơn</span>
-                            <span class="info-box-number">@Model.TotalOrdersCount</span>
+                            <span class="info-box-number">@Model.Statistics.TotalOrdersCount</span>
                         </div>
                         <!-- /.info-box-content -->
                     </div>
@@ -71,7 +71,7 @@
 
                         <div class="info-box-content">
                             <span class="info-box-text">Số Sản Phẩm Bán Ra</span>
-                            <span class="info-box-number">@Model.TotalProductsSold</span>
+                            <span class="info-box-number">@Model.Statistics.TotalProductsSold</span>
                         </div>
                         <!-- /.info-box-content -->
                     </div>
@@ -109,12 +109,24 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-12">
-                                   
                                     <div class="chart">
-                                        <!-- Sales Chart Canvas -->
-                                        <canvas id="salesChart" height="180" style="height: 180px;"></canvas>
+                                        <canvas id="salesChart" height="150"></canvas>
                                     </div>
-                                    <!-- /.chart-responsive -->
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="chart">
+                                        <canvas id="statusChart" height="150"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="chart">
+                                        <canvas id="categoryPieChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="chart">
+                                        <canvas id="productBarChart" height="150"></canvas>
+                                    </div>
                                 </div>
                             </div>
                             <!-- /.row -->
@@ -124,6 +136,9 @@
                 </div>
                 <!-- /.col -->
             </div>
+
+            <button id="exportButton" class="btn btn-primary">Xuất PDF</button>
+
             <!-- /.row -->
         </div><!--/. container-fluid -->
     </section>
@@ -131,37 +146,62 @@
 </div>
 <!-- /.content-wrapper -->
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script>
-        function updateChart() {
-            var selectedYear = document.getElementById('selectedYear').value;
-            window.location.href = "/admin/homeadmin?selectedYear=" + selectedYear;
+        // Render the charts
+        var revenueLabels = @Html.Raw(Json.Serialize(Model.RevenueLabels));
+        var revenueData = @Html.Raw(Json.Serialize(Model.RevenueData));
+        renderSalesChart(revenueLabels, revenueData);
+
+        var statusLabels = @Html.Raw(Json.Serialize(Model.Months));
+        var statusData = @Html.Raw(Json.Serialize(Model.ChartData));
+        renderStatusChart(statusLabels, statusData);
+
+        var categoryLabels = @Html.Raw(Json.Serialize(Model.InventoryCategoryPercentages.Select(x => x.CategoryName)));
+        var categoryData = @Html.Raw(Json.Serialize(Model.InventoryCategoryPercentages.Select(x => x.Percentage)));
+        renderCategoryPieChart(categoryLabels, categoryData);
+
+        var productLabels = @Html.Raw(Json.Serialize(Model.ProductInventories.Select(x => x.ProductName)));
+        var productData = @Html.Raw(Json.Serialize(Model.ProductInventories.Select(x => x.Quantity)));
+        renderProductBarChart(productLabels, productData);
+
+        // Hàm để xuất biểu đồ thành PDF
+        async function exportChartsToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Hàm để thêm biểu đồ vào PDF
+            async function addChartToPDF(doc, canvasId, x, y, maxWidth) {
+                const canvas = document.getElementById(canvasId);
+                const imgWidth = maxWidth;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                const chartImage = await html2canvas(canvas);
+                const chartData = chartImage.toDataURL('image/png');
+                doc.addImage(chartData, 'PNG', x, y, imgWidth, imgHeight);
+            }
+
+            // Chụp và thêm biểu đồ salesChart vào PDF
+            await addChartToPDF(doc, 'salesChart', 10, 10, 190);
+
+            // Thêm trang mới cho biểu đồ statusChart
+            doc.addPage();
+            await addChartToPDF(doc, 'statusChart', 10, 10, 190);
+
+            // Thêm trang mới cho biểu đồ categoryPieChart
+            doc.addPage();
+            await addChartToPDF(doc, 'categoryPieChart', 10, 10, 190);
+
+            // Thêm trang mới cho biểu đồ productBarChart
+            doc.addPage();
+            await addChartToPDF(doc, 'productBarChart', 10, 10, 190);
+
+            // Lưu file PDF
+            doc.save('charts.pdf');
         }
 
-        var labels = @Html.Raw(Json.Serialize(ViewBag.Labels));
-        var data = @Html.Raw(Json.Serialize(ViewBag.Data));
+        // Gán sự kiện click cho nút xuất PDF
+        document.getElementById('exportButton').addEventListener('click', exportChartsToPDF);
 
-        var ctx = document.getElementById('salesChart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Doanh thu tháng',
-                    data: data,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
+
+
     </script>
 }

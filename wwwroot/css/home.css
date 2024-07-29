@@ -485,20 +485,7 @@ i.bi.bi-facebook {
     overflow: auto;
 }
 
-.message-box .first-chat {
-        width: 200px;
-        float: right;
-        background-color: #4c5aa1;
-        padding: 10px;
-        margin: 14px 0px;
-        border-radius: 5px;
-        color: white;
-}
 
-        .message-box .first-chat p {
-            font-size: 12px;
-            overflow-wrap: break-word;
-        }
 
         .message-box .first-chat .arrow {
             content: "";
@@ -514,37 +501,11 @@ i.bi.bi-facebook {
             margin-top: -15px;
         }
 
-    .message-box .second-chat {
-        display: inline-block;
-    }
 
-        .message-box .second-chat .circle {
-            background-image: url('../img/vietnam.png');
-            border-radius: 50%;
-            float: left;
-            padding: 16px;
-            margin-top: 10px;
-            margin-right: 5px;
-        }
 
-        .message-box .second-chat #circle-mar {
-            margin-top: 5px;
-        }
+     
 
-        .message-box .second-chat p {
-            font-size: 12px;
-            overflow-wrap: break-word;
-        }
-
-        .message-box .second-chat p {
-            width: 200px;
-            float: left;
-            background-color: #ecf1fb;
-            padding: 12px;
-            margin: 0px 5px;
-            border-radius: 10px;
-            color: #000;
-        }
+ 
 
         .message-box .second-chat .arrow {
             content: "";
@@ -646,4 +607,160 @@ i.bi.bi-facebook {
     .message-box .second-chat .arrow {
         margin-left: 41px;
     }
+}
+
+/* Style for message list */
+#messagesList {
+    list-style-type: none;
+    padding: 0;
+}
+
+    /* Style for individual messages */
+    #messagesList li {
+        display: block; /* Ensure each message is displayed in its own row */
+        background-color: #5261f7; /* Light blue background */
+        border-radius: 10px;
+        padding: 5px;
+        width: 60%;
+        margin-bottom: 10px;
+        text-align: left; /* Align text to the left */
+        max-width: fit-content; /* Width adjusts based on content */
+        word-wrap: break-word;
+        margin-left: auto; /* Align to the right */
+        color: white;
+        font-size: 12px;
+    }
+
+/* Optional: Style for the chat window container */
+.chat-window2 {
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+/* Style for the input box and send button */
+
+#messageInput {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#sendButton {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+    #sendButton:hover {
+        background-color: #45a049;
+    }
+.first-chat {
+    text-align: left;
+}
+
+.second-chat {
+    text-align: right;
+}
+
+.first-chat .arrow, .second-chat .arrow {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+}
+
+.first-chat .arrow {
+    border-width: 0 10px 10px 0;
+    border-color: transparent blue transparent transparent;
+    margin-left: 10px;
+}
+
+.second-chat .arrow {
+    border-width: 0 0 10px 10px;
+    border-color: transparent transparent transparent blue;
+    margin-right: 10px;
+}
+
+.circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: blue;
+    display: inline-block;
+}
+.message-box {
+    width: 100%;
+    padding-right: 5px;
+    overflow: auto;
+}
+
+    .message-box .first-chat {
+        max-width: 80%; /* Giới hạn chiều rộng tối đa */
+        float: right;
+        display: inline-grid; /* Đảm bảo chiều rộng tự động theo nội dung */
+        height: auto; /* Đảm bảo chiều cao tự động theo nội dung */
+        clear: both; /* Đảm bảo mỗi tin nhắn nằm trên một hàng riêng */
+    
+    }
+
+.first-chat .conten-message-admin {
+    background-color: #5a3cfe;
+    color: white;
+    padding: 5px;
+    margin: 5px 0px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+
+
+
+
+
+.message-box .first-chat p {
+    overflow-wrap: break-word;
+    margin: 0; /* Loại bỏ khoảng cách thừa xung quanh đoạn văn */
+}
+
+    .message-box .second-chat {
+        display: inline-block;
+    }
+        .message-box .second-chat .circle {
+            background-image: url('../img/Administrator.png');
+            border-radius: 50%;
+            float: left;
+            padding: 16px;
+            margin-top: 10px;
+            margin-right: 5px;
+        }
+        .message-box .second-chat #circle-mar {
+            margin-top: 5px;
+        }
+
+        .message-box .second-chat p {
+            overflow-wrap: break-word;
+        }
+
+        .message-box .second-chat p {
+            width: 180px;
+            float: left;
+            padding: 12px;
+            margin: 0px 5px;
+            border-radius: 10px;
+            color: #000;
+            display: inline-flex;
+        }
+
+.conten-message-customer {
+    background-color: #f1f1f1;
+    font-size: 14px;
+}
+.time-messages {
+    font-size: 10px;
 }

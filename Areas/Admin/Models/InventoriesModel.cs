@@ -13,5 +13,11 @@ namespace WebsiteBanHang.Areas.Admin.Models
         public ProductModel product { get; set; } = null!;
         public DateTime? NgayNhap { get; set; }
         public int SoLuong { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime CreatedTime { get; set; } // Thêm thuộc tính thời gian tạo
+
+        [DataType(DataType.Date)]
+        public DateTime ModifiedTime { get; set; } // Thêm thuộc tính thời gian cập nhật
     }
 }

@@ -5,7 +5,6 @@ namespace WebsiteBanHang.Areas.Admin.Models
 {
     public class ChatConnection
     {
-
         [Key]
         public string ConnectionId { get; set; } = Guid.NewGuid().ToString();
 
@@ -15,7 +14,11 @@ namespace WebsiteBanHang.Areas.Admin.Models
 
         public DateTime LastActive { get; set; } = DateTime.Now;
 
-        // Relationship (consider using polymorphism)
+        // Relationship
         public User? User { get; set; } // Base class for CustomerModel and UserModel
+
+        // Navigation property for ChatMessages
+        public virtual ICollection<ChatMessage> ChatMessages { get; set; }
     }
+
 }

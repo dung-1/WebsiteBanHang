@@ -12,6 +12,8 @@
         public decimal GiaGiam { get; set; }
         public string? Image { get; set; }
         public string? ThongTinSanPham { get; set; }
+        public List<CommentDTO> Comments { get; set; }
+
 
         // Checkboxes for filtering
         public bool CheckboxAll { get; set; }
@@ -36,6 +38,13 @@
         internal ProductViewDTO Select(Func<object, ProductViewDTO> value)
         {
             throw new NotImplementedException();
+        }
+        public class CommentDTO
+        {
+            public string UserName { get; set; }
+            public string Content { get; set; }
+            public int Rating { get; set; }
+            public DateTime CommentDate { get; set; }
         }
     }
 }

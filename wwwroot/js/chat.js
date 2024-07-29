@@ -1,13 +1,27 @@
-    let audio1 = new Audio(
+﻿    let audio1 = new Audio(
   "https://s3-us-west-2.amazonaws.com/s.cdpn.io/242518/clickUp.mp3"
 );
 function chatOpen() {
-  document.getElementById("chat-open").style.display = "none";
-  document.getElementById("chat-close").style.display = "block";
-  document.getElementById("chat-window1").style.display = "block";
+    $.ajax({
+        type: "GET",
+        url: "/CustomerInfo/AccountInfo", // Đặt URL kiểm tra đăng nhập tại đây
+        success: function (isLoggedIn) {
+            if (isLoggedIn) {
+                document.getElementById("chat-open").style.display = "none";
+                document.getElementById("chat-close").style.display = "block";
+                document.getElementById("chat-window1").style.display = "block";
 
-  audio1.load();
-  audio1.play();
+                audio1.load();
+                audio1.play();
+            }
+        },
+        error: function () {
+            // Người dùng chưa đăng nhập, hiển thị thông báo và chuyển hướng đến trang đăng nhập
+            Swal.fire("Thông báo", "Bạn cần phải đăng nhập ", "warning").then(function () {
+                window.location.href = "/Login/account/Login";
+            });
+        }
+    });
 }
 function chatClose() {
   document.getElementById("chat-open").style.display = "block";
@@ -95,3 +109,21 @@ addEventListener("keypress", (e) => {
     }
   }
 });
+function checkComentlogin() {
+    $.ajax({
+        type: "GET",
+        url: "/User/AddComment", // Đặt URL kiểm tra đăng nhập tại đây
+        success: function (isLoggedIn) {
+            if (isLoggedIn) {
+                window.location.href = "/User/AddComment";
+            }
+        },
+        error: function () {
+            // Người dùng chưa đăng nhập, hiển thị thông báo và chuyển hướng đến trang đăng nhập
+            Swal.fire(getTranslation("Notification"), getTranslation("Youneedtologin"), "warning").then(function () {
+                window.location.href = "/Login/account/Login";
+            });
+        }
+    });
+
+}

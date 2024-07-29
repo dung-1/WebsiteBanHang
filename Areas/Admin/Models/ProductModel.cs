@@ -11,24 +11,27 @@ namespace WebsiteBanHang.Areas.Admin.Models
     {
         [Key]
         public int Id { get; set; }
+
         [Required]
         [StringLength(10)]
         public string? MaSanPham { get; set; }
+
         [Required]
         [StringLength(20)]
         public string? TenSanPham { get; set; }
-        [Required]
-
-        public int? HangId { get; set; } // Required foreign key property
-        public BrandModel ? Brand { get; set; } = null!;
 
         [Required]
+        public int? HangId { get; set; }
+        public BrandModel? Brand { get; set; } = null!;
 
-        public int? LoaiId { get; set; } // Required foreign key property
+        [Required]
+        public int? LoaiId { get; set; }
         public CategoryModel? Category { get; set; } = null!;
+
         public decimal GiaNhap { get; set; }
-        public decimal GiaBan{ get; set; }
+        public decimal GiaBan { get; set; }
         public decimal GiaGiam { get; set; }
+
         [StringLength(255)]
         public string? Image { get; set; }
 
@@ -36,10 +39,17 @@ namespace WebsiteBanHang.Areas.Admin.Models
         [Column(TypeName = "nvarchar(max)")]
         public string? ThongTinSanPham { get; set; }
 
-        public ICollection<OrderDetaiModel> Order_Detai { get; } = new List<OrderDetaiModel>(); // Collection navigation containing dependents
+        [DataType(DataType.Date)]
+        public DateTime CreatedTime { get; set; }
 
-        public ICollection<InventoriesModel> Inventory { get; set; } = new List<InventoriesModel>(); // Collection navigation containing dependents
+        [DataType(DataType.Date)]
+        public DateTime ModifiedTime { get; set; }
+
+        public ICollection<OrderDetaiModel> Order_Detai { get; } = new List<OrderDetaiModel>();
+        public ICollection<InventoriesModel> Inventory { get; set; } = new List<InventoriesModel>();
         public ICollection<Cart_Item> CartItems { get; } = new List<Cart_Item>();
 
+        // Thêm mối quan hệ với CommentModel
+        public ICollection<CommentModel> Comments { get; set; } = new List<CommentModel>();
     }
 }

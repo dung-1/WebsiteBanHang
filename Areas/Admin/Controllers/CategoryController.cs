@@ -37,7 +37,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
                 int pageSize = int.MaxValue; // Số mục trên mỗi trang
 
-                var sortedBrands = _context.Category.AsQueryable().OrderByDescending(b => b.Id);
+                var sortedBrands = _context.Category.AsQueryable().OrderByDescending(b => b.ModifiedTime);
 
                 if (!string.IsNullOrEmpty(searchName))
                 {
@@ -114,6 +114,8 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 {
                     // Tạo mã loại sản phẩm mới tự động và gán cho empobj.MaLoai
                     empobj.MaLoai = GenerateCategoryCode(empobj);
+                    empobj.CreatedTime = DateTime.Now;
+                    empobj.ModifiedTime = DateTime.Now;
 
                     _context.Category.Add(empobj);
                     _context.SaveChanges();
@@ -170,6 +172,8 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             {
                 if (ModelState.IsValid)
                 {
+          
+                    empobj.ModifiedTime = DateTime.Now;
                     _context.Category.Update(empobj);
                     _context.SaveChanges();
                     return RedirectToAction("Index"); // Sử dụng RedirectToAction để trả về action "Index"

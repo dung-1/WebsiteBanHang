@@ -65,10 +65,12 @@
 
     <!-- Add more Razor code and content as needed -->
 </div>
-<section class="section-content mb-5">
 
+<section class="section-content mb-5">
     <header class="section-heading py-2 text-light text-uppercase my-3 d-flex justify-content-between bg-primary">
-        <h3 class="section-title container d-flex justify-content-between  ">Danh Sách Sản phẩm</h3>
+        <h3 class="section-title container d-flex justify-content-between  ">
+            @language.GetKey("List of products")
+        </h3>
         @*             <a class="btn btn-secondary" href="#" role="button" style="height: fit-content;">Xem tất cả</a>
         *@
     </header> <!-- section-heading.// -->
@@ -113,7 +115,7 @@
                                             <div class="col-4">
 
                                                 <p style="font-size:14px;">
-                                                    Còn: <span class="text-danger">@inventoryItem.SoLuong</span>
+                                                    @language.GetKey("Remaining"): <span class="text-danger">@inventoryItem.SoLuong</span>
                                                 </p>
                                             </div>
                                         </div>
@@ -148,7 +150,7 @@
                                         @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @product.GiaBan)
                                     </div>
 
-                                    @if (inventoryItem.SoLuong > 0)
+                                    @if (inventoryItem?.SoLuong > 0)
                                     {
                    
                                         <div class="row">
@@ -160,7 +162,7 @@
                                             <div class="col-4">
 
                                                 <p style="font-size:14px;">
-                                                    Còn: <span class="text-danger">@inventoryItem.SoLuong</span>
+                                                    @language.GetKey("Remaining"): <span class="text-danger">@inventoryItem.SoLuong</span>
                                                 </p>
                                             </div>
                                         </div>
@@ -212,3 +214,8 @@
         <!-- row.// -->
     </div> <!-- container.// -->
 </section>
+@section Scripts
+{
+    <script src="~/js/chathub-send-admin.js"></script>
+    <script src="~/js/notification-mail.js"></script>
+}

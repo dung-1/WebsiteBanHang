@@ -5,7 +5,8 @@
 @model X.PagedList.IPagedList<WebsiteBanHang.Areas.Admin.AdminDTO.OrderDto>
 <section class="section-pagetop bg-light">
     <div class="container">
-        <h2 class="title-page">Đơn hàng</h2>
+        <h2 class="title-page">@language.GetKey("Order")</h2>
+
     </div> <!-- container.// -->
 </section> <!-- section-pagetop.// -->
 
@@ -15,11 +16,11 @@
 
             <aside class="col-md-3 mb-md-0 mb-3">
                 <nav class="list-group">
-                    <a class="list-group-item " asp-controller="CustomerOrder" asp-action="Index"> Đang chờ xử lý</a>
-                    <a class="list-group-item " asp-controller="CustomerOrder" asp-action="Approved"> Đã duyệt </a>
-                    <a class="list-group-item" asp-controller="CustomerOrder" asp-action="Transport"> Đang giao hàng </a>
-                    <a class="list-group-item" asp-controller="CustomerOrder" asp-action="Complete"> Hoàn Thành</a>
-                    <a class="list-group-item active " asp-controller="CustomerOrder" asp-action="CancelOrders"> Đơn Hủy</a>
+                    <a class="list-group-item " asp-controller="CustomerOrder" asp-action="Index">  @language.GetKey("Pending")</a>
+                    <a class="list-group-item " asp-controller="CustomerOrder" asp-action="Approved"> @language.GetKey("Approved") </a>
+                    <a class="list-group-item" asp-controller="CustomerOrder" asp-action="Transport">@language.GetKey("Delivering")  </a>
+                    <a class="list-group-item" asp-controller="CustomerOrder" asp-action="Complete"> @language.GetKey("Complete")</a>
+                    <a class="list-group-item active" asp-controller="CustomerOrder" asp-action="CancelOrders">@language.GetKey("Cancellation Form")</a>
 
                 </nav>
             </aside> <!-- col.// -->
@@ -30,11 +31,11 @@
                     {
                         <table id="example1" class="table table-bordered table-striped">
                             <thead>
-                                <tr>
-                                    <th>Mã đơn hàng</th>
-                                    <th>Ngày mua</th>
-                                    <th>Trạng thái đơn hàng</th>
-                                    <th style=" display: flex;justify-content: center;">Thao tác</th>
+                                <tr class="tr_header">
+                                    <th>@language.GetKey("Code orders")</th>
+                                    <th>@language.GetKey("Date of purchase")</th>
+                                    <th>@language.GetKey("Single state")</th>
+                                    <th style=" display: flex;justify-content: center;">@language.GetKey("Action")/th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -45,7 +46,7 @@
                                         <td>@item.NgayBan</td>
                                         <td><span class="badge bg-danger">@item.TrangThai</span></td>
                                         <td class="text-center text-nowrap">
-                                            <a class="btn btn-primary me-2" asp-controller="CustomerOrder" asp-action="OrderDetail" asp-route-id="@item.Id" role="button">Xem đơn hàng</a>
+                                            <a class="btn btn-primary me-2" asp-controller="CustomerOrder" asp-action="OrderDetail" asp-route-id="@item.Id" role="button">@language.GetKey("View orders")</a>
                                         </td>
                                     </tr>
                                 }
@@ -64,7 +65,7 @@
                                                                         padding: 28px 0 16px;
                                                                         background: #fff;">
                             <img src="~/img/null_order.png" width="100px" />
-                            <p class="css-8uyn92 text-red-5 px-16 md:px-0 text-danger fs-5">Chưa có đơn hàng </p>
+                            <p class="css-8uyn92 text-red-5 px-16 md:px-0 text-danger fs-5">@language.GetKey("No orders yet")</p>
                             <div class="cart-status_btn m-b-32 cart-empty_cart-status_btn__yWtjL">
                                 <a href="/" class="btn btn-danger border-2" style="border-radius:10%">
                                     <span>  @language.GetKey("Buy Now")</span>

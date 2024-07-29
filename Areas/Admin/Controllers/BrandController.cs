@@ -36,7 +36,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 var pageNumber = page ?? 1; // Số trang mặc định (trang 1)
                 int pageSize = int.MaxValue; // Số mục trên mỗi trang
 
-                var sortedBrands = _context.Brand.AsQueryable().OrderByDescending(b => b.Id);
+                var sortedBrands = _context.Brand.AsQueryable().OrderByDescending(b => b.ModifiedTime);
 
                 if (!string.IsNullOrEmpty(searchName))
                 {
@@ -106,6 +106,8 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             {
                 // Tạo mã hãng mới tự động và gán cho empobj.MaHang
                 empobj.MaHang = GenerateBrandCode(empobj);
+                empobj.CreatedTime = DateTime.Now;
+                empobj.ModifiedTime = DateTime.Now;
 
                 _context.Brand.Add(empobj);
                 _context.SaveChanges();
@@ -157,6 +159,8 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                empobj.ModifiedTime = DateTime.Now;
+
                 _context.Brand.Update(empobj);
                 _context.SaveChanges();
                 return RedirectToAction("Index");

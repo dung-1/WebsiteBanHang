@@ -129,7 +129,7 @@ namespace WebsiteBanHang.Controllers
                     if (loggedInCustomer != null)
                     {
                         var pageNumber = page ?? 1;
-                        int pageSize = 10;
+                        int pageSize = int.MaxValue;
 
                         // Lấy danh sách đơn hàng của khách hàng đăng nhập
                         var productsQuery = _context.Order
