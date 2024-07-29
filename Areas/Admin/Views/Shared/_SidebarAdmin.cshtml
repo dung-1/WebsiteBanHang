@@ -44,6 +44,30 @@
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
+                        <i class="fa-solid fa-blog menu-icon"></i>
+                        <p>
+                            Quản Lý Bài viết
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="@Url.Action("Index","Posts")" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Bài viết</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("Index","CategoryPost")" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Thể loại bài viết</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
                         <i class="fa-solid fa-house-laptop menu-icon"></i>
                         <p>
                             Quản Lý Sản Phẩm

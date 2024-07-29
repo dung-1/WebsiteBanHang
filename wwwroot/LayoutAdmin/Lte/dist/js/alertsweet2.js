@@ -185,6 +185,43 @@ function deleteCategory(id) {
     });
 }
 
+//delete CategoryPost
+function deleteCategoryPost(id) {
+    Swal.fire({
+        title: 'Bạn có chắc chắn muốn xóa?',
+        text: 'Hành động này không thể hoàn tác!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Xóa'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Gọi controller để xóa khi người dùng xác nhận
+            $.ajax({
+                type: 'POST',
+                url: '/Admin/CategoryPost/Delete/' + id,
+                success: function (response) {
+                    if (response.success) {
+                        // Hiển thị thông báo thành công
+                        Swal.fire('Xóa thành công!', '', 'success')
+                            .then(() => {
+                                // Chuyển đến trang Index sau khi xóa
+                                location.href = '/Admin/CategoryPost/Index';
+                            });
+                    } else {
+                        // Hiển thị thông báo lỗi
+                        Swal.fire('Không thể xóa thể loại tin tức  này !', '', 'error');
+                    }
+                },
+                error: function () {
+                    // Xử lý lỗi nếu cần
+                    Swal.fire('Có lỗi xảy ra!', '', 'error');
+                }
+            });
+        }
+    });
+}
 
 //delete Brand
 
@@ -629,6 +666,71 @@ function validateAndSubmitCategory() {
 }
 
 
+function validateAndSubmitCategoryPost() {
+    var form = document.getElementById('createFormCategorypost');
+    var inputElement = form.elements['Name'];
+    var spanElement = document.querySelector('[data-valmsg-for="Name"]');
+
+    // Kiểm tra trùng tên loại bằng Ajax
+    $.ajax({
+        type: 'GET',
+        url: '/Admin/CategoryPost/IsTenLoaiExists?tenLoai=' + inputElement.value,
+        success: function (response) {
+            if (response.exists) {
+                // Hiển thị thông báo lỗi nếu tên loại đã tồn tại
+                spanElement.textContent = 'Tên thể loại bài viết đã tồn tại.';
+                spanElement.style.display = 'block';
+                inputElement.focus();
+            } else {
+                // Nếu không có lỗi, gọi Ajax để tạo mới thể loại bài viết
+                $.ajax({
+                    type: 'POST',
+                    url: '/Admin/CategoryPost/Create',
+                    data: { Name: inputElement.value },
+                    success: function (response) {
+                        console.log("Thêm thể loại bài viết thành công");
+
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: "top-end",
+                            showConfirmButton: false,
+                            timer: 1800,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.onmouseenter = Swal.stopTimer;
+                                toast.onmouseleave = Swal.resumeTimer;
+                            }
+                        });
+
+                        Toast.fire({
+                            icon: "success",
+                            title: "Thêm thể loại bài viết thành công"
+                        });
+
+                        new Promise(resolve => setTimeout(resolve, 1800))
+                            .then(() => {
+                                window.location.href = "/Admin/CategoryPost/Index";
+                            });
+                    },
+                    error: function () {
+                        // Xử lý lỗi nếu cần
+                        spanElement.textContent = 'Có lỗi xảy ra khi thêm thể loại bài viết.';
+                        spanElement.style.display = 'block';
+                        inputElement.focus();
+                    }
+                });
+            }
+        },
+        error: function () {
+            // Xử lý lỗi nếu cần
+            spanElement.textContent = 'Có lỗi xảy ra khi kiểm tra trùng tên loại.';
+            spanElement.style.display = 'block';
+            inputElement.focus();
+        }
+    });
+}
+
+
 function validateEditBrand() {
     var form = document.getElementById('EditFormBrand');
     var ngaySanXuatInput = form.elements['NgaySanXuat'];
@@ -742,6 +844,66 @@ function validateEditCategory() {
         }
     });
 }
+
+
+
+
+function validateEditCategorypost() {
+    var form = document.getElementById('EditFormCategoryPost');
+    var ngaySanXuatInput = form.elements['Name'];
+    var ngaySanXuatValidationError = document.querySelector('[data-valmsg-for="Name"]');
+
+    if (!ngaySanXuatInput.value) {
+        showValidationError(ngaySanXuatValidationError, "Nhập Tên Loại Bài viết.");
+        return;
+    } else {
+        hideValidationError(ngaySanXuatValidationError);
+    }
+
+    // Lấy dữ liệu từ form và chuyển đổi thành đối tượng JSON
+    var formData = new FormData(form);
+    var jsonObject = {};
+    formData.forEach((value, key) => {
+        jsonObject[key] = value;
+    });
+
+    // Thực hiện AJAX để chỉnh sửa brand
+    $.ajax({
+        type: 'POST',
+        url: '/Admin/CategoryPost/Edit',
+        data: JSON.stringify(jsonObject),
+        contentType: 'application/json',
+        success: function (response) {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 1800,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            Toast.fire({
+                icon: 'success',
+                title: 'Chỉnh sửa Loại bài viết thành công'
+            });
+
+            new Promise(resolve => setTimeout(resolve, 1800))
+                .then(() => {
+                    window.location.href = '/Admin/CategoryPost/Index';
+                });
+        },
+        error: function (error) {
+            // Xử lý lỗi
+            console.log('Lỗi khi chỉnh sửa thể loại bài viết', error);
+        }
+    });
+}
+
+
 
 
 function validateAndSubmitBrand() {
