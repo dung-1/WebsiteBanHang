@@ -136,9 +136,9 @@ namespace WebsiteBanHang.Controllers
                     Rating = c.Rating,
                     CommentDate = c.CommentDate
                 }).ToList(),
-                RelatedInfoNuberProducT = new List<ProductViewDTO.InfoNuberProductDTO>
+                RelatedInfoNumberProduct = new List<ProductViewDTO.InfoNumberProductDTO>
         {
-            new ProductViewDTO.InfoNuberProductDTO
+            new ProductViewDTO.InfoNumberProductDTO
             {
                 Rating = (int)Math.Round(averageRating),
                 Comment = totalComments,
