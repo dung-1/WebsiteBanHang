@@ -82,6 +82,8 @@ namespace WebsiteBanHang.Controllers
                 .Include(p => p.Inventory)
                 .Include(p => p.Comments)
                 .ThenInclude(c => c.User)
+                .Include(p => p.Order_Detai)
+                .ThenInclude(od => od.order)
                 .Where(p => p.Id == productid)
                 .FirstOrDefault();
 
@@ -106,6 +108,14 @@ namespace WebsiteBanHang.Controllers
                 })
                 .ToList();
 
+            var totalRating = product.Comments.Sum(c => c.Rating);
+            var totalComments = product.Comments.Count;
+            var averageRating = totalComments > 0 ? (double)totalRating / totalComments : 0;
+
+            var totalSoldProducts = _context.Order_Detai
+                .Where(od => od.ProductId == productid && od.order.trangThai == "Hoàn thành")
+                .Sum(od => od.soLuong);
+
             var productView = new ProductViewDTO
             {
                 Id = product.Id,
@@ -125,7 +135,16 @@ namespace WebsiteBanHang.Controllers
                     Content = c.Content,
                     Rating = c.Rating,
                     CommentDate = c.CommentDate
-                }).ToList()
+                }).ToList(),
+                RelatedInfoNuberProducT = new List<ProductViewDTO.InfoNuberProductDTO>
+        {
+            new ProductViewDTO.InfoNuberProductDTO
+            {
+                Rating = (int)Math.Round(averageRating),
+                Comment = totalComments,
+                ProductBuyNumber = totalSoldProducts
+            }
+        }
             };
 
             return View(productView);
