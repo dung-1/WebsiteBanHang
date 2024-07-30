@@ -14,6 +14,8 @@ namespace WebsiteBanHang.Areas.Admin.AdminDTO
         public string Title { get; set; }
         [Display(Name = "Mô tả trích đoạn")]
         public string Excerpt { get; set; }
+        [Display(Name = "Nội dung trích đoạn")]
+        public string? Content { get; set; }
         [Display(Name = "Hình ảnh trích đoạn")]
         public string? ExcerptImage { get; set; }
         [Display(Name = "Danh mục")]

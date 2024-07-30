@@ -29,7 +29,7 @@ namespace WebsiteBanHang.ViewComponents
             try
             {
                 var posts = await _context.Posts
-                                 .Where(p => p.Category.Name == "Công Nghệ" && p.Status== StatusActivity.Active)
+                                 .Where(p => p.Category.Name == "Công Nghệ" && p.Status== StatusActivity.Active && p.FromDate <= DateTime.Now && p.ToDate>= DateTime.Now)
                                  .OrderByDescending(p => p.CreatedTime)
                                  .Take(4)
                                  .Select(p => new PostsViewDto

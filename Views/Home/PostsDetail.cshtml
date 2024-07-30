@@ -1,0 +1,90 @@
+﻿@using System.Globalization;
+@using Microsoft.AspNetCore.Html
+﻿@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
+@inject LanguageService language
+@model WebsiteBanHang.Models.PostsDetailViewModel
+@{
+    ViewData["Title"] = "PostsDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<section class="section-pagetop-2 bg-light">
+    <div class="container">
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page"><a href="#">@Model.Post.CategoryName</a></li>
+            </ol>
+        </nav>
+    </div> 
+</section> 
+<section class="section-content mb-4">  
+    <div class="container">
+        <div class="row main-article-list">
+            <div class="col-8 article-list-left">
+                <h3 class="pb-2">@Model.Post.Title</h3>
+                <div class="meta-top" style="display:flex">
+                    <ul>
+                        <li class="d-flex align-items-center" style="float:left; padding-right:15px;"><i class="bi bi-eye"></i> @Model.Post.ViewCount Lượt xem</li>
+                        <li class="d-flex align-items-center"><i class="bi bi-clock"></i>  @Model.Post.CreatedTime.ToString("MM/dd/yyyy hh:mm tt")</li>
+                    </ul>
+                </div>
+                <p>
+                    @(new HtmlString(Model.Post.Content))
+                </p>
+            </div>
+            <div class="col-4 article-list-right">
+                <div class="hot-article right-article">
+                    <div class="title">
+                        TIN NỔI BẬT
+                    </div>
+                    <div class="hot-article-list right-article-content">
+                        <ul class="list-unstyled">
+                            @foreach (var item in Model.TopHighlightedPosts)
+                            {
+                                <li>
+                                    <a asp-controller="Home" asp-action="PostsDetail" asp-route-postsId="@item.Id" class="post-title">@item.Title</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="tin-kmai-right right-article">
+                    <div class="title">
+                        TIN KHUYẾN MÃI
+                    </div>
+                    <div class="right-article-content">
+                        @if (Model.LatestPromotionalPost != null)
+                        {
+                            <div class="article-first">
+                                <div class="article-item">
+                                    <div class="article-img">
+                                        <a asp-controller="Home" asp-action="PostsDetail" asp-route-postsId="@Model.LatestPromotionalPost.Id">
+                                            <img class="img-fluid" src="~/@Model.LatestPromotionalPost.ExcerptImage">
+                                        </a>
+                                    </div>
+                                    <div class="article-title">
+                                        <a asp-controller="Home" asp-action="PostsDetail" asp-route-postsId="@Model.LatestPromotionalPost.Id" >@Model.LatestPromotionalPost.Title</a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @foreach (var item in Model.TopPromotionalPosts)
+                        {
+                            <div class="article-item">
+                                <div class="article-img">
+                                    <a asp-controller="Home" asp-action="PostsDetail" asp-route-postsId="@item.Id">
+                                        <img class="img-fluid" src="~/@item.ExcerptImage">
+                                    </a>
+                                </div>
+                                <div class="article-title">
+                                    <a asp-controller="Home" asp-action="PostsDetail" asp-route-postsId="@item.Id">@item.Title</a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
