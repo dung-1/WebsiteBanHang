@@ -16,11 +16,11 @@ namespace WebsiteBanHang.Areas.Admin.Models
         public string ?TenLoai { get; set; }
 
         [DataType(DataType.Date)]
-        public DateTime CreatedTime { get; set; } // Thêm thuộc tính thời gian tạo
+        public DateTime CreatedTime { get; set; } 
 
         [DataType(DataType.Date)]
-        public DateTime ModifiedTime { get; set; } // Thêm thuộc tính thời gian cập nhật
-        public ICollection<ProductModel> Prodcut { get; } = new List<ProductModel>(); // Collection navigation containing dependents
+        public DateTime ModifiedTime { get; set; } 
+        public ICollection<ProductModel> Prodcut { get; } = new List<ProductModel>(); 
 
     }
 }

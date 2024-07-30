@@ -33,6 +33,8 @@ namespace WebsiteBanHang.Areas.Admin.Data
         public DbSet<ChatMessage> ChatMessage { get; set; }
         public DbSet<Session> Sessions { get; set; }
         public DbSet<CommentModel> Comments { get; set; }
+        public DbSet<PostsModel> Posts { get; set; }
+        public DbSet<CategoryPostModel> CategoryPost { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -45,6 +47,21 @@ namespace WebsiteBanHang.Areas.Admin.Data
                 entity.Property(e => e.ExpiresAtTime).IsRequired();
             });
 
+            modelBuilder.Entity<CategoryPostModel>()
+               .HasMany(e => e.Posts)
+               .WithOne(e => e.Category)
+               .HasForeignKey(e => e.CategoryId)
+               .IsRequired()
+               .OnDelete(DeleteBehavior.Restrict);
+
+
+            modelBuilder.Entity<PostsModel>()
+               .HasOne(p => p.Category)
+               .WithMany(c => c.Posts)
+               .HasForeignKey(p => p.CategoryId)
+               .IsRequired()
+               .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<CustomerModel>()
                .HasMany(e => e.Carts)
                .WithOne(e => e.Customer)
@@ -56,7 +73,6 @@ namespace WebsiteBanHang.Areas.Admin.Data
                   .HasMany(c => c.CartItems)
                   .WithOne(ci => ci.Cart)
                   .OnDelete(DeleteBehavior.Cascade);
-
 
             modelBuilder.Entity<ProductModel>()
                 .HasMany(e => e.CartItems)
@@ -87,7 +103,6 @@ namespace WebsiteBanHang.Areas.Admin.Data
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
-
             modelBuilder.Entity<ProductModel>()
                  .HasOne(e => e.Category)
                  .WithMany(e => e.Prodcut)
@@ -101,7 +116,6 @@ namespace WebsiteBanHang.Areas.Admin.Data
                .HasForeignKey(e => e.User_ID)
                .IsRequired()
                .OnDelete(DeleteBehavior.Restrict);
-
 
             modelBuilder.Entity<CustomerModel>()
               .HasMany(e => e.CustomerRole)
@@ -185,37 +199,33 @@ namespace WebsiteBanHang.Areas.Admin.Data
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Cấu hình mối quan hệ cho ChatConnection với User và Admin
             modelBuilder.Entity<ChatConnection>()
-              .HasOne(cc => cc.User) // Kết nối tới User
-              .WithMany() // Một User có thể có nhiều kết nối chat
-              .HasForeignKey(cc => cc.UserId) // Khóa ngoại của User trong ChatConnection
-                .IsRequired()
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Cấu hình mối quan hệ cho ChatMessage
-            modelBuilder.Entity<ChatMessage>()
-                .HasOne(cm => cm.FromConnection) // Kết nối tới ChatConnection của người gửi
-                .WithMany() // Một kết nối chat có thể có nhiều tin nhắn gửi đi
-                .HasForeignKey(cm => cm.ConnectionIdFrom) // Khóa ngoại của kết nối chat trong ChatMessage
+              .HasOne(cc => cc.User)
+              .WithMany()
+              .HasForeignKey(cc => cc.UserId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ChatMessage>()
-                .HasOne(cm => cm.ToConnection) // Kết nối tới ChatConnection của người nhận
-                .WithMany() // Một kết nối chat có thể có nhiều tin nhắn nhận được
-                .HasForeignKey(cm => cm.ConnectionIdTo) // Khóa ngoại của kết nối chat trong ChatMessage
+                .HasOne(cm => cm.FromConnection)
+                .WithMany()
+                .HasForeignKey(cm => cm.ConnectionIdFrom)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Thiết lập mối quan hệ giữa Product và Comment
+            modelBuilder.Entity<ChatMessage>()
+                .HasOne(cm => cm.ToConnection)
+                .WithMany()
+                .HasForeignKey(cm => cm.ConnectionIdTo)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<ProductModel>()
                 .HasMany(p => p.Comments)
                 .WithOne(c => c.Product)
                 .HasForeignKey(c => c.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Thiết lập mối quan hệ giữa User và Comment
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Comments)
                 .WithOne(c => c.User)

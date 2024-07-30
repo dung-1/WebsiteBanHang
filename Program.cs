@@ -19,7 +19,11 @@ namespace WebsiteBanHang
         {
             var builder = WebApplication.CreateBuilder(args);
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews()
+                .AddRazorOptions(options =>
+                {
+                    options.ViewLocationFormats.Add("/{0}.cshtml");
+                });
             builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             //builder.Services.AddDbContext<ApplicationDbContext>(options =>

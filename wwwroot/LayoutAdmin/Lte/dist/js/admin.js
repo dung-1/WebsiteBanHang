@@ -177,6 +177,55 @@ $(document).on("click", ".edit-customer", function (e) {
         }
     })
 });
+
+
+
+
+// Modal create Categoryposts
+$(document).on("click", ".category_post_create", function (e) {
+
+    $.ajax({
+        url: "/Admin/CategoryPost/Create",// Đường dẫn đến API của bạn
+        type: "GET",
+        dataType: "html", // Đặt kiểu dữ liệu trả về
+        success: function (data) {
+            $('#Category_Post_Create').find('.modal-content').html(data)
+            $('#Category_Post_Create').modal('show');
+        }
+    })
+});
+
+
+// Modal Edit Category
+$(document).on("click", ".edit-post-category", function (e) {
+
+    let id = $(this).data("id")
+    $.ajax({
+        url: "/Admin/CategoryPost/Edit?id=" + id,// Đường dẫn đến API của bạn
+        type: "GET",
+        dataType: "html", // Đặt kiểu dữ liệu trả về
+        success: function (data) {
+            $('#edit-category-post-modal').find('.modal-content').html(data)
+            $('#edit-category-post-modal').modal('show');
+        }
+    })
+});
+
+// Modal Edit Post
+$(document).on("click", ".edit-posts", function (e) {
+
+    let id = $(this).data("id")
+    $.ajax({
+        url: "/Admin/Post/Edit?id=" + id,// Đường dẫn đến API của bạn
+        type: "GET",
+        dataType: "html", // Đặt kiểu dữ liệu trả về
+        success: function (data) {
+            $('#edit-posts-modal').find('.modal-content').html(data)
+            $('#edit-posts-modal').modal('show');
+        }
+    })
+});
+
 function formatCurrency(input) {
     // Lấy giá trị nhập vào và loại bỏ tất cả các ký tự không phải số
     var value = input.value.replace(/\D/g, '');

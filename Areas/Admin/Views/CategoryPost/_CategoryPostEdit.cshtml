@@ -1,0 +1,27 @@
+﻿@model WebsiteBanHang.Areas.Admin.Models.CategoryPostModel
+<div class="modal-header">
+    <h1 class="modal-title fs-5" id="exampleModalLabel">Sửa loại sản phẩm</h1>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <form id="EditFormCategoryPost">
+        <input type="hidden" class="form-control mb-3" id="Id" asp-for="Id">
+
+        <div class="mb-3">
+            <label asp-for="MaTheLoai">Mã Loại Sản Phẩm</label>
+            <input type="text" class="form-control id=" id=" MaTheLoai" mb-3" asp-for="MaTheLoai" readonly>
+            <span asp-validation-for="MaTheLoai" class=" alert-danger"></span>
+            </div>
+        <div class="mb-3">
+                <label asp-for="Name">Tên Loại Sản Phẩm</label>
+            <input type="text" class="form-control mb-3" id="Name" asp-for="Name">
+                <span asp-validation-for="Name" class=" alert-danger"></span>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+            <button type="button" class="btn btn-primary" onclick="validateEditCategorypost()">Sửa Thông Tin</button>
+        </div>
+    </form>
+</div>
