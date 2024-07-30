@@ -23,7 +23,16 @@
         public bool CheckboxPrice4 { get; set; }
         public bool CheckboxPrice5 { get; set; }
         public List<ProductDTO> RelatedProducts { get; set; }
+        public List<InfoNumberProductDTO> RelatedInfoNumberProduct { get; set; }
 
+
+        public class InfoNumberProductDTO
+        {
+            public int Rating { get; set; }
+            public int Comment { get; set; }
+            public int ProductBuyNumber { get; set; }
+
+        }
         public class ProductDTO
         {
             public int Id { get; set; }
@@ -35,10 +44,6 @@
             public decimal GiaGiam { get; set; }
             public string? Image { get; set; }
         }
-        internal ProductViewDTO Select(Func<object, ProductViewDTO> value)
-        {
-            throw new NotImplementedException();
-        }
         public class CommentDTO
         {
             public string UserName { get; set; }
@@ -46,5 +51,6 @@
             public int Rating { get; set; }
             public DateTime CommentDate { get; set; }
         }
+
     }
 }

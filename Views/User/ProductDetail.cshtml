@@ -64,20 +64,35 @@
                 </div>
             </aside>
             <main class="col-md-7 col-lg-6">
-
                 <h2 class="title text-uppercase">@Model.TenSanPham</h2>
 
-                <div class="rating-wrap my-3">
-                    <span class="rating-stars me-2">
-                        <i class="bi bi-star-fill active"></i>
-                        <i class="bi bi-star-fill active"></i>
-                        <i class="bi bi-star-fill active"></i>
-                        <i class="bi bi-star-fill active"></i>
-                        <i class="bi bi-star-fill"></i>
-                    </span>
-                    <small class="label-rating text-muted me-2">20 đánh giá</small>
-                    <small class="label-rating text-success"><i class="bi bi-bag-check-fill"></i> 150 đã mua</small>
-                </div>
+
+                @if (Model.RelatedInfoNumberProduct != null && Model.RelatedInfoNumberProduct.Any())
+                {
+                    @foreach (var RelatedInfoNumberProduct in Model.RelatedInfoNumberProduct)
+                    {
+                        <div class="rating-wrap my-3">
+                            <span class="rating-stars me-2">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= RelatedInfoNumberProduct.Rating)
+                                    {
+                                        <i class="bi bi-star-fill active"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-star-fill"></i>
+                                    }
+                                }
+                            </span>
+                            <small class="label-rating text-muted me-2">@RelatedInfoNumberProduct.Comment đánh giá</small>
+                            <small class="label-rating text-success"><i class="bi bi-bag-check-fill"></i> @RelatedInfoNumberProduct.ProductBuyNumber đã mua</small>
+                        </div>
+                    }
+                }
+
+
+
 
                 <div class="mb-4">
 
@@ -140,7 +155,7 @@
         <div class="row">
             <div class="col">
                 @if (Model.Comments != null && Model.Comments.Any())
-                {   
+                {
                     <h3 class="pb-2">Đánh giá sản phẩm</h3>
                     @foreach (var comment in Model.Comments)
                     {
