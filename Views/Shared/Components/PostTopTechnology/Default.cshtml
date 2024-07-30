@@ -1,0 +1,76 @@
+﻿@using Microsoft.AspNetCore.Localization
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Options
+@using System.Security.Claims
+@inject LanguageService language
+@model List<WebsiteBanHang.Areas.Admin.AdminDTO.PostsViewDto>
+
+
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="tintuc-footer hide-mobile hide-tablet">
+        <div class="container">
+            <div class="main-title">
+                <p>@language.GetKey("New Technology News")</p>
+            </div>
+            <div class="list-tintuc">
+                <div class="row">
+                    @foreach (var item in Model)
+                    {
+                        <div class="item-tintuc col-xl-3 col-md-6 hvr-grow-shadow">
+                            <a asp-controller="User" asp-action="PostsDetail" asp-route-postsId="@item.Id">
+                                <img class="img-fluid" src="~/@item.ExcerptImage" alt="">
+                            </a>
+                            <div class="media-body">
+                                <div class="info-tintuc">
+                                    <span class="date-create">
+                                        @item.CreatedTime.ToString("MM/dd/yyyy hh:mm tt")
+                                    </span>
+                                </div>
+                                <div class="title-tintuc">
+                                    <a asp-controller="User" asp-action="PostsDetail" asp-route-postsId="@item.Id">@item.Title</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+<div class="tintuc-footer hide-mobile hide-tablet">
+    <div class="container">
+        <div class="main-title">
+            <p>@language.GetKey("New Technology News")</p>
+        </div>
+        <div class="list-tintuc">
+            <div class="row">
+                @foreach (var item in Model)
+                {
+                    <div class="item-tintuc col-xl-3 col-md-6 hvr-grow-shadow">
+                        <a asp-controller="Home" asp-action="PostsDetail" asp-route-postsId="@item.Id">
+                            <img class="img-fluid" src="~/@item.ExcerptImage" alt="">
+                        </a>
+                        <div class="media-body">
+                            <div class="info-tintuc">
+                                <span class="date-create">
+                                    @item.CreatedTime.ToString("MM/dd/yyyy hh:mm tt")
+                                </span>
+                            </div>
+                            <div class="title-tintuc">
+                                <a asp-controller="Home" asp-action="PostsDetail" asp-route-postsId="@item.Id">@item.Title</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>    
+}
+
+ @* 29-07-2024, 8:18 pm *@

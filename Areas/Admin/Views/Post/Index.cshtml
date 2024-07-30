@@ -1,0 +1,161 @@
+﻿@using System.Globalization;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
+@{
+    ViewData["Title"] = "View";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutLteAdmin.cshtml";
+}
+@model X.PagedList.IPagedList<WebsiteBanHang.Areas.Admin.AdminDTO.PostsViewDto>
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Quản Lý Bài Viết</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang Chủ</a></li>
+                        <li class="breadcrumb-item active">Quản Lý Bài Viết</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-3">
+                                    <a asp-area="Admin" asp-action="_PostsAdd" class="btn bg-blue">
+                                        <i class="fa fa-plus-square"></i>
+                                        Thêm mới
+                                    </a>
+                                </div>
+
+                               @*  <div class="col-3">
+                                    <form id="importForm" asp-controller="Product" asp-action="Import" enctype="multipart/form-data" method="post">
+                                        <input type="file" id="fileInput" name="formFile" style="display: none;" />
+                                        <button type="button" class="btn btn-danger" onclick="document.getElementById('fileInput').click();"><i class="fa-solid fa-file-excel"></i> Import Excel</button>
+                                    </form>
+
+                                </div>
+                                <div class="col-3">
+                                    <form autocomplete="off" asp-controller="Product" asp-antiforgery="true" asp-action="DownloadReport" method="post">
+                                        <button type="submit" id="btnsubmit" class="btn btn-success"><i class="fa-solid fa-file-excel"></i> Export to Excel</button>
+                                    </form>
+                                </div> *@
+
+
+                            </div>
+
+
+                            <div class="modal fade" id="Create_Posts" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal fade" id="edit-posts-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <table id="example1" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr class="tr_header">
+                                        <th>Tiêu đề</th>
+                                        <th>Danh mục</th>
+                                        <th>Lượt truy cập</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thời gian mở</th>
+                                        <th>Thời gian đóng</th>
+                                        <th> Chỉnh Sửa </th>
+                                        @if (User.IsInRole("Admin"))
+                                        {
+                                            <th> Xóa </th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @item.Title
+                                            </td>
+                                            <td>
+                                                @item.CategoryName
+                                            </td>
+                                            <td>
+                                                @item.ViewCount
+                                            </td>
+                                            <td>
+                                                @item.StatusString
+                                            </td>
+                                            <td>
+                                                @item.FromDate
+                                            </td>
+                                            <td>
+                                                @item.ToDate
+                                            </td>
+                                            <td>
+                                                <a asp-area="Admin" asp-action="_PostsUpdate" asp-route-id="@item.Id" class="btn btn-sm btn-warning edit-posts"><i class="bi bi-pencil-square"></i><i class="fa-solid fa-pen-to-square"></i>Sửa</a>&nbsp;
+                                            </td>
+                                            @if (User.IsInRole("Admin"))
+                                            {
+                                                <td>
+                                                    <a onclick="deletePosts(@item.Id)" class="btn btn-sm btn-danger">
+                                                        <i class="bi bi-trash-fill"></i><i class="fa-solid fa-trash-can"></i> Xóa
+                                                    </a>
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.card-body -->
+                        @*   <div class="row">
+                        <div class="col-lg-12 grid-margin stretch-card">
+                        <div class="card">
+                        <div class="card-body d-flex justify-content-end">
+                        @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchName = ViewBag.SearchName }), new PagedListRenderOptions
+                        {
+                        LiElementClasses = new string[] { "page-item" },
+                        PageClasses = new string[] { "page-link" },
+                        Display = PagedListDisplayMode.IfNeeded,
+                        MaximumPageNumbersToDisplay = 3 // Số trang bạn muốn hiển thị
+                        })
+                        </div>
+                        </div>
+                        </div>
+                        </div> *@
+                    </div>
+                    <!-- /.card -->
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+@section Scripts {
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function () {
+            document.getElementById('importForm').submit();
+        });
+    </script>
+}

@@ -26,7 +26,7 @@
                 <div class="col-lg-4 col-xl-5">
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <form asp-controller="Home" asp-action="Index">
+                        <form asp-controller="User" asp-action="Index">
                             <div class="input-group w-100">
                                 <input type="text" class="form-control" placeholder=" @language.GetKey("Please input the product you want to find")..." name="searchName" id="searchName" value="@ViewBag.SearchName">
                                 <button type="submit" class="btn btn-primary">
@@ -37,7 +37,7 @@
                     }
                     else
                     {
-                        <form asp-controller="User" asp-action="Index">
+                        <form asp-controller="Home" asp-action="Index">
                             <div class="input-group w-100">
                                 <input type="text" class="form-control" placeholder=" @language.GetKey("Please input the product you want to find")..." name="searchName" id="searchName" value="@ViewBag.SearchName">
                                 <button type="submit" class="btn btn-primary">

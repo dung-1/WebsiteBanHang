@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Dynamic;
 using Microsoft.CSharp.RuntimeBinder;
 using static WebsiteBanHang.Areas.Admin.AdminDTO.ProductViewDTO;
+using WebsiteBanHang.Areas.Admin.Common;
 namespace WebsiteBanHang.Controllers
 {
     public class UserController : Controller
@@ -176,5 +177,88 @@ namespace WebsiteBanHang.Controllers
 
             return RedirectToAction("ProductDetail", new { productid = ProductId });
         }
+
+        public async Task<IActionResult> PostsDetail(int postsId)
+        {
+            try
+            {
+
+                var posts = await _context.Posts
+           .Where(p => p.Id == postsId)
+           .FirstOrDefaultAsync();
+
+                if (posts == null)
+                {
+                    return NotFound();
+                }
+
+                posts.ViewCount += 1;
+
+                _context.Posts.Update(posts);
+                await _context.SaveChangesAsync();
+
+                var post = await _context.Posts
+                        .Where(p => p.Id == postsId)
+                        .Select(p => new PostsViewDto
+                        {
+                            Id = p.Id,
+                            ExcerptImage = p.ExcerptImage,
+                            CreatedTime = p.CreatedTime,
+                            Title = p.Title,
+                            Content = p.Content,
+                            CategoryName = p.Category.Name,
+                            ViewCount = p.ViewCount
+                        })
+                        .FirstOrDefaultAsync();
+
+                if (post == null)
+                {
+                    return NotFound();
+                }
+
+                var topHighlightedPosts = await _context.Posts
+                    .Where(p =>  p.Status == StatusActivity.Active && p.FromDate <= DateTime.Now && p.ToDate >= DateTime.Now)
+                        .OrderByDescending(p => p.ViewCount)
+                        .Take(5)
+                        .Select(p => new HighlightedPostDto
+                        {
+                            Id = p.Id,
+                            Title = p.Title,
+                            ExcerptImage = p.ExcerptImage
+                        })
+                        .ToListAsync();
+
+                var topPromotionalPosts = await _context.Posts
+                        .Where(p => p.Category.Name == "Khuyễn Mãi" && p.Status == StatusActivity.Active && p.FromDate <= DateTime.Now && p.ToDate >= DateTime.Now)
+                        .OrderByDescending(p => p.CreatedTime)
+                        .Take(10)
+                        .Select(p => new PromotionalPostDto
+                        {
+                            Id = p.Id,
+                            Title = p.Title,
+                            ExcerptImage = p.ExcerptImage,
+                            CreatedTime = p.CreatedTime
+                        })
+                        .ToListAsync();
+
+                var latestPromotionalPost = topPromotionalPosts.FirstOrDefault();
+
+                var viewModel = new PostsDetailViewModel
+                {
+                    Post = post,
+                    TopHighlightedPosts = topHighlightedPosts,
+                    TopPromotionalPosts = topPromotionalPosts.Skip(1).ToList(),
+                    LatestPromotionalPost = latestPromotionalPost
+                };
+
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                return View();
+            }
+        }
+
+
     }
 }
