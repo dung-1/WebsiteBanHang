@@ -8,10 +8,11 @@ using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks;
 using X.PagedList;
+using WebsiteBanHang.Areas.Admin.Models;
+using WebsiteBanHang.Areas.Admin.Common;
 
 namespace WebsiteBanHang.ViewComponents
 {
-    [Authorize(Roles = "Customer")]
     public class PostTopTechnologyViewComponent : ViewComponent
     {
         private readonly ILogger<PostTopTechnologyViewComponent> _logger;
@@ -22,10 +23,35 @@ namespace WebsiteBanHang.ViewComponents
             _context = context;
             _logger = logger;
         }
-        public IViewComponentResult Invoke()
+
+        private async Task<IViewComponentResult> GetPostsTechnologyAsync()
         {
-            return View();
+            try
+            {
+                var posts = await _context.Posts
+                                 .Where(p => p.Category.Name == "Công Nghệ" && p.Status== StatusActivity.Active)
+                                 .OrderByDescending(p => p.CreatedTime)
+                                 .Take(4)
+                                 .Select(p => new PostsViewDto
+                                 {
+                                     Id = p.Id,
+                                     ExcerptImage = p.ExcerptImage,
+                                     CreatedTime = p.CreatedTime,
+                                     Title = p.Title
+                                 }).ToListAsync();
+
+                return View(posts);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while getting technology posts.");
+                return View();
+            }
         }
 
+        public Task<IViewComponentResult> InvokeAsync()
+        {
+            return GetPostsTechnologyAsync();
+        }
     }
 }

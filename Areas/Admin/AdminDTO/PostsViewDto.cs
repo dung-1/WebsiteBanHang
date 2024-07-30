@@ -7,6 +7,8 @@ namespace WebsiteBanHang.Areas.Admin.AdminDTO
 
     {
         public int Id { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime CreatedTime { get; set; }
 
         [Display(Name = "Tiêu đề")]
         public string Title { get; set; }

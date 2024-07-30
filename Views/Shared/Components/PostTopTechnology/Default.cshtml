@@ -1,98 +1,39 @@
 ﻿@using Microsoft.AspNetCore.Localization
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @using Microsoft.AspNetCore.Builder
-@using Microsoft.AspNetCore.Localization
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Microsoft.Extensions.Options
 @using System.Security.Claims
 @inject LanguageService language
+@model List<WebsiteBanHang.Areas.Admin.AdminDTO.PostsViewDto>
 
 <div class="tintuc-footer hide-mobile hide-tablet">
     <div class="container">
         <div class="main-title">
-            <p>  @language.GetKey("New Technology News")</p>
+            <p>@language.GetKey("New Technology News")</p>
         </div>
-        <!-- end_main_title -->
         <div class="list-tintuc">
             <div class="row">
-                <!-- Add Razor logic for dynamic content here if needed -->
-                <div class="item-tintuc col-xl-3 col-md-6 hvr-grow-shadow">
-                    <a href="">
-                        <img class="" src="~/img/footer-tintuc-1.jpg" alt="">
-                    </a>
-                    <!-- Add dynamic content here if needed -->
-                    <div class="media-body">
-                        <div class="info-tintuc">
-                            <span class="date-create">
-                                26-06-2023, 4:42 pm
-                            </span>
+                @foreach (var item in Model)
+                {
+                    <div class="item-tintuc col-xl-3 col-md-6 hvr-grow-shadow">
+                        <a href="#">
+                            <img class="img-fluid" src="@item.ExcerptImage" alt="">
+                        </a>
+                        <div class="media-body">
+                            <div class="info-tintuc">
+                                <span class="date-create">
+                                    @item.CreatedTime.ToString("MM/dd/yyyy hh:mm tt")
+                                </span>
+                            </div>
+                            <div class="title-tintuc">
+                                <a href="#">@item.Title</a>
+                            </div>
                         </div>
-                        <!-- end_info_tintuc -->
-                        <div class="title-tintuc">
-                            <a href="#">TOP 5 Laptop Gaming 20-25 Triệu Bán Chạy Nhất 2023</a>
-                        </div>
-                        <!-- end_title_tintuc -->
                     </div>
-                </div>
-                <div class="item-tintuc col-xl-3 col-md-6 hvr-grow-shadow">
-                    <a href="">
-                        <img class="" src="/img/footer-tintuc-2.jpg" alt="">
-                    </a>
-                    <div class="media-body">
-                        <div class="info-tintuc">
-                            <span class="date-create">
-                                26-06-2023, 4:42 pm
-                            </span>
-                        </div>
-                        <!-- end_info_tintuc -->
-                        <div class="title-tintuc">
-                            <a href="">TOP 3 Laptop Gaming Intel Đáng Mua Nhất 2023</a>
-                        </div>
-                        <!-- end_title_tintuc -->
-                    </div>
-                </div>
-                <!-- end_col_lg_3 -->
-                <div class="item-tintuc col-xl-3 col-md-6 hvr-grow-shadow">
-                    <a href="">
-                        <img class="" src="/img/footer-tintuc-3.jpg" alt="">
-                    </a>
-                    <div class="media-body">
-                        <div class="info-tintuc">
-                            <span class="date-create">
-                                26-06-2023, 4:42 pm
-                            </span>
-                        </div>
-                        <!-- end_info_tintuc -->
-                        <div class="title-tintuc">
-                            <a href="">
-                                Lenovo ra mắt Legion R9000P 2023 sở hữu Chip Ryzen mới, GPU RTX 4060 với
-                                hiệu năng khủng
-                            </a>
-                        </div>
-                        <!-- end_title_tintuc -->
-                    </div>
-                </div>
-                <!-- end_col_lg_3 -->
-                <div class="item-tintuc col-xl-3 col-md-6 hvr-grow-shadow">
-                    <a href="">
-                        <img class="" src="/img/footer-tintuc-4.jpg" alt="">
-                    </a>
-                    <div class="media-body">
-                        <div class="info-tintuc">
-                            <span class="date-create">
-                                26-06-2023, 4:42 pm
-                            </span>
-                        </div>
-                        <!-- end_info_tintuc -->
-                        <div class="title-tintuc">
-                            <a href="">ASUS ra mắt màn hình gaming tần số quét cao, độ phân giải 5K</a>
-                        </div>
-                        <!-- end_title_tintuc -->
-                    </div>
-                </div>
-                <!-- Add more items with dynamic content here -->
+                }
             </div>
         </div>
-        <!-- end_list_tintuc -->
     </div>
 </div>
+ @* 29-07-2024, 8:18 pm *@
