@@ -34,7 +34,7 @@
         <div class="container-fluid">
             <!-- Info boxes -->
             <div class="row">
-                <div class="col-12 col-sm-6 col-md-4">
+                <div class="col-12 col-sm-6 col-md-6">
                     <div class="info-box">
                         <span class="info-box-icon bg-info elevation-1"><i class="fa-solid fa-money-bill-1"></i></span>
 
@@ -49,7 +49,7 @@
                     <!-- /.info-box -->
                 </div>
                 <!-- /.col -->
-                <div class="col-12 col-sm-6 col-md-4">
+                <div class="col-12 col-sm-6 col-md-6">
                     <div class="info-box mb-3">
                         <span class="info-box-icon bg-danger elevation-1"><i class="fa-solid fa-list"></i></span>
 
@@ -65,12 +65,25 @@
                 <!-- fix for small devices only -->
                 <div class="clearfix hidden-md-up"></div>
 
-                <div class="col-12 col-sm-6 col-md-4">
+                <div class="col-12 col-sm-6 col-md-6">
                     <div class="info-box mb-3">
                         <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
 
                         <div class="info-box-content">
                             <span class="info-box-text">Số Sản Phẩm Bán Ra</span>
+                            <span class="info-box-number">@Model.Statistics.TotalProductsSold</span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                    <!-- /.info-box -->
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-6">
+                    <div class="info-box mb-3">
+                        <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">Tổng số bài viết</span>
                             <span class="info-box-number">@Model.Statistics.TotalProductsSold</span>
                         </div>
                         <!-- /.info-box-content -->
@@ -107,28 +120,35 @@
 
                         <!-- /.card-header -->
                         <div class="card-body">
+
                             <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-md-6 col-sm-6 col-6 ">
                                     <div class="chart">
-                                        <canvas id="salesChart" height="150"></canvas>
+                                        <canvas id="salesChart" height="350" width="500"></canvas>
                                     </div>
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-6 col-sm-6 col-6">
                                     <div class="chart">
-                                        <canvas id="statusChart" height="150"></canvas>
+                                        <canvas id="statusChart" height="350" width="500"></canvas>
                                     </div>
                                 </div>
-                                <div class="col-md-12">
+
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-md-6 col-sm-6 col-6">
                                     <div class="chart">
-                                        <canvas id="categoryPieChart"></canvas>
+                                        <canvas id="categoryPieChart" height="350" width="500"></canvas>
                                     </div>
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-6 col-sm-6 col-6">
                                     <div class="chart">
-                                        <canvas id="productBarChart" height="150"></canvas>
+                                        <canvas id="productBarChart" height="350" width="500"></canvas>
                                     </div>
                                 </div>
                             </div>
+
                             <!-- /.row -->
                         </div>
                     </div>
@@ -147,6 +167,10 @@
 <!-- /.content-wrapper -->
 @section Scripts {
     <script>
+        function updateChart() {
+            var selectedYear = document.getElementById('selectedYear').value;
+            window.location.href = "/admin/homeadmin?selectedYear=" + selectedYear;
+        }
         // Render the charts
         var revenueLabels = @Html.Raw(Json.Serialize(Model.RevenueLabels));
         var revenueData = @Html.Raw(Json.Serialize(Model.RevenueData));
