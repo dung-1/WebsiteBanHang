@@ -10,6 +10,22 @@
     ViewData["Title"] = "Monthly Revenue Chart";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutLteAdmin.cshtml";
 }
+@section css {
+    <style>
+        .chart {
+            border: 1px solid #ccc;
+            padding: 10px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+            .chart .col-md-2 {
+                flex: 0 0 auto;
+                margin-left: 1rem;
+            }
+    </style>
+
+}
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -32,81 +48,14 @@
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
-            <!-- Info boxes -->
-            <div class="row">
-                <div class="col-12 col-sm-6 col-md-6">
-                    <div class="info-box">
-                        <span class="info-box-icon bg-info elevation-1"><i class="fa-solid fa-money-bill-1"></i></span>
-
-                        <div class="info-box-content">
-                            <span class="info-box-text">Doanh Thu</span>
-                            <span class="info-box-number">
-                                @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @Model.Statistics.TotalRevenue)
-                            </span>
-                        </div>
-                        <!-- /.info-box-content -->
-                    </div>
-                    <!-- /.info-box -->
-                </div>
-                <!-- /.col -->
-                <div class="col-12 col-sm-6 col-md-6">
-                    <div class="info-box mb-3">
-                        <span class="info-box-icon bg-danger elevation-1"><i class="fa-solid fa-list"></i></span>
-
-                        <div class="info-box-content">
-                            <span class="info-box-text">Tổng Hóa Đơn</span>
-                            <span class="info-box-number">@Model.Statistics.TotalOrdersCount</span>
-                        </div>
-                        <!-- /.info-box-content -->
-                    </div>
-                    <!-- /.info-box -->
-                </div>
-                <!-- /.col -->
-                <!-- fix for small devices only -->
-                <div class="clearfix hidden-md-up"></div>
-
-                <div class="col-12 col-sm-6 col-md-6">
-                    <div class="info-box mb-3">
-                        <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
-
-                        <div class="info-box-content">
-                            <span class="info-box-text">Số Sản Phẩm Bán Ra</span>
-                            <span class="info-box-number">@Model.Statistics.TotalProductsSold</span>
-                        </div>
-                        <!-- /.info-box-content -->
-                    </div>
-                    <!-- /.info-box -->
-                </div>
-
-                <div class="col-12 col-sm-6 col-md-6">
-                    <div class="info-box mb-3">
-                        <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
-
-                        <div class="info-box-content">
-                            <span class="info-box-text">Tổng số bài viết</span>
-                            <span class="info-box-number">@Model.Statistics.TotalProductsSold</span>
-                        </div>
-                        <!-- /.info-box-content -->
-                    </div>
-                    <!-- /.info-box -->
-                </div>
-            </div>
-            <!-- /.row -->
-
             <div class="row">
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header">
                             <div class="row">
-                                <div class="col-md-8">
-                                    <h5 class="card-title">Báo cáo doanh thu</h5>
+                                <div class="col-md-10">
+                                    <h5 class="card-title">Báo cáo thống kê</h5>
                                 </div>
-                                <div class="col-md-2">
-                                    <div class="card-tools">
-                                        <label for="selectedYear" class="fs-6 text-capitalize">Chọn Năm:</label>
-                                    </div>
-                                </div>
-
                                 <div class="col-md-2">
                                     <select class="form-control" id="selectedYear" name="selectedYear" onchange="updateChart()">
                                         @foreach (var year in ViewBag.AvailableYears)
@@ -120,47 +69,39 @@
 
                         <!-- /.card-header -->
                         <div class="card-body">
-
                             <div class="row">
-                                <div class="col-md-6 col-sm-6 col-6 ">
+                                <div class="col-md-12">
                                     <div class="chart">
-                                        <canvas id="salesChart" height="350" width="500"></canvas>
+                                        <canvas id="salesChart" height="350" width="920"></canvas>
                                     </div>
                                 </div>
-                                <div class="col-md-6 col-sm-6 col-6">
+                                <div class="col-md-12 mt-3 ">
                                     <div class="chart">
-                                        <canvas id="statusChart" height="350" width="500"></canvas>
+                                        <canvas id="statusChart" height="350" width="920"></canvas>
                                     </div>
                                 </div>
-
-                            </div>
-
-
-                            <div class="row">
-                                <div class="col-md-6 col-sm-6 col-6">
+                                <div class="col-md-12 mt-3">
                                     <div class="chart">
-                                        <canvas id="categoryPieChart" height="350" width="500"></canvas>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 col-sm-6 col-6">
-                                    <div class="chart">
-                                        <canvas id="productBarChart" height="350" width="500"></canvas>
+                                        <canvas id="productBarChart" height="350" width="920"></canvas>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- /.row -->
+                            <div class="row">
+                                <div class="col-md-12 mt-3">
+                                    <div class="chart">
+                                    <canvas id="postCategoryChart" height="350" width="320"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.card -->
                         </div>
+                        <!-- /.col -->
                     </div>
-                    <!-- /.card -->
-                </div>
-                <!-- /.col -->
-            </div>
 
-            <button id="exportButton" class="btn btn-primary">Xuất PDF</button>
+                    <button id="exportButton" class="btn btn-primary">Xuất PDF</button>
 
-            <!-- /.row -->
-        </div><!--/. container-fluid -->
+                    <!-- /.row -->
+                </div><!--/. container-fluid -->
     </section>
     <!-- /.content -->
 </div>
@@ -180,13 +121,15 @@
         var statusData = @Html.Raw(Json.Serialize(Model.ChartData));
         renderStatusChart(statusLabels, statusData);
 
-        var categoryLabels = @Html.Raw(Json.Serialize(Model.InventoryCategoryPercentages.Select(x => x.CategoryName)));
-        var categoryData = @Html.Raw(Json.Serialize(Model.InventoryCategoryPercentages.Select(x => x.Percentage)));
-        renderCategoryPieChart(categoryLabels, categoryData);
+        var productLabels = @Html.Raw(Json.Serialize(Model.BrandInventories.Select(x => x.BrandName)));
+        var productData = @Html.Raw(Json.Serialize(Model.BrandInventories.Select(x => x.ProductDetails.Sum(p => p.Quantity))));
+        var productDetails = @Html.Raw(Json.Serialize(Model.BrandInventories.Select(x => x.ProductDetails)));
+        renderProductBarChart(productLabels, productData, productDetails);
 
-        var productLabels = @Html.Raw(Json.Serialize(Model.ProductInventories.Select(x => x.ProductName)));
-        var productData = @Html.Raw(Json.Serialize(Model.ProductInventories.Select(x => x.Quantity)));
-        renderProductBarChart(productLabels, productData);
+
+        var revenuepostLabels = @Html.Raw(Json.Serialize(Model.CategoryLabels));
+        var revenuepostData = @Html.Raw(Json.Serialize(Model.PostCounts));
+        renderPostCategoryChart(revenuepostLabels, revenuepostData);
 
         // Hàm để xuất biểu đồ thành PDF
         async function exportChartsToPDF() {

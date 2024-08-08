@@ -2,29 +2,26 @@
 {
     public class DashboardViewModel
     {
-        public StatisticsViewDto Statistics { get; set; }
         public List<string> RevenueLabels { get; set; }
         public List<decimal> RevenueData { get; set; }
         public List<string> Months { get; set; }
         public List<dynamic> ChartData { get; set; }
-
-        // New properties for inventory statistics
-        public List<InventoryCategoryPercentageDto> InventoryCategoryPercentages { get; set; }
-        public List<ProductInventoryDto> ProductInventories { get; set; }
+        public List<BrandInventoryDto> BrandInventories { get; set; }
+        public List<string> CategoryLabels { get; set; } // Danh sách tên các category
+        public List<int> PostCounts { get; set; } // Số lượng bài viết theo từng category
+        public List<int> ViewCounts { get; set; } // Tổng lượt xem theo từng category
     }
 
-    public class InventoryCategoryPercentageDto
+    public class BrandInventoryDto
     {
-        public string CategoryName { get; set; }
-        public decimal Percentage { get; set; }
+        public string BrandName { get; set; }
+        public List<ProductDetailDto> ProductDetails { get; set; }
     }
 
-    public class ProductInventoryDto
+    public class ProductDetailDto
     {
         public string ProductName { get; set; }
         public int Quantity { get; set; }
     }
-
-
 
 }
