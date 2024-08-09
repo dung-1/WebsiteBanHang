@@ -56,7 +56,7 @@ $(document).on("click", ".inventory_create", function (e) {
 });
 // Modal create Brand
 $(document).on("click", ".category_create", function (e) {
-    
+
     $.ajax({
         url: "/Admin/Category/Create",// Đường dẫn đến API của bạn
         type: "GET",
@@ -69,7 +69,7 @@ $(document).on("click", ".category_create", function (e) {
 });
 // Modal Edit Category
 $(document).on("click", ".edit-category", function (e) {
-    
+
     let id = $(this).data("id")
     $.ajax({
         url: "/Admin/Category/Edit?id=" + id,// Đường dẫn đến API của bạn
@@ -83,9 +83,9 @@ $(document).on("click", ".edit-category", function (e) {
 });
 // Modal create Brand
 $(document).on("click", ".create-brand", function (e) {
-    
+
     $.ajax({
-        url: "/Admin/Brand/Create" ,// Đường dẫn đến API của bạn
+        url: "/Admin/Brand/Create",// Đường dẫn đến API của bạn
         type: "GET",
         dataType: "html", // Đặt kiểu dữ liệu trả về
         success: function (data) {
@@ -97,7 +97,7 @@ $(document).on("click", ".create-brand", function (e) {
 });
 // Modal Edit Category
 $(document).on("click", ".edit-brand", function (e) {
-    
+
     let id = $(this).data("id")
     $.ajax({
         url: "/Admin/Brand/Edit?id=" + id,// Đường dẫn đến API của bạn
@@ -111,7 +111,7 @@ $(document).on("click", ".edit-brand", function (e) {
 });
 // Modal create Brand
 $(document).on("click", ".create-produt", function (e) {
-    
+
     $.ajax({
         url: "/Admin/Product/Create",// Đường dẫn đến API của bạn
         type: "GET",
@@ -124,7 +124,7 @@ $(document).on("click", ".create-produt", function (e) {
 });
 // Modal Edit Category
 $(document).on("click", ".edit-produt", function (e) {
-    
+
     let id = $(this).data("id")
     $.ajax({
         url: "/Admin/Product/Edit?id=" + id,// Đường dẫn đến API của bạn
@@ -245,4 +245,43 @@ function isNumberKey(evt) {
     }
     return true;
 }
+//----------------------------------------------------------------//
+function showLoading() {
+    $('#loading-spinner').show();
+}
 
+function hideLoading() {
+    $('#loading-spinner').hide();
+}
+$(document).ready(function () {
+    $('.approve-order').on('click', function (e) {
+        e.preventDefault();
+        var orderId = $(this).data('id');
+
+        // Hiển thị hiệu ứng tải
+        showLoading();
+
+        $.ajax({
+            url: '/Admin/Billorder/ApproveOrder',
+            type: 'POST',
+            data: { id: orderId },
+            success: function (response) {
+                if (response) {
+                    Swal.fire('Gửi đơn hàng thành công!', '', 'success')
+                        .then(() => {
+                            location.href = '/Admin/Billorder/Index';
+                        });
+                } else {
+                    Swal.fire('Đã xảy ra lỗi khi duyệt đơn !', '', 'error');
+                }
+            },
+            error: function () {
+                Swal.fire('Đã xảy ra lỗi. Vui lòng thử lại !', '', 'error');
+            },
+            complete: function () {
+                // Ẩn hiệu ứng tải sau khi nhận phản hồi
+                hideLoading();
+            }
+        });
+    });
+});

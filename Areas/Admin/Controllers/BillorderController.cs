@@ -122,16 +122,19 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             var pagedCategories = GetOrdersByStatus("Đang giao hàng", page, searchName);
             return View(pagedCategories);
         }
+
         public IActionResult Complete(int? page, string searchName)
         {
             var pagedCategories = GetOrdersByStatus("Hoàn thành", page, searchName);
             return View(pagedCategories);
         }
+
         public IActionResult Failorder(int? page, string searchName)
         {
             var pagedCategories = GetOrdersByStatus("Đã hủy", page, searchName);
             return View(pagedCategories);
         }
+
         [HttpGet]
         public IActionResult View(int id)
         {
@@ -209,7 +212,9 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             }
 
         }
+
         //Duyệt Đơn Hàng
+        [HttpPost]
         public async Task<IActionResult> ApproveOrderAsync(int Id)
         {
             try
@@ -285,7 +290,6 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
         }
 
-
         //sendmail
         private void SendInvoiceByEmail(string recipientEmail, OrdersModel order)
         {
@@ -359,8 +363,6 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             smtp.Send(emailMessage);
             smtp.Disconnect(true);
         }
-
-
 
         //Giao Đơn Hàng
         public IActionResult DeliverOrder(int Id)
@@ -448,8 +450,5 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             }
 
         }
-
-
-
     }
 }
