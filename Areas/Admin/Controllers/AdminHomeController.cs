@@ -26,7 +26,8 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         {
             _context = context;
         }
-        public async Task<IActionResult> Index(int? selectedYear)
+
+        public async Task<IActionResult> Index(int? selectedYear, string CategoryNamePost)
         {
             try
             {
@@ -36,6 +37,32 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 }
 
                 int currentMonth = DateTime.Now.Year == selectedYear ? DateTime.Now.Month : 12;
+
+
+                // Truy vấn để tìm CategoryPost có tổng ViewCount cao nhất
+
+                var topCategory = await _context.CategoryPost
+           .Select(c => new
+           {
+               CategoryName = c.Name,
+               TotalViewCount = c.Posts.Where(p => p.CreatedTime.Year == selectedYear).Sum(p => p.ViewCount),
+               Posts = c.Posts.Where(p => p.CreatedTime.Year == selectedYear)
+                   .Select(p => new { p.Title, p.ViewCount })
+                   .ToList()
+           })
+           .OrderByDescending(c => c.TotalViewCount)
+           .FirstOrDefaultAsync();
+
+
+                if (topCategory == null)
+                {
+                    return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
+                }
+
+                // Chuẩn bị dữ liệu cho biểu đồ bài viết
+                var postNames = topCategory.Posts.Select(p => p.Title).ToList();
+                var postViewCounts = topCategory.Posts.Select(p => p.ViewCount).ToList();
+
 
                 // Query for monthly revenue data
                 IQueryable<OrdersModel> query = _context.Order.Where(o => o.ngayBan.Year == selectedYear && o.trangThai == "Hoàn thành");
@@ -117,17 +144,21 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 // Chuẩn bị dữ liệu cho biểu đồ
                 var categoryLabels = categoryStats.Select(cs => cs.CategoryName).ToList();
                 var postCounts = categoryStats.Select(cs => cs.PostCount).ToList();
+                CategoryNamePost = topCategory.CategoryName;
 
                 // Create the view model
                 var model = new DashboardViewModel
                 {
+                    SelectedCategory = CategoryNamePost,
+                    PostNames = postNames,
+                    PostViewCounts = postViewCounts,
                     CategoryLabels = categoryLabels,
                     PostCounts = postCounts,
                     RevenueLabels = revenueLabels,
                     RevenueData = revenueData,
                     Months = months,
                     ChartData = statusChartData,
-                    BrandInventories = productInventories // Gán giá trị cho BrandInventories
+                    BrandInventories = productInventories
                 };
 
                 return View(model);
@@ -138,6 +169,21 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             }
         }
 
+        [Route("api/GetPostViewCounts")]    
+        public async Task<IActionResult> GetPostViewCounts(string category)
+        {
+            var postData = await _context.CategoryPost
+                .Where(c => c.Name == category)
+                .Select(c => c.Posts
+                    .Select(p => new
+                    {
+                        PostName = p.Title,
+                        ViewCount = p.ViewCount
+                    }).ToList())
+                .FirstOrDefaultAsync();
+
+            return Json(postData);
+        }
 
         public byte[] ExporttoExcel<T>(List<T> table, string filename)
         {

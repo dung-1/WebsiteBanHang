@@ -49,7 +49,7 @@ function renderSalesChart(labels, data) {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Biểu đồ Doanh thu theo Tháng'
+                    text: 'Biểu đồ doanh thu theo tháng'
                 },
                 tooltip: {
                     callbacks: {
@@ -69,10 +69,10 @@ function renderSalesChart(labels, data) {
                 datalabels: {
                     display: true,
                     color: 'black',
-                    anchor: 'end',
-                    align: 'top',
+                    anchor: 'center',
+                    align: 'center',
                     formatter: (value) => {
-                        return value.toLocaleString() + ' VND';
+                        return value.toLocaleString();
                     }
                 }
             },
@@ -119,7 +119,7 @@ function renderStatusChart(labels, chartData) {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Biểu đồ Số lượng Sản phẩm theo Trạng thái'
+                    text: 'Biểu đồ số lượng sản phẩm theo trạng thái'
                 },
                 tooltip: {
                     callbacks: {
@@ -164,60 +164,24 @@ function renderStatusChart(labels, chartData) {
     });
 }
 
-function renderCategoryPieChart(labels, data) {
-    var ctx = document.getElementById('categoryPieChart').getContext('2d');
-    var colors = getColorList(labels.length);
-    var backgroundColors = colors;
+function renderProductBarChart(labels, data, productDetails) {
 
-    new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Phần trăm sản phẩm tồn kho theo danh mục',
-                data: data,
-                backgroundColor: backgroundColors,
-                borderWidth: 1
-            }]
-        },
-        options: {
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Biểu đồ Phần trăm Sản phẩm Tồn kho theo Danh mục'
-                },
-                datalabels: {
-                    display: true,
-                    color: 'white',
-                    formatter: (value, context) => {
-                        let sum = 0;
-                        let dataArr = context.chart.data.datasets[0].data;
-                        dataArr.map(data => {
-                            sum += data;
-                        });
-                        let percentage = (value * 100 / sum).toFixed(2) + "%";
-                        return percentage;
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function (tooltipItem) {
-                            var data = tooltipItem.chart.data.datasets[0].data;
-                            var total = data.reduce((sum, value) => sum + value, 0);
-                            var currentValue = data[tooltipItem.dataIndex];
-                            var percentage = (currentValue / total * 100).toFixed(2);
-                            return `${tooltipItem.label}: ${currentValue.toLocaleString()} (${percentage}%)`;
-                        }
-                    },
-                    displayColors: true
-                }
-            }
-        },
-        plugins: [ChartDataLabels]
+    // Kết hợp labels, data, và productDetails vào một mảng đối tượng
+    var combinedData = labels.map((label, index) => {
+        return {
+            label: label,
+            data: data[index],
+            details: productDetails[index]
+        };
     });
-}
 
-function renderProductBarChart(labels, data) {
+    // Sắp xếp mảng theo số lượng tồn kho từ cao đến thấp
+    combinedData.sort((a, b) => b.data - a.data);
+
+    // Tách lại các labels, data, và productDetails sau khi sắp xếp
+    labels = combinedData.map(item => item.label);
+    data = combinedData.map(item => item.data);
+    productDetails = combinedData.map(item => item.details);
 
     var ctx = document.getElementById('productBarChart').getContext('2d');
     var colors = getColorList(labels.length);
@@ -226,12 +190,11 @@ function renderProductBarChart(labels, data) {
         data: {
             labels: labels,
             datasets: [{
-                label: 'Số lượng Sản phẩm Tồn kho',
+                label: 'Số lượng tồn kho theo hãng sản phẩm',
                 data: data,
                 backgroundColor: colors,
                 borderColor: colors,
                 borderWidth: 1,
-                barThickness: 30
             }]
         },
         options: {
@@ -239,22 +202,29 @@ function renderProductBarChart(labels, data) {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Biểu đồ Số lượng Sản phẩm Tồn kho'
+                    text: 'Biểu đồ số lượng tồn kho theo hãng sản phẩm'
                 },
                 tooltip: {
                     callbacks: {
                         title: function (tooltipItems) {
-                            return 'Sản phẩm: ' + labels[tooltipItems[0].dataIndex];
+                            var brandName = labels[tooltipItems[0].dataIndex];
+                            return 'Hãng: ' + brandName;
                         },
                         label: function (tooltipItem) {
-                            return 'Số lượng: ' + data[tooltipItem.dataIndex].toLocaleString();
+                            var brandName = labels[tooltipItem.dataIndex];
+                            var details = productDetails[tooltipItem.dataIndex].map(function (item) {
+                                return '  ' + item.productName + ': ' + item.quantity.toLocaleString();
+                            });
+                            return details;
                         },
-                        //afterLabel: function () {
-                        //    // Thêm thông tin bổ sung ở đây
-                        //    return 'Thông tin bổ sung';
-                        //}
+                        labelTextColor: function (context) {
+                            return 'white';
+                        }
                     },
-                    displayColors: true // Không hiển thị màu của dataset trong tooltip
+                    bodyFont: {
+                        size: 14
+                    },
+                    displayColors: false
                 },
                 datalabels: {
                     display: true,
@@ -270,7 +240,7 @@ function renderProductBarChart(labels, data) {
                 x: {
                     title: {
                         display: true,
-                        text: 'Sản phẩm'
+                        text: 'Hãng sản phẩm'
                     }
                 },
                 y: {
@@ -286,3 +256,168 @@ function renderProductBarChart(labels, data) {
     });
 }
 
+function renderPostCategoryChart(labels, data) {
+    var ctx = document.getElementById('postCategoryChart').getContext('2d');
+    var colors = getColorList(labels.length);
+    var chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Tổng số bài viết theo từng danh mục',
+                data: data,
+                backgroundColor: colors,
+                borderColor: colors,
+                borderWidth: 1,
+                //barThickness: 30
+            }]
+        },
+        options: {
+            responsive: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Biểu đồ tổng số bài viết theo từng danh mục'
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function (tooltipItems) {
+                            return 'Thể loại: ' + labels[tooltipItems[0].dataIndex];
+                        },
+                        label: function (tooltipItem) {
+                            return data[tooltipItem.dataIndex].toLocaleString() + ' bài viết';
+                        },
+                    },
+                    displayColors: false
+                },
+                datalabels: {
+                    display: true,
+                    color: 'black',
+                    anchor: 'center',
+                    align: 'center',
+                    formatter: (value) => {
+                        return value.toLocaleString() + ' Bài viết';
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Thể loại bài viết'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Số lượng bài viết'
+                    },
+                    beginAtZero: true
+                }
+            },
+            onClick: function (event, elements) {
+                if (elements.length > 0) {
+                    var index = elements[0].index;
+                    var selectedCategory = labels[index];
+                    updatePostCategoryViewCountChart(selectedCategory);
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+}
+
+function renderPostCategoryViewCountChart(labels, data, category) {
+    var ctx = document.getElementById('postCategoryviewcountChart').getContext('2d');
+    var colors = getColorList(labels.length);
+    var shortenedLabels = labels.map(label => label.length > 3 ? label.substring(0, 3) + '...' : label);
+
+    if (window.viewCountChart) {
+        window.viewCountChart.destroy(); // Xóa biểu đồ cũ nếu tồn tại
+    }
+
+    window.viewCountChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: shortenedLabels,
+            datasets: [{
+                label: 'Số lượt xem của từng bài viết thuộc danh mục ' + category.toLowerCase(),
+                data: data,
+                backgroundColor: colors,
+                borderColor: colors,
+                borderWidth: 1,
+                //barThickness: 30
+            }]
+        },
+        options: {
+            responsive: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Biểu đồ thống kê số lượt xem của từng bài viết thuộc danh mục ' + category.toLowerCase()
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function (tooltipItems) {
+                            return 'Bài viết: ' + labels[tooltipItems[0].dataIndex];
+                        },
+                        label: function (tooltipItem) {
+                            return data[tooltipItem.dataIndex].toLocaleString() + ' lượt xem';
+                        },
+                    },
+                    displayColors: false
+                },
+                datalabels: {
+                    display: true,
+                    color: 'black',
+                    anchor: 'center',
+                    align: 'center',
+                    formatter: (value) => {
+                        return value.toLocaleString() + ' Lượt xem';
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Tên bài viết'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Số lượng lượt xem'
+                    },
+                    beginAtZero: true
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+}
+
+function updatePostCategoryViewCountChart(selectedCategory) {
+    fetchPostViewCountData(selectedCategory).then(response => {
+        var postNames = response.map(p => p.postName);
+        var postViewCounts = response.map(p => p.viewCount);
+
+        renderPostCategoryViewCountChart(postNames, postViewCounts, selectedCategory);
+    });
+}
+
+function fetchPostViewCountData(category) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: '/admin/homeadmin/api/GetPostViewCounts',
+            type: 'GET',
+            data: { category: category },
+            success: function (data) {
+                resolve(data);
+            },
+            error: function (err) {
+                reject(err);
+            }
+        });
+    });
+}

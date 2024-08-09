@@ -86,15 +86,20 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-12 mt-3">
+                            <div class="row  mt-3">
+                                <div class="col-4 ">
                                     <div class="chart">
-                                    <canvas id="postCategoryChart" height="350" width="320"></canvas>
+                                        <canvas id="postCategoryChart" height="350" width="270"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-8">
+                                    <div class="chart">
+                                        <canvas id="postCategoryviewcountChart" height="350" width="600"></canvas>
                                     </div>
                                 </div>
                             </div>
-                            <!-- /.card -->
                         </div>
+
                         <!-- /.col -->
                     </div>
 
@@ -131,6 +136,13 @@
         var revenuepostData = @Html.Raw(Json.Serialize(Model.PostCounts));
         renderPostCategoryChart(revenuepostLabels, revenuepostData);
 
+        var cateroypostestLabels = @Html.Raw(Json.Serialize(Model.SelectedCategory));
+        var revenuepostviewcountLabels = @Html.Raw(Json.Serialize(Model.PostNames));
+        var revenuepostviewcountData = @Html.Raw(Json.Serialize(Model.PostViewCounts));
+        renderPostCategoryViewCountChart(revenuepostviewcountLabels, revenuepostviewcountData, cateroypostestLabels);
+
+
+
         // Hàm để xuất biểu đồ thành PDF
         async function exportChartsToPDF() {
             const { jsPDF } = window.jspdf;
@@ -155,11 +167,15 @@
 
             // Thêm trang mới cho biểu đồ categoryPieChart
             doc.addPage();
-            await addChartToPDF(doc, 'categoryPieChart', 10, 10, 190);
+            await addChartToPDF(doc, 'productBarChart', 10, 10, 190);
 
             // Thêm trang mới cho biểu đồ productBarChart
             doc.addPage();
-            await addChartToPDF(doc, 'productBarChart', 10, 10, 190);
+            await addChartToPDF(doc, 'postCategoryChart', 10, 10, 190);
+
+            // Thêm trang mới cho biểu đồ productBarChart
+            doc.addPage();
+            await addChartToPDF(doc, 'postCategoryviewcountChart', 10, 10, 190);
 
             // Lưu file PDF
             doc.save('charts.pdf');

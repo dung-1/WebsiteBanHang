@@ -9,7 +9,10 @@
         public List<BrandInventoryDto> BrandInventories { get; set; }
         public List<string> CategoryLabels { get; set; } // Danh sách tên các category
         public List<int> PostCounts { get; set; } // Số lượng bài viết theo từng category
-        public List<int> ViewCounts { get; set; } // Tổng lượt xem theo từng category
+        // Thêm các thuộc tính để chứa dữ liệu hiển thị bài viết theo category có viewcount cao nhất
+        public string SelectedCategory { get; set; } // Tên Category được chọn
+        public List<string> PostNames { get; set; } // Danh sách tên các bài viết
+        public List<int> PostViewCounts { get; set; } // Số lượt xem của từng bài viết
     }
 
     public class BrandInventoryDto
@@ -23,5 +26,4 @@
         public string ProductName { get; set; }
         public int Quantity { get; set; }
     }
-
 }
