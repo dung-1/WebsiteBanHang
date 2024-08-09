@@ -103,6 +103,7 @@ namespace WebsiteBanHang
             {
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
+            builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())
