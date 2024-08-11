@@ -35,7 +35,7 @@ namespace WebsiteBanHang.Areas.Admin.Data
         public DbSet<CommentModel> Comments { get; set; }
         public DbSet<PostsModel> Posts { get; set; }
         public DbSet<CategoryPostModel> CategoryPost { get; set; }
-
+        public DbSet<OrderCancellationModel> OrderCancel { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -232,7 +232,25 @@ namespace WebsiteBanHang.Areas.Admin.Data
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<UserRoleModel>()
+            modelBuilder.Entity<OrdersModel>()
+                .HasMany(o => o.OrderCancellations)
+                .WithOne(oc => oc.Order)
+                .HasForeignKey(oc => oc.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserModel>()
+                .HasMany(u => u.OrderCancellations)
+                .WithOne(oc => oc.Admin)
+                .HasForeignKey(oc => oc.AdminId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CustomerModel>()
+                .HasMany(c => c.OrderCancellations)
+                .WithOne(oc => oc.Customer)
+                .HasForeignKey(oc => oc.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<UserRoleModel>()
                     .HasKey(ur => new
                     {
                         ur.User_ID,

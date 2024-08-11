@@ -35,14 +35,17 @@ namespace WebsiteBanHang.Controllers
         {
             return GetOrdersByStatus(page, searchName, "Đang giao hàng");
         }
+
         public IActionResult Complete(int? page, string searchName)
         {
             return GetOrdersByStatus(page, searchName, "Hoàn thành");
         }
+
         public IActionResult CancelOrders(int? page, string searchName)
         {
             return GetOrdersByStatus(page, searchName, "Đã hủy");
         }
+
         public IActionResult OrderDetail(int id)
         {
             var orderDetailsQuery = from order in _context.Order
@@ -180,8 +183,8 @@ namespace WebsiteBanHang.Controllers
                 return View();
             }
         }
-        //Hủy Đơn Hàng
 
+        //Hủy Đơn Hàng
         public IActionResult CancelOrder(int Id)
         {
             var order = _context.Order.Include(o => o.ctdh).FirstOrDefault(o => o.id == Id);
@@ -221,7 +224,6 @@ namespace WebsiteBanHang.Controllers
         }
 
         //Xác nhận Đơn Hàng
-
         public IActionResult ConfirmOrder(int Id)
         {
             var order = _context.Order.Find(Id);
