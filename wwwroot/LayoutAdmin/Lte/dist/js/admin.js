@@ -1,4 +1,29 @@
-﻿// Modal View Order
+﻿
+// Modal View_CanCelReason
+$(document).on("click", ".View-CanCelReason", function (e) {
+    // Lấy giá trị id từ thuộc tính data-id của phần tử được nhấp
+    let id = $(this).data("id");
+
+    // Gọi AJAX để lấy nội dung modal
+    $.ajax({
+        url: "/Admin/Billorder/CancelReason?id=" + id, // Đường dẫn đến API của bạn
+        type: "GET",
+        dataType: "html", // Đặt kiểu dữ liệu trả về
+        success: function (data) {
+            // Đổ dữ liệu vào modal-content
+            $('#View_CanCelReason').find('.modal-content').html(data);
+
+            // Gán giá trị id vào trường hidden sau khi nội dung modal đã được tải
+            $('#OrderId').val(id);
+
+            // Hiển thị modal
+            $('#View_CanCelReason').modal('show');
+        }
+    });
+});
+
+
+// Modal View Order
 $(document).on("click", ".View-Order", function (e) {
 
     let id = $(this).data("id")
@@ -285,3 +310,37 @@ $(document).ready(function () {
         });
     });
 });
+function SubmitOrderCancel() {
+    var form = document.getElementById('cancelOrderForm');
+    form.elements['AdminId'];
+    form.elements['Reason'];
+    form.elements['OrderId'];
+    var formData = new FormData(form);
+    showLoading();
+    $.ajax({
+        url: '/Admin/Billorder/CancelOrder',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (response) {
+            if (response.success) {
+                Swal.fire('Đơn hàng đã được hủy và email đã được gửi cho khách hàng!', '', 'success')
+                    .then(() => {
+                        $('#View_CanCelReason').modal('hide');
+                        location.reload();
+                    });
+
+            } else {
+                Swal.fire('Đã xảy ra lỗi khi hủy đơn hàng!', '', 'error');
+            }
+        },
+        error: function () {
+            Swal.fire('Đã xảy ra lỗi. Vui lòng thử lại!', '', 'error');
+        },
+        complete: function () {
+            hideLoading();
+        }
+    });
+}
+
