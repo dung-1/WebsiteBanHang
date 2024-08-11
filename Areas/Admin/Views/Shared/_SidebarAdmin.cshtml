@@ -1,4 +1,6 @@
-﻿     <!-- Main Sidebar Container -->
+﻿@{
+    var currentUrl = Context.Request.Path.Value;
+}
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="@Url.Action("Index","AdminHome")" class="brand-link">
@@ -32,18 +34,16 @@
         <!-- Sidebar Menu -->
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                <!-- Add icons to the links using the .nav-icon class
-                     with font-awesome or any other icon font library -->
+                <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
                 <li class="nav-item">
-                    <a href="@Url.Action("Index","AdminHome")" class="nav-link">
+                    <a href="@Url.Action("Index", "AdminHome")" class="nav-link @(currentUrl == Url.Action("Index", "AdminHome") ? "active" : "")">
                         <i class="nav-icon fas fa-columns"></i>
-                        <p>
-                            Dashboard
-                        </p>
+                        <p>Dashboard</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
+
+                <li class="nav-item @(currentUrl.StartsWith(Url.Action("Index", "Post")) || currentUrl.StartsWith(Url.Action("Index", "CategoryPost")) ? "menu-open" : "")">
+                    <a href="#" class="nav-link @(currentUrl.StartsWith(Url.Action("Index", "Post")) || currentUrl.StartsWith(Url.Action("Index", "CategoryPost")) ? "active" : "")">
                         <i class="fa-solid fa-blog menu-icon"></i>
                         <p>
                             Quản Lý Bài viết
@@ -52,13 +52,13 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="@Url.Action("Index","Post")" class="nav-link">
+                            <a href="@Url.Action("Index", "Post")" class="nav-link @(currentUrl == Url.Action("Index", "Post") ? "active" : "")">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Bài viết</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="@Url.Action("Index","CategoryPost")" class="nav-link">
+                            <a href="@Url.Action("Index", "CategoryPost")" class="nav-link @(currentUrl == Url.Action("Index", "CategoryPost") ? "active" : "")">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Thể loại bài viết</p>
                             </a>
@@ -66,8 +66,8 @@
                     </ul>
                 </li>
 
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
+                <li class="nav-item @(currentUrl.StartsWith(Url.Action("Index", "Product")) || currentUrl.StartsWith(Url.Action("Index", "Brand")) || currentUrl.StartsWith(Url.Action("Index", "Category")) ? "menu-open" : "")">
+                    <a href="#" class="nav-link @(currentUrl.StartsWith(Url.Action("Index", "Product")) || currentUrl.StartsWith(Url.Action("Index", "Brand")) || currentUrl.StartsWith(Url.Action("Index", "Category")) ? "active" : "")">
                         <i class="fa-solid fa-house-laptop menu-icon"></i>
                         <p>
                             Quản Lý Sản Phẩm
@@ -76,46 +76,45 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="@Url.Action("Index","Product")" class="nav-link">
+                            <a href="@Url.Action("Index", "Product")" class="nav-link @(currentUrl == Url.Action("Index", "Product") ? "active" : "")">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Sản Phẩm</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="@Url.Action("Index","Brand")" class="nav-link">
+                            <a href="@Url.Action("Index", "Brand")" class="nav-link @(currentUrl == Url.Action("Index", "Brand") ? "active" : "")">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Hãng Sản Phẩm</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="@Url.Action("Index","Category")" class="nav-link">
+                            <a href="@Url.Action("Index", "Category")" class="nav-link @(currentUrl == Url.Action("Index", "Category") ? "active" : "")">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Loại Sản Phẩm</p>
                             </a>
                         </li>
                     </ul>
                 </li>
-                    @if (User.IsInRole("Admin"))
+
+                @if (User.IsInRole("Admin"))
                 {
                     <li class="nav-item">
-                        <a href="@Url.Action("Index","User")" class="nav-link">
+                        <a href="@Url.Action("Index", "User")" class="nav-link @(currentUrl == Url.Action("Index", "User") ? "active" : "")">
                             <i class="fa-solid fa-user menu-icon"></i>
-                            <p>
-                                Quản Lý Tài Khoản
-                            </p>
+                            <p>Quản Lý Tài Khoản</p>
                         </a>
                     </li>
                 }
+
                 <li class="nav-item">
-                    <a href="@Url.Action("Index","Customer")" class="nav-link">
-                        <i class="menu-icon  fa-solid fa-users"></i>
-                        <p>
-                            Quản Lý Khách Hàng
-                        </p>
+                    <a href="@Url.Action("Index", "Customer")" class="nav-link @(currentUrl == Url.Action("Index", "Customer") ? "active" : "")">
+                        <i class="menu-icon fa-solid fa-users"></i>
+                        <p>Quản Lý Khách Hàng</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
+
+                <li class="nav-item @(currentUrl.StartsWith(Url.Action("Index", "Billorder")) || currentUrl.StartsWith(Url.Action("Approved", "Billorder")) || currentUrl.StartsWith(Url.Action("Transport", "Billorder")) || currentUrl.StartsWith(Url.Action("Complete", "Billorder")) || currentUrl.StartsWith(Url.Action("Failorder", "Billorder")) ? "menu-open" : "")">
+                    <a href="#" class="nav-link @(currentUrl.StartsWith(Url.Action("Index", "Billorder")) || currentUrl.StartsWith(Url.Action("Approved", "Billorder")) || currentUrl.StartsWith(Url.Action("Transport", "Billorder")) || currentUrl.StartsWith(Url.Action("Complete", "Billorder")) || currentUrl.StartsWith(Url.Action("Failorder", "Billorder")) ? "active" : "")">
                         <i class="fa-solid fa-list"></i>
                         <p>
                             Quản Lý Đơn Hàng
@@ -124,59 +123,56 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="@Url.Action("Index","Billorder")" class="nav-link">
+                            <a href="@Url.Action("Index", "Billorder")" class="nav-link @(currentUrl == Url.Action("Index", "Billorder") ? "active" : "")">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Đang Chờ Xử Lý</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="@Url.Action("Approved","Billorder")" class="nav-link">
+                            <a href="@Url.Action("Approved", "Billorder")" class="nav-link @(currentUrl == Url.Action("Approved", "Billorder") ? "active" : "")">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Đã Duyệt</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="@Url.Action("Transport","Billorder")" class="nav-link">
+                            <a href="@Url.Action("Transport", "Billorder")" class="nav-link @(currentUrl == Url.Action("Transport", "Billorder") ? "active" : "")">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Đang Giao Hàng</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="@Url.Action("Complete","Billorder")" class="nav-link">
+                            <a href="@Url.Action("Complete", "Billorder")" class="nav-link @(currentUrl == Url.Action("Complete", "Billorder") ? "active" : "")">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Đã Hoàn Thành</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="@Url.Action("Failorder","Billorder")" class="nav-link">
+                            <a href="@Url.Action("Failorder", "Billorder")" class="nav-link @(currentUrl == Url.Action("Failorder", "Billorder") ? "active" : "")">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Đơn Hàng Hủy</p>
                             </a>
                         </li>
                     </ul>
                 </li>
+
                 <li class="nav-item">
-                    <a href="@Url.Action("Index","Inventory")" class="nav-link">
+                    <a href="@Url.Action("Index", "Inventory")" class="nav-link @(currentUrl == Url.Action("Index", "Inventory") ? "active" : "")">
                         <i class="fa-solid fa-warehouse menu-icon"></i>
-                        <p>
-                            Quản Lý Kho
-                        </p>
+                        <p>Quản Lý Kho</p>
                     </a>
                 </li>
+
                 <li class="nav-item">
-                    <a href="@Url.Action("Index","ChatChit")" class="nav-link">
+                    <a href="@Url.Action("Index", "ChatChit")" class="nav-link @(currentUrl == Url.Action("Index", "ChatChit") ? "active" : "")">
                         <i class="fa-solid fa-comments"></i>
-                        <p>
-                            Chat Với Khách Hàng
-                        </p>
+                        <p>Chat Với Khách Hàng</p>
                     </a>
                 </li>
+
                 <li class="nav-item">
                     <a asp-area="" asp-controller="Home" asp-action="Logout" class="nav-link">
                         <i class="fa-solid fa-right-from-bracket menu-icon"></i>
-                        <p>
-                            Đăng Xuất
-                        </p>
+                        <p>Đăng Xuất</p>
                     </a>
                 </li>
             </ul>

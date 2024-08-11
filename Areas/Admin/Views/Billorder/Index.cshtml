@@ -30,6 +30,12 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="View_CanCelReason" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
@@ -67,10 +73,10 @@
                                                     <a data-id="@item.Id" class="btn btn-sm btn-primary View-Order ">
                                                         <i class="fa-solid fa-eye"></i> Xem chi tiết
                                                     </a>
-                                                    <a asp-area="Admin" asp-controller="Billorder" asp-action="ApproveOrder" asp-route-Id="@item.Id" class="btn btn-sm btn-warning ">
+                                                    <a href="javascript:void(0);" class="btn btn-sm btn-warning approve-order" data-id="@item.Id">
                                                         <i class="fa-solid fa-pen-to-square"></i> Duyệt Đơn
                                                     </a>
-                                                    <a asp-area="Admin" asp-controller="Billorder" asp-action="CancelOrder" asp-route-Id="@item.Id" class="btn btn-sm btn-danger ">
+                                                    <a data-id="@item.Id" class="btn btn-sm btn-danger View-CanCelReason">
                                                         <i class="fa-solid fa-trash-can"></i> Hủy Đơn
                                                     </a>
                                                 </td>

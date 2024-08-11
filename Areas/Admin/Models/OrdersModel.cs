@@ -15,7 +15,6 @@ namespace WebsiteBanHang.Areas.Admin.Models
         public UserModel? user { get; set; }
         public int? CustomerID { get; set; }
         public CustomerModel? Customer { get; set; }
-
         public DateTime ngayBan { get; set; }
         public float tongTien { get; set; }
         [StringLength(20)]
@@ -23,7 +22,6 @@ namespace WebsiteBanHang.Areas.Admin.Models
         [StringLength(20)]
         public string? LoaiHoaDon { get; set; }
         public ICollection<OrderDetaiModel> ctdh { get; } = new List<OrderDetaiModel>();
-
-
+        public ICollection<OrderCancellationModel> OrderCancellations { get; } = new List<OrderCancellationModel>();
     }
 }

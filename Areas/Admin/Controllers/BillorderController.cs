@@ -14,6 +14,8 @@ using X.PagedList;
 using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
 using WebsiteBanHang.HubSignalR;
+using WebsiteBanHang.Areas.Admin.Common;
+
 
 namespace WebsiteBanHang.Areas.Admin.Controllers
 {
@@ -122,16 +124,19 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             var pagedCategories = GetOrdersByStatus("Đang giao hàng", page, searchName);
             return View(pagedCategories);
         }
+
         public IActionResult Complete(int? page, string searchName)
         {
             var pagedCategories = GetOrdersByStatus("Hoàn thành", page, searchName);
             return View(pagedCategories);
         }
+
         public IActionResult Failorder(int? page, string searchName)
         {
             var pagedCategories = GetOrdersByStatus("Đã hủy", page, searchName);
             return View(pagedCategories);
         }
+
         [HttpGet]
         public IActionResult View(int id)
         {
@@ -209,16 +214,18 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             }
 
         }
+
         //Duyệt Đơn Hàng
+        [HttpPost]
         public async Task<IActionResult> ApproveOrderAsync(int Id)
         {
             try
             {
-                 var order = _context.Order
-                .Include(o => o.Customer)
-                .Include(o => o.ctdh) // Load danh sách chi tiết đơn hàng
-                .ThenInclude(od => od.product) // Load thông tin sản phẩm cho mỗi chi tiết đơn hàng
-                .FirstOrDefault(o => o.id == Id);
+                var order = _context.Order
+               .Include(o => o.Customer)
+               .Include(o => o.ctdh) // Load danh sách chi tiết đơn hàng
+               .ThenInclude(od => od.product) // Load thông tin sản phẩm cho mỗi chi tiết đơn hàng
+               .FirstOrDefault(o => o.id == Id);
 
                 if (order != null)
                 {
@@ -284,7 +291,6 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             }
 
         }
-
 
         //sendmail
         private void SendInvoiceByEmail(string recipientEmail, OrdersModel order)
@@ -360,8 +366,6 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             smtp.Disconnect(true);
         }
 
-
-
         //Giao Đơn Hàng
         public IActionResult DeliverOrder(int Id)
         {
@@ -402,15 +406,18 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         }
 
         //Hủy Đơn Hàng
-        public IActionResult CancelOrder(int Id)
+        [HttpPost]
+        public IActionResult CancelOrder(OrderCancellationModel cancellationModel)
         {
             try
             {
-                var order = _context.Order.Include(o => o.ctdh).FirstOrDefault(o => o.id == Id);
+                var order = _context.Order.Include(o => o.Customer)
+                    .Include(o => o.ctdh)
+                    .ThenInclude(od => od.product)
+                                          .FirstOrDefault(o => o.id == cancellationModel.OrderId);
 
                 if (order != null)
                 {
-                    // Kiểm tra quyền truy cập của người dùng, ví dụ chỉ cho phép khách hàng hủy đơn
                     if (User.IsInRole("Admin"))
                     {
                         foreach (var orderDetail in order.ctdh)
@@ -421,35 +428,139 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                                 inventoryItem.SoLuong += orderDetail.soLuong;
                             }
                         }
-                        // Cập nhật trạng thái đơn hàng là đã hủy
+                        // Gán giá trị cho các trường cần thiết
+                        cancellationModel.CancelledAt = DateTime.Now;
+
+                        // Thêm thông tin về Order vào model nếu cần
+                        cancellationModel.OrderId = order.id;
+
+                        // Thêm thông tin AdminId từ user đang đăng nhập
+                        cancellationModel.AdminId = cancellationModel.AdminId;
+
+                        // Lưu thông tin vào bảng OrderCancellationModel
+                        _context.OrderCancel.Add(cancellationModel);
+
+                        // Cập nhật trạng thái đơn hàng là "Đã hủy"
                         order.trangThai = "Đã hủy";
                         _context.SaveChanges();
 
-                        TempData["SuccessMessage"] = "Đã hủy đơn hàng thành công.";
+                        SendCancellationEmail(order.Customer.Email, order, cancellationModel);
+
+                        return Json(new { success = true });
                     }
                     else
                     {
-                        TempData["ErrorMessage"] = "Bạn không có quyền hủy đơn hàng.";
+                        return Json(new { success = false, message = "Bạn không có quyền hủy đơn hàng." });
                     }
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Không tìm thấy đơn hàng.";
+                    return Json(new { success = false, message = "Không tìm thấy đơn hàng." });
                 }
-
-                return RedirectToAction("Failorder"); // Chuyển hướng về trang danh sách đơn hàng
             }
             catch (Exception ex)
             {
-
-                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
-
-
+                return Json(new { success = false, message = "Đã xảy ra lỗi. Vui lòng thử lại." });
             }
-
         }
 
+        private void SendCancellationEmail(string recipientEmail, OrdersModel order, OrderCancellationModel cancellationModel)
+        {
+            var emailMessage = new MimeMessage();
 
+            emailMessage.From.Add(new MailboxAddress("Nguyễn Văn Dụng", _configuration["EmailSettings:Email"]));
+            emailMessage.To.Add(new MailboxAddress("Người Nhận", recipientEmail));
+            emailMessage.Subject = "Hóa Đơn Mua Hàng";
+
+            var builder = new BodyBuilder();
+
+            // Bắt đầu tạo nội dung email
+            builder.HtmlBody = "<div style='font-family: Arial, sans-serif; padding: 20px;'>";
+            builder.HtmlBody += "<h1 style=\"color: #007bff; font-weight: bold; text-transform: uppercase;\">" +
+                                "vifiretek <span style=\"font-size: 1.25rem; color: #dc3545;\">.VN</span></h1>";
+
+            // Thêm tiêu đề hóa đơn
+            builder.HtmlBody += "<h3 style='text-align: center; font-weight: bold;color: #dc3545;'>ĐƠN HÀNG ĐÃ BỊ HỦY</h3>";
+
+            // Thêm thông tin hóa đơn
+            builder.HtmlBody += "<p style=\"font-family: Arial, sans-serif; font-size: 16px;\">" +
+                     $"<span style=\"float: left; width: 50%;\">Mã Hóa Đơn: {order.MaHoaDon}</span>" +
+                     $"<span style=\"float: right; width: 50%; text-align: right;\">Ngày Mua: {order.ngayBan.ToString("dd/MM/yyyy HH:mm:ss")}</span>" +
+                     $"<div style=\"clear: both;\"></div>" +
+                     $"</p>";
+
+            // Thêm bảng chi tiết đơn hàng
+            builder.HtmlBody += "<table style='width:100%; border-collapse: collapse;'>";
+            builder.HtmlBody += "<tr><th style='border: 1px solid #ddd; padding: 8px;'>STT</th><th style='border: 1px solid #ddd; padding: 8px;'>Sản phẩm</th><th style='border: 1px solid #ddd; padding: 8px;'>Số lượng</th><th style='border: 1px solid #ddd; padding: 8px;'>Đơn giá</th><th style='border: 1px solid #ddd; padding: 8px;'>Thành tiền</th></tr>";
+
+            // Thêm chi tiết đơn hàng
+            int stt = 1;
+            decimal tongCong = 0;
+            foreach (var orderDetail in order.ctdh)
+            {
+                // Sử dụng orderDetail để lấy thông tin sản phẩm từ đơn hàng
+                var product = orderDetail.product;
+
+                // Tính tổng tiền cho sản phẩm này
+                decimal donGia = (decimal)(orderDetail.product.GiaGiam >= 0 ?
+                    (decimal)(orderDetail.product.GiaBan - ((orderDetail.product.GiaBan * orderDetail.product.GiaGiam) / 100)) :
+                    (decimal)orderDetail.product.GiaBan);
+                decimal thanhTien = (decimal)(orderDetail.soLuong * donGia);
+                builder.HtmlBody += $"<tr><td style='border: 1px solid #ddd; padding: 8px;text-align:center;'>{stt}</td><td style='border: 1px solid #ddd; padding: 8px;text-align:center;text-transform: capitalize;'>{product?.TenSanPham}</td><td style='border: 1px solid #ddd; padding: 8px;text-align:center;'>{orderDetail.soLuong}</td><td style='border: 1px solid #ddd; padding: 8px;text-align:center;'>{donGia.ToString("C0", new CultureInfo("vi-VN"))}</td><td style='border: 1px solid #ddd; padding: 8px;text-align:end;'>{thanhTien.ToString("C0", new CultureInfo("vi-VN"))}</td></tr>";
+                tongCong += thanhTien;
+                stt++;
+            }
+
+
+            // Kết thúc bảng
+            builder.HtmlBody += "</table>";
+
+            // Thêm tổng cộng
+            builder.HtmlBody += $"<p style='text-align: right; font-weight: bold;font-site:18px;'>Tổng cộng: {tongCong.ToString("C0", new CultureInfo("vi-VN"))}</p>";
+            builder.HtmlBody += "<hr>";
+            if (int.TryParse(cancellationModel.Reason, out int reasonInt))
+            {
+                var reasonEnum = (CancelOfAdmin)reasonInt;
+
+                // Lấy Display Name của lý do hủy
+                string reasonDisplayName = reasonEnum.GetDescription();
+
+                builder.HtmlBody += $"<p>Lý do hủy: {reasonDisplayName}</p>";
+            }
+
+            builder.HtmlBody += $"<p>Thời gian hủy: {cancellationModel.CancelledAt:dd/MM/yyyy HH:mm:ss}</p>";
+            // Thêm dòng chân trang và cảm ơn
+            builder.HtmlBody += "<hr>";
+            builder.HtmlBody += "<p style='text-align: center; font-weight: bold;'>Chúng tôi rất tiếc vì sự bất tiện này. !!!</p>";
+
+            // Kết thúc nội dung email
+            builder.HtmlBody += "</div>";
+
+            emailMessage.Body = new TextPart(TextFormat.Html)
+            {
+                Text = builder.HtmlBody
+            };
+
+            using var smtp = new SmtpClient();
+            smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+            smtp.Authenticate(_configuration["EmailSettings:Email"], _configuration["EmailSettings:Password"]);
+            smtp.Send(emailMessage);
+            smtp.Disconnect(true);
+        }
+
+        [HttpGet]
+        public IActionResult CancelReason(int id)
+        {
+            try
+            {
+                return PartialView("_ViewCancelReason");
+            }
+            catch
+            {
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
+            }
+        }
 
     }
+
 }
