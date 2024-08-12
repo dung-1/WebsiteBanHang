@@ -147,6 +147,9 @@
   <data name="Bill" xml:space="preserve">
     <value>Bill</value>
   </data>
+  <data name="Buy back" xml:space="preserve">
+    <value>Buy back</value>
+  </data>
   <data name="Buy Now" xml:space="preserve">
     <value>Buy Now</value>
   </data>
