@@ -48,10 +48,9 @@
                                     </p>
                                 </div>
                                 <div class="col-lg-4">
-                                    <h6 class="text-muted">Hình thức thanh toán</h6>
+                                    <h6 class="text-muted">Hình thức thanh toán:</h6>
                                     <span class="text-success">
-                                        <i class="fab fa-lg fa-cc-visa"></i>
-                                        Giao tiêu chuẩn
+                                        @item.LoaiHoaDon
                                     </span>
                                     <p class="lh-lg">
                                         <strong>Tổng cộng: @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @item.TongCong)</strong>
@@ -96,7 +95,33 @@
                                 </tbody>
                             </table>
                         </div> <!-- table.responsive-md.// -->
+                        @if (item.HoaDonHuy != null)
+                        {
+                            <div class="card-body pb-0">
+                                <div class="row">
 
+                                    <p class="lh-lg">
+
+                                        <span class="text-capitalize">Ngày hủy: @item.HoaDonHuy.DateCancel <br></span>
+
+                                        @if (item.HoaDonHuy.ReasonAdmin != null)
+                                        {
+                                            <span class="text-capitalize">Lý do hủy: @item.HoaDonHuy.StatusReasonAdmin <br></span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-capitalize">Lý do hủy: @item.HoaDonHuy.StatusReasonCustomer <br></span>
+                                        }
+
+
+                                        <span class="text-capitalize">Bên hủy: @item.HoaDonHuy.UserCancel <br></span>
+
+                                    </p>
+
+                                </div>
+                            </div>
+
+                        }
                     </article>
 
                 </main> <!-- col.// -->

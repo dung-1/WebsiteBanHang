@@ -12,29 +12,30 @@
 
         <article class="card mb-4">
             <header class="card-header d-flex justify-content-between">
-                <p class="text-capitalize m-auto">Ngày mua: @item.NgayBan</p>
+                <p class="text-capitalize ">Ngày mua: @item.NgayBan</p>
                 <p class="text-capitalize m-auto">Tên Nhân Viên: @item.TenNhanVien</p>
             </header> <!-- card-header.// -->
 
             <div class="card-body pb-0">
                 <div class="row">
-                    <div class="col-lg-8">
+                    <div class="col-lg-6">
                         <h6 class="text-muted">Địa chỉ người nhận</h6>
                         <p class="lh-lg">
-                           
-                                <span class="text-capitalize">Tên Khách Hàng: @item.TenKhachHang <br></span>
-                            
-                            
-                                <span class="text-capitalize">Số điện thoại: @item.SoDienThoai <br></span>
-                           
-                                <span class="text-capitalize">Địa chỉ: @item.DiaChi <br></span>
-                            
+
+                            <span class="text-capitalize">Tên Khách Hàng: @item.TenKhachHang <br></span>
+
+
+                            <span class="text-capitalize">Số điện thoại: @item.SoDienThoai <br></span>
+
+                            <span class="text-capitalize">Địa chỉ: @item.DiaChi <br></span>
+
                         </p>
                     </div>
-                    <div class="col-lg-4">
+                    <div class="col-lg-6">
                         <h6 class="text-muted">Thanh toán</h6>
                         <p class="lh-lg">
-                            <strong>Tổng cộng:  @string.Format(new CultureInfo("vi-VN", false), "{0:c0}",@item.TongCong)</strong>
+                            <span class="text-capitalize">Loại hóa đơn: @item.LoaiHoaDon <br> </span>
+                            <strong>Tổng cộng:  @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @item.TongCong)<br></strong>
                         </p>
                     </div>
                 </div> <!-- row.// -->
@@ -58,12 +59,12 @@
                             <tr>
                                 <td>
                                     <figcaption class="info">
-                                        <a href="#" class="title">@chiTiet.TenSanPham</a>
+                                        <span class="title">@chiTiet.TenSanPham</span>
                                     </figcaption>
                                 </td>
                                 <td>
-                                    <figure class="itemside">
-                                        <div class="float-start me-3"><img style="width:100px;height:100px;" src="~/@chiTiet.img"></div>
+                                    <figure class="info" style="width:120px;height:120px;">
+                                        <span><img style="width:100px;height:100px;" src="~/@chiTiet.img"></span>
                                     </figure>
                                 </td>
                                 <td>@chiTiet.SoLuong</td>
@@ -78,6 +79,35 @@
 
                 </table>
             </div> <!-- table.responsive-md.// -->
+            @if (item.HoaDonHuy != null)
+            {
+                <div class="card-body pb-0">
+                    <div class="row">
+
+                        <p class="lh-lg">
+
+                            <span class="text-capitalize">Ngày hủy: @item.HoaDonHuy.DateCancel <br></span>
+                            @if (item.HoaDonHuy.ReasonAdmin != null)
+                            {
+                                <span class="text-capitalize">Lý do hủy: @item.HoaDonHuy.StatusReasonAdmin <br></span>
+                            }
+                            else
+                            {
+                                  <span class="text-capitalize">Lý do hủy: @item.HoaDonHuy.StatusReasonCustomer <br></span>
+                            }
+
+                          
+
+                            <span class="text-capitalize">Bên hủy: @item.HoaDonHuy.UserCancel <br></span>
+
+                        </p>
+
+                    </div>
+                </div>
+
+            }
+
+
         </article>
 
     </div>

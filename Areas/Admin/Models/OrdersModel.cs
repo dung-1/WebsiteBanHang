@@ -19,7 +19,7 @@ namespace WebsiteBanHang.Areas.Admin.Models
         public float tongTien { get; set; }
         [StringLength(20)]
         public string? trangThai { get; set; }
-        [StringLength(20)]
+        [StringLength(50)]
         public string? LoaiHoaDon { get; set; }
         public ICollection<OrderDetaiModel> ctdh { get; } = new List<OrderDetaiModel>();
         public ICollection<OrderCancellationModel> OrderCancellations { get; } = new List<OrderCancellationModel>();

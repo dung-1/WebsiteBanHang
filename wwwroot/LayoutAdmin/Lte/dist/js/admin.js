@@ -278,51 +278,129 @@ function showLoading() {
 function hideLoading() {
     $('#loading-spinner').hide();
 }
+
+//----------------------------- Duyệt Đơn hàng-----------------------------------//
 $(document).ready(function () {
     $('.approve-order').on('click', function (e) {
         e.preventDefault();
         var orderId = $(this).data('id');
 
-        // Hiển thị hiệu ứng tải
-        showLoading();
+        // Hiển thị hộp thoại xác nhận
+        Swal.fire({
+            title: 'Bạn có chắc chắn muốn duyệt đơn hàng này?',
+            text: 'Hành động này sẽ duyệt đơn hàng và không thể hoàn tác!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Duyệt',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Nếu người dùng xác nhận duyệt đơn hàng
+                showLoading();
 
-        $.ajax({
-            url: '/Admin/Billorder/ApproveOrder',
-            type: 'POST',
-            data: { id: orderId },
-            success: function (response) {
-                if (response) {
-                    Swal.fire('Gửi đơn hàng thành công!', '', 'success')
-                        .then(() => {
-                            location.href = '/Admin/Billorder/Index';
-                        });
-                } else {
-                    Swal.fire('Đã xảy ra lỗi khi duyệt đơn !', '', 'error');
-                }
-            },
-            error: function () {
-                Swal.fire('Đã xảy ra lỗi. Vui lòng thử lại !', '', 'error');
-            },
-            complete: function () {
-                // Ẩn hiệu ứng tải sau khi nhận phản hồi
-                hideLoading();
+                $.ajax({
+                    url: '/Admin/Billorder/ApproveOrder',
+                    type: 'POST',
+                    data: { id: orderId },
+                    success: function (response) {
+                        if (response) {
+                            Swal.fire('Duyệt đơn hàng thành công!', '', 'success')
+                                .then(() => {
+                                    location.href = '/Admin/Billorder/Index';
+                                });
+                        } else {
+                            Swal.fire('Đã xảy ra lỗi khi duyệt đơn hàng!', '', 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Đã xảy ra lỗi. Vui lòng thử lại!', '', 'error');
+                    },
+                    complete: function () {
+                        // Ẩn hiệu ứng tải sau khi nhận phản hồi
+                        hideLoading();
+                    }
+                });
+            }
+        });
+    });
+});
+
+//----------------------------- Giao Đơn hàng-----------------------------------//
+$(document).ready(function () {
+    $('.deliver-order').on('click', function (e) {
+        e.preventDefault();
+        var orderId = $(this).data('id');
+
+        // Hiển thị hộp thoại xác nhận
+        Swal.fire({
+            title: 'Bạn có chắc chắn muốn giao đơn hàng này?',
+            text: 'Hành động này sẽ giao đơn hàng và không thể hoàn tác!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Giao Hàng',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Nếu người dùng xác nhận duyệt đơn hàng
+                showLoading();
+
+                $.ajax({
+                    url: '/Admin/Billorder/DeliverOrder',
+                    type: 'POST',
+                    data: { id: orderId },
+                    success: function (response) {
+                        if (response) {
+                            Swal.fire('Giao đơn hàng thành công!', '', 'success')
+                                .then(() => {
+                                    location.href = '/Admin/Billorder/Approved';
+                                });
+                        } else {
+                            Swal.fire('Đã xảy ra lỗi khi giao đơn hàng!', '', 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Đã xảy ra lỗi. Vui lòng thử lại!', '', 'error');
+                    },
+                    complete: function () {
+                        // Ẩn hiệu ứng tải sau khi nhận phản hồi
+                        hideLoading();
+                    }
+                });
             }
         });
     });
 });
 function SubmitOrderCancel() {
     var form = document.getElementById('cancelOrderForm');
-    form.elements['AdminId'];
-    form.elements['Reason'];
-    form.elements['OrderId'];
     var formData = new FormData(form);
+
+    // Convert FormData to JSON
+    var object = {};
+    formData.forEach((value, key) => {
+        // Xử lý đặc biệt cho __RequestVerificationToken
+        if (key === '__RequestVerificationToken') {
+            object['__RequestVerificationToken'] = value;
+        } else {
+            object[key] = value;
+        }
+    });
+    var json = JSON.stringify(object);
+
     showLoading();
     $.ajax({
         url: '/Admin/Billorder/CancelOrder',
         type: 'POST',
-        data: formData,
+        data: json,
+        headers: {
+            'RequestVerificationToken': formData.get('__RequestVerificationToken')
+        },
+        contentType: "application/json",
+        async: true,
         processData: false,
-        contentType: false,
         success: function (response) {
             if (response.success) {
                 Swal.fire('Đơn hàng đã được hủy và email đã được gửi cho khách hàng!', '', 'success')
@@ -330,7 +408,6 @@ function SubmitOrderCancel() {
                         $('#View_CanCelReason').modal('hide');
                         location.reload();
                     });
-
             } else {
                 Swal.fire('Đã xảy ra lỗi khi hủy đơn hàng!', '', 'error');
             }
@@ -343,4 +420,3 @@ function SubmitOrderCancel() {
         }
     });
 }
-
