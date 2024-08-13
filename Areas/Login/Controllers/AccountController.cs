@@ -10,11 +10,9 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using WebsiteBanHang.Models;
-using Org.BouncyCastle.Crypto.Generators;
 using WebsiteBanHang.Areas.Admin.AdminDTO;
+using WebsiteBanHang.Areas.Admin.Controllers;
 
 namespace WebsiteBanHang.Controllers
 {
@@ -24,13 +22,13 @@ namespace WebsiteBanHang.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<BillorderController> _logger;
 
-        public AccountController(IConfiguration configuration, ApplicationDbContext context)
+        public AccountController(IConfiguration configuration, ApplicationDbContext context, ILogger<BillorderController> logger)
         {
             _configuration = configuration;
             _context = context;
-
-
+            _logger = logger;
         }
         [Route("account")]
         public IActionResult Index()
@@ -172,6 +170,7 @@ namespace WebsiteBanHang.Controllers
             // Mã code không khớp, hiển thị thông báo lỗi
             return View();
         }
+
         [Route("Login")]
         public IActionResult Login()
         {
@@ -299,43 +298,64 @@ namespace WebsiteBanHang.Controllers
         }
 
         [HttpPost("forgot-password")]
-        public IActionResult ForgotPassword(string email)
+        public async Task<IActionResult> ForgotPassword(string email)
         {
-            var user = _context.User.FirstOrDefault(u => u.Email == email);
-            if (user == null) return BadRequest("Không tìm thấy người dùng");
-
-            // Tạo token reset mật khẩu
-            user.ResetPasswordToken = Guid.NewGuid().ToString();
-            user.ResetPasswordTokenExpiry = DateTime.UtcNow.AddHours(1);
-            _context.SaveChanges();
-
-            // Gửi email reset mật khẩu
-            var resetLink = Url.Action("ResetPassword", "Account", new { token = user.ResetPasswordToken }, Request.Scheme);
-
-            // Tạo email chứa link reset mật khẩu
-            var emailMessage = new MimeMessage();
-            emailMessage.From.Add(new MailboxAddress("Nguyễn Văn Dụng", _configuration["EmailSettings:Email"]));
-            emailMessage.To.Add(new MailboxAddress("Recipient Name", email));
-            emailMessage.Subject = "Đặt lại mật khẩu của bạn";
-
-            emailMessage.Body = new TextPart(TextFormat.Html)
-            {
-                Text = $"Click <a href='{resetLink}'>đây</a> để đặt lại mật khẩu của bạn"
-            };
-
             try
             {
-                using var smtp = new SmtpClient();
-                smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-                smtp.Authenticate(_configuration["EmailSettings:Email"], _configuration["EmailSettings:Password"]);
-                smtp.Send(emailMessage);
-                smtp.Disconnect(true);
+                var users = await _context.Customer
+                    .Where(u => u.Email == email)
+                    .ToListAsync();
 
-                return Ok("Liên kết đặt lại mật khẩu đã được gửi đến email của bạn.");
+                if (users.Count == 0)
+                    return Json(new { success = false, message = "Không tìm thấy người dùng với email này" });
+
+                foreach (var user in users)
+                {
+                    user.ResetPasswordToken = Guid.NewGuid().ToString();
+                    user.ResetPasswordTokenExpiry = DateTime.UtcNow.AddMinutes(30);
+                }
+
+                await _context.SaveChangesAsync();
+
+                foreach (var user in users)
+                {
+                    var resetLink = Url.Action("ResetPassword", "Account", new { token = user.ResetPasswordToken }, Request.Scheme);
+
+                    var emailMessage = new MimeMessage();
+                    emailMessage.From.Add(new MailboxAddress("Nguyễn Văn Dụng", _configuration["EmailSettings:Email"]));
+                    emailMessage.To.Add(new MailboxAddress(user.Email, user.Email));
+                    emailMessage.Subject = "Đặt lại mật khẩu của bạn";
+                    emailMessage.Body = new TextPart(TextFormat.Html)
+                    {
+                        Text = $@"
+            <h2>Xin chào {user.Email},</h2>
+            <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.</p>
+            <p>Click <a href='{resetLink}'>vào đây</a> để đặt lại mật khẩu của bạn.</p>
+            <p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>
+            <p>Trân trọng,<br>Đội ngũ hỗ trợ</p>"
+                    };
+
+                    try
+                    {
+                        using var smtp = new SmtpClient();
+                        await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+                        await smtp.AuthenticateAsync(_configuration["EmailSettings:Email"], _configuration["EmailSettings:Password"]);
+                        await smtp.SendAsync(emailMessage);
+                        await smtp.DisconnectAsync(true);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Lỗi khi gửi email đến {user.Email}: {ex.Message}");
+                        continue;
+                    }
+                }
+
+                return Json(new { success = true, message = "Liên kết đặt lại mật khẩu đã được gửi đến email của bạn." });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Đã xảy ra lỗi khi gửi email. Vui lòng thử lại sau.");
+                _logger.LogError($"Lỗi trong quá trình xử lý ForgotPassword: {ex.Message}");
+                return Json(new { success = false, message = "Đã xảy ra lỗi trong quá trình xử lý yêu cầu." });
             }
         }
 
@@ -347,20 +367,64 @@ namespace WebsiteBanHang.Controllers
             return View(model);
         }
 
-
         [HttpPost("reset-password")]
-        public IActionResult ResetPassword(ResetPasswordDto model)
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto model)
         {
-            var user = _context.User.FirstOrDefault(u => u.ResetPasswordToken == model.Token && u.ResetPasswordTokenExpiry > DateTime.UtcNow);
-            if (user == null) return BadRequest("Token không hợp lệ hoặc đã hết hạn");
+            try
+            {
+                if (string.IsNullOrEmpty(model.Token) || string.IsNullOrEmpty(model.NewPassword))
+                {
+                    return Json(new { success = false, message = "Token và mật khẩu mới không được để trống" });
+                }
 
-            // Cập nhật mật khẩu mới với mã hóa MD5
-            user.MatKhau = GetMd5Hash(model.NewPassword);
-            user.ResetPasswordToken = null;
-            user.ResetPasswordTokenExpiry = null;
-            _context.SaveChanges();
+                var user = await _context.Customer
+                    .FirstOrDefaultAsync(u => u.ResetPasswordToken == model.Token && u.ResetPasswordTokenExpiry > DateTime.UtcNow);
 
-            return Ok("Mật khẩu của bạn đã được đặt lại thành công.");
+                if (user == null)
+                {
+                    return Json(new { success = false, message = "Token không hợp lệ hoặc đã hết hạn" });
+
+                }
+
+                // Kiểm tra độ phức tạp của mật khẩu
+                if (!IsPasswordComplex(model.NewPassword))
+                {
+                    return Json(new { success = false, message = "Mật khẩu mới không đủ phức tạp. Vui lòng sử dụng ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt." });
+                }
+
+                // Cập nhật mật khẩu mới với mã hóa MD5
+                user.MatKhau = GetMd5Hash(model.NewPassword);
+                user.ResetPasswordToken = null;
+                user.ResetPasswordTokenExpiry = null;
+
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "Mật khẩu của bạn đã được đặt lại thành công." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Lỗi trong quá trình xử lý đổi mật khẩu: {ex.Message}");
+                return Json(new { success = false, message = "Đã xảy ra lỗi trong quá trình xử lý yêu cầu." });
+            }
+        }
+
+        private bool IsPasswordComplex(string password)
+        {
+            // Kiểm tra độ dài tối thiểu
+            if (password.Length < 8) return false;
+
+            // Kiểm tra có chữ hoa
+            if (!password.Any(char.IsUpper)) return false;
+
+            // Kiểm tra có chữ thường
+            if (!password.Any(char.IsLower)) return false;
+
+            // Kiểm tra có số
+            if (!password.Any(char.IsDigit)) return false;
+
+            // Kiểm tra có ký tự đặc biệt
+            if (!password.Any(ch => !char.IsLetterOrDigit(ch))) return false;
+
+            return true;
         }
 
     }

@@ -10,6 +10,7 @@
 }
 
 <div class="form-body">
+    <a href="javascript:window.history.back();" style="color:black;"><i class="fa-solid fa-left-long"></i> @language.GetKey("Back")</a>
     <h3 class="title fw-bold text-uppercase ">@language.GetKey("Register")</h3>
     <form asp-area="Login" asp-controller="Account" asp-action="formSignUp" method="post" onsubmit="return validateForm()" class="the-form">
 

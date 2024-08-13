@@ -9,7 +9,10 @@
     Layout = "~/Areas/Login/Shared/_LayoutLogin.cshtml";
 }
 @model WebsiteBanHang.Areas.Admin.Models.UserModel
+
+
 <div class="form-body">
+    <a href="javascript:window.history.back();" style="color:black;"><i class="fa-solid fa-left-long"></i>@language.GetKey("Back")</a>
     <h3 class="title text-uppercase fw-bold">@language.GetKey("Log in")</h3>
     <div class="social-login">
         <ul>
@@ -33,7 +36,7 @@
 
     </form>
 
-    <a asp-area="Login" asp-controller="Account" asp-action="ForgotPassword" class="text-black bg-dark">@language.GetKey("Forgot password ?")</a>
+    <a asp-area="Login" asp-controller="Account" asp-action="ForgotPassword" class="text-danger">@language.GetKey("Forgot password ?")</a>
 
 </div><!-- FORM BODY-->
 

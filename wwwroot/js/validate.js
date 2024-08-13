@@ -119,3 +119,64 @@ function validateForm() {
     // Trả về true nếu không có lỗi
     return !hasErrors;
 }
+function showLoading() {
+    $('#loading-spinner').show();
+}
+
+function hideLoading() {
+    $('#loading-spinner').hide();
+}
+function buttonForgotPassword() {
+    var data = $("#ForgotPasswordForm").serialize();
+    showLoading();
+    $.ajax({
+        url: '/Login/account/forgot-password',
+        type: 'POST',
+        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+        data: data,
+        success: function (result) {
+            if (result.success) {
+                Swal.fire('Gửi thông tin thành công', 'Vui lòng kiểm tra Email!', 'success')
+                    .then(() => {
+                        location.href = '/Login/account/forgot-password';
+                    });
+            } else {
+                Swal.fire('Lỗi', result.message || 'Có lỗi xảy ra khi gửi email!', 'error');
+            }
+        },
+        error: function (xhr) {
+            Swal.fire('Lỗi', xhr.responseText || 'Không thể xử lý yêu cầu!', 'error');
+        },
+        complete: function () {
+            hideLoading();
+        }
+    });
+}
+
+function buttonResetPassword() {
+    var data = $("#ResetPasswordForm").serialize();
+    showLoading(); // Hiển thị hiệu ứng loading
+    $.ajax({
+        url: '/Login/account/reset-password', // Đường dẫn đến action ResetPassword trong controller
+        type: 'POST',
+        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+        data: data,
+        success: function (result) {
+
+            if (result.success) {
+                Swal.fire('Thành công', 'Mật khẩu của bạn đã được đặt lại thành công!', 'success')
+                    .then(() => {
+                        location.href = '/Login/account/Login'; 
+                    });
+            } else {
+                Swal.fire('Lỗi', result.message || 'Có lỗi xảy ra khi gửi email!', 'error');
+            }
+        },
+        error: function (xhr) {
+            Swal.fire('Lỗi', xhr.responseText || 'Có lỗi xảy ra trong quá trình đặt lại mật khẩu!', 'error');
+        },
+        complete: function () {
+            hideLoading(); // Ẩn hiệu ứng loading
+        }
+    });
+}
