@@ -9,8 +9,11 @@
 
     <!-- Bootstrap Icons v1.5.0 -->
     <link href="~/css/bootstrap-icons.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.9.0/sweetalert2.all.js" integrity="sha512-Gj7qCEK1iGn8FZv0PG0cT7jCxOASayniKKK8cF/S5/1C65S4aXCUgvnBBsUm94g/jyeBYkDcLMTtTUYHGVC+Pg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link href="https://fonts.googleapis.com/css2?family=Muli:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/assets/css/style-with-prefix.css">
+    <link href="~/layoutadmin/lte/dist/css/customize-lte.css" rel="stylesheet" />
     <style>
         .srouce {
             text-align: center;
@@ -27,6 +30,11 @@
                 @RenderBody()
 
         </div><!-- FORM CONTAINER -->
+        <div id="loading-spinner" style="display:none;">
+            <div class="spinner-background">
+                <div class="spinner"></div>
+            </div>
+        </div>
     </div>
 
     <script src="~/js/jquery-3.3.1.min.js"></script>

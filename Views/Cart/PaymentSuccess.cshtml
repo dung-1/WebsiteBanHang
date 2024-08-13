@@ -1,7 +1,36 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Payment Success";
 }
+<style>
+    .payment-success-container {
+        font-family: Arial, sans-serif;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        text-align: center;
+        max-width: 400px;
+        margin: 2rem auto;
+    }
 
-<h2>Payment Successful!</h2>
-<p>Thank you for your purchase. Your payment was successful.</p>
+        .payment-success-container h2 {
+            color: #4CAF50;
+            margin-bottom: 1rem;
+        }
+
+        .payment-success-container p {
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .payment-success-container .icon {
+            font-size: 4rem;
+            color: #4CAF50;
+            margin-bottom: 1rem;
+        }
+</style>
+<div class="payment-success-container">
+    <div class="icon">✓</div>
+    <h2>Thanh toán thành công!</h2>
+    <p>Cảm ơn bạn đã mua hàng. Thanh toán của bạn đã được xác nhận.</p>
+</div>

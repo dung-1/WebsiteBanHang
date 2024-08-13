@@ -61,10 +61,7 @@ $(".delete-item").on("click", function (e) {
                 method: "POST",
                 success: function (data) {
                     if (data.success) {
-                        // Hiển thị thông báo xóa thành công
                         Swal.fire(getTranslation("Deletedsuccessfully"), "", "success").then(function () {
-                            // Sau khi người dùng đóng thông báo, làm điều gì đó (nếu cần)
-                            // Ví dụ: Reload lại trang giỏ hàng
                             location.reload();
                         });
                     } else {
@@ -96,36 +93,42 @@ $(".delete-item").on("click", function (e) {
 function buttonCheckout() {
     var data = $("#checkoutForm").serialize();
     showLoading();
-    // Gửi Ajax request đến     
     $.ajax({
-        url: '/Cart/Checkout', // Đường dẫn đến action Checkout trong controller
+        url: '/Cart/Checkout',
         type: 'POST',
-        contentType: 'application/x-www-form-urlencoded; charset=UTF-8', 
+        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
         data: data,
-        success: function (result) {
-            if (result) {
-                // Hiển thị thông báo thành công
-                Swal.fire('Đặt hàng thành công!', '', 'success')
-                    .then(() => {
-                        // Chuyển đến trang Index sau khi xóa
-                        location.href = '/Cart/Index';
-                    });
+        success: function (response) {
+            if (response.success) {
+                if (response.redirectUrl) {
+                    Swal.fire('Đặt hàng thành công!', '', 'success')
+                        .then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = response.redirectUrl;
+                            }
+                        });
+                } else if (response.stripeSessionUrl) {
+                    Swal.fire('Xác nhận thông tin, Vui lòng thanh toán qua thẻ!', '', 'success')
+                        .then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = response.stripeSessionUrl;
+                            }
+                        });
+                } else {
+                    Swal.fire('Có lỗi xảy ra với URL chuyển hướng!', '', 'error');
+                }
             } else {
-                // Hiển thị thông báo lỗi
-                Swal.fire('Đặt hàng không thành công !', '', 'error');
+                Swal.fire('Đặt hàng không thành công!', '', 'error');
             }
         },
         error: function () {
-            // Xử lý lỗi nếu cần
-            Swal.fire('Có lỗi xảy ra đặt hàng!', '', 'error');
+            Swal.fire('Có lỗi xảy ra khi đặt hàng!', '', 'error');
         },
         complete: function () {
-            // Ẩn hiệu ứng tải sau khi nhận phản hồi
             hideLoading();
         }
     });
 }
-
 
 
 // updateCartItemCount.js

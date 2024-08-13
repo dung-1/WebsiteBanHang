@@ -9,8 +9,11 @@
     Layout = "~/Areas/Login/Shared/_LayoutLogin.cshtml";
 }
 @model WebsiteBanHang.Areas.Admin.Models.UserModel
+
+
 <div class="form-body">
-    <h3 class="title text-uppercase fw-bold">@language.GetKey("Log in")</h3>
+    <a href="javascript:window.history.back();" style="color:black;"><i class="fa-solid fa-left-long"></i> @language.GetKey("Back")</a>
+    <h3 class="title text-uppercase fw-bold">@language.GetKey("Log In")</h3>
     <div class="social-login">
         <ul>
             <li class="google"><a href="#">Google</a></li>
@@ -20,7 +23,7 @@
 
     <div class="_or">@language.GetKey("Or")</div>
 
-    <form asp-area="Login" asp-controller="Account" asp-action="Login" method="post" class="the-form">
+    <form id="LoginForm" method="post" class="the-form">
 
         <label for="email">Email</label>
         <input type="email" name="email" id="email" asp-for="Email" placeholder="Nhập Email Của Bạn">
@@ -29,11 +32,11 @@
         <input asp-for="MatKhau" type="password" class="form-control" placeholder="Nhập Mật Khẩu Của Bạn" />
 
 
-        <input type="submit" value="@language.GetKey("Log in")">
+        <input type="button" onclick="buttonLoginForm()" class="btn submit_login" value="@language.GetKey("Log In")">
 
     </form>
 
-    <a asp-area="Login" asp-controller="Account" asp-action="ForgotPassword" class="text-black bg-dark">@language.GetKey("Forgot password ?")</a>
+    <a asp-area="Login" asp-controller="Account" asp-action="ForgotPassword" class="text-danger">@language.GetKey("Forgot password ?")</a>
 
 </div><!-- FORM BODY-->
 

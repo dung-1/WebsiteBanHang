@@ -10,8 +10,17 @@
 }
 
 <div class="form-body">
+    <a href="javascript:window.history.back();" style="color:black;"><i class="fa-solid fa-left-long"></i> @language.GetKey("Back")</a>
     <h3 class="title fw-bold text-uppercase ">@language.GetKey("Register")</h3>
-    <form asp-area="Login" asp-controller="Account" asp-action="formSignUp" method="post" onsubmit="return validateForm()" class="the-form">
+    <div class="social-login">
+        <ul>
+            <li class="google"><a href="#">Google</a></li>
+            <li class="fb"><a href="#">Facebook</a></li>
+        </ul>
+    </div><!-- SOCIAL LOGIN -->
+
+    <div class="_or">@language.GetKey("Or")</div>
+    <form  method="post" onsubmit="return validateForm()" class="the-form">
 
         <label for="inputEmail" class="form-label ">Email</label>
         <input type="email" id="inputEmail" name="email" placeholder="Nhập Email Của Bạn">
