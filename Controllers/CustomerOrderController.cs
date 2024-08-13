@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using WebsiteBanHang.Areas.Admin.AdminDTO;
+using WebsiteBanHang.Areas.Admin.Common;
 using WebsiteBanHang.Areas.Admin.Controllers;
 using WebsiteBanHang.Areas.Admin.Data;
 using X.PagedList;
@@ -61,7 +62,11 @@ namespace WebsiteBanHang.Controllers
                                     join product in _context.Product
                                     on details.ProductId equals product.Id into orderProductDetails
                                     from orderProduct in orderProductDetails.DefaultIfEmpty()
-                                    where order.id == id
+                                    join cancelOrder in _context.OrderCancel
+                                    on order.id equals cancelOrder.OrderId into orderCancelDetails
+                                    from orderCancel in orderCancelDetails.DefaultIfEmpty()
+
+                                    where order.id == id && (orderCancel != null || orderCancel == null)// Lọc các đơn hàng bị hủy
                                     orderby order.id descending
                                     select new
                                     {
@@ -69,7 +74,8 @@ namespace WebsiteBanHang.Controllers
                                         UserDetail = user,
                                         CustomerDetail = customer,
                                         OrderDetails = details,
-                                        Product = orderProduct
+                                        Product = orderProduct,
+                                        OrderCancel = orderCancel
                                     };
 
             var orderDetailsList = orderDetailsQuery.ToList();
@@ -95,22 +101,46 @@ namespace WebsiteBanHang.Controllers
                 NgayBan = orderInfo.Order.ngayBan,
                 TrangThai = orderInfo.Order.trangThai,
                 LoaiHoaDon = orderInfo.Order.LoaiHoaDon,
+
                 ChiTietHoaDon = orderDetailsList
-                .Where(o => o.Order.id == orderInfo.Order.id)
-                .Select(o => new ChiTietHoaDonDto
+                  .Where(o => o.Order.id == orderInfo.Order.id)
+                  .Select(o => new ChiTietHoaDonDto
+                  {
+                      img = o.Product.Image,
+                      TenSanPham = o.Product.TenSanPham,
+                      SoLuong = o.OrderDetails.soLuong,
+                      Gia = o.Product.GiaGiam >= 0 ?
+                          (decimal)(o.Product.GiaBan - ((o.Product.GiaBan * o.Product.GiaGiam) / 100)) :
+                          (decimal)o.Product.GiaBan,
+                  }).ToList(),
+
+                HoaDonHuy = orderInfo.OrderCancel != null ? new HoaDonHuyDto
                 {
-                    img = o.OrderDetails.product.Image,
-                    TenSanPham = o.OrderDetails.product.TenSanPham,
-                    SoLuong = o.OrderDetails.soLuong,
-                    Gia = o.OrderDetails.product.GiaGiam >= 0 ?
-                        (decimal)(o.OrderDetails.product.GiaBan - ((o.OrderDetails.product.GiaBan * o.OrderDetails.product.GiaGiam) / 100)) :
-                        (decimal)o.OrderDetails.product.GiaBan,
-                }).ToList(),
+                    Reason = orderInfo.OrderCancel.Reason,
+                    ReasonAdmin = orderInfo.OrderCancel.AdminId != null
+                  ? Enum.TryParse<CancelOfAdmin>(orderInfo.OrderCancel.Reason, out var reasonAdmin)
+                    ? reasonAdmin
+                    : (CancelOfAdmin?)null
+                  : null,
+                    ReasonCustomer = orderInfo.OrderCancel.CustomerId != null
+                     ? Enum.TryParse<CancelOfClient>(orderInfo.OrderCancel.Reason, out var reasonCustomer)
+                       ? reasonCustomer
+                       : (CancelOfClient?)null
+                     : null,
+                    DateCancel = orderInfo.OrderCancel.CancelledAt,
+                    UserCancel = orderInfo.OrderCancel.AdminId != null
+                 ? "Hệ thống hủy đơn hàng"
+                 : orderInfo.OrderCancel.CustomerId != null
+                   ? "Khách hàng hủy đơn hàng"
+                   : "Không xác định"
+                } : null,
+
 
                 TongCong = orderInfo.Order.ctdh != null
-                    ? (decimal)orderInfo.Order.ctdh.Sum(ct => ct.gia)
-                    : 0
+                      ? (decimal)orderInfo.Order.ctdh.Sum(ct => ct.gia)
+                      : 0
             }).ToList();
+
             return View(orderDtos);
         }
 

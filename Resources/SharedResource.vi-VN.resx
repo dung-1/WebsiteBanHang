@@ -151,6 +151,9 @@
   <data name="Bill" xml:space="preserve">
     <value>Hóa Đơn</value>
   </data>
+  <data name="Buy back" xml:space="preserve">
+    <value>Mua lại</value>
+  </data>
   <data name="Buy Now" xml:space="preserve">
     <value>Mua Ngay</value>
   </data>
@@ -344,7 +347,7 @@
     <value>Chính sách vận chuyển</value>
   </data>
   <data name="Single state" xml:space="preserve">
-    <value>Trạng thái đơn hàn</value>
+    <value>Trạng thái đơn hàng</value>
   </data>
   <data name="Sold out" xml:space="preserve">
     <value>Đã Hết</value>

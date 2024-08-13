@@ -263,8 +263,6 @@ namespace WebsiteBanHang.Controllers
             // If no existing orders, start from HD00001
             return "HD00001";
         }
-
-        [Route("Checkout")]
         public async Task<IActionResult> Checkout(string delivery_method)
         {
             var (loggedInCustomer, cartModel) = GetLoggedInCustomerAndCart();
@@ -300,7 +298,7 @@ namespace WebsiteBanHang.Controllers
                             ngayBan = DateTime.Now,
                             tongTien = total,
                             trangThai = "Đang xử lý",
-                            LoaiHoaDon = "Mua hàng"
+                            LoaiHoaDon = "Thanh toán qua thẻ"
                         };
                         foreach (var cartItem in cartItems)
                         {
@@ -392,7 +390,7 @@ namespace WebsiteBanHang.Controllers
                             ngayBan = DateTime.Now,
                             tongTien = total,
                             trangThai = "Đang xử lý",
-                            LoaiHoaDon = "Mua hàng"
+                            LoaiHoaDon = "Thanh toán khi nhận hàng"
                         };
                         foreach (var cartItem in cartItems)
                         {
@@ -450,6 +448,7 @@ namespace WebsiteBanHang.Controllers
 
             return RedirectToAction("Index");
         }
+
         public IActionResult PaymentSuccess()
         {
             return View();

@@ -12,6 +12,7 @@
 </div>
 <div class="modal-body">
     <form id="cancelOrderForm" method="post">
+        @Html.AntiForgeryToken()
         <input type="hidden" name="AdminId" value="@userId" />
         <input type="hidden" asp-for="OrderId" name="OrderId" id="OrderId" />
 

@@ -67,7 +67,7 @@
                                                     <a data-id="@item.Id" class="btn btn-sm btn-primary View-Order ">
                                                         <i class="fa-solid fa-eye"></i> Xem chi tiết
                                                     </a>
-                                                    <a asp-area="Admin" asp-controller="Billorder" asp-action="DeliverOrder" asp-route-Id="@item.Id" class="btn btn-sm btn-warning ">
+                                                    <a href="javascript:void(0);" class="btn btn-sm btn-warning deliver-order" data-id="@item.Id">
                                                         <i class="fa-solid fa-car-side"></i> Giao Hàng
                                                     </a>
                                                 </td>

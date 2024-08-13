@@ -15,6 +15,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
 using WebsiteBanHang.HubSignalR;
 using WebsiteBanHang.Areas.Admin.Common;
+using Newtonsoft.Json;
 
 
 namespace WebsiteBanHang.Areas.Admin.Controllers
@@ -88,6 +89,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             var pagedCategories = GetOrdersByStatus("Đang xử lý", page, searchName);
             return View(pagedCategories);
         }
+
         //public JsonResult GetAllOrders(int? page, string searchName)
         //{
         //    try
@@ -111,7 +113,6 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
         //        return Json(new { error = "Error retrieving orders" });
         //    }
         //}
-
 
         public IActionResult Approved(int? page, string searchName)
         {
@@ -155,7 +156,11 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                                         join product in _context.Product
                                         on details.ProductId equals product.Id into orderProductDetails
                                         from orderProduct in orderProductDetails.DefaultIfEmpty()
-                                        where order.id == id
+                                        join cancelOrder in _context.OrderCancel
+                                        on order.id equals cancelOrder.OrderId into orderCancelDetails
+                                        from orderCancel in orderCancelDetails.DefaultIfEmpty()
+
+                                        where order.id == id && (orderCancel != null || orderCancel == null )// Lọc các đơn hàng bị hủy
                                         orderby order.id descending
                                         select new
                                         {
@@ -163,7 +168,8 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                                             UserDetail = user,
                                             CustomerDetail = customer,
                                             OrderDetails = details,
-                                            Product = orderProduct
+                                            Product = orderProduct,
+                                            OrderCancel = orderCancel
                                         };
 
                 var orderDetailsList = orderDetailsQuery.ToList();
@@ -189,17 +195,40 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                     NgayBan = orderInfo.Order.ngayBan,
                     TrangThai = orderInfo.Order.trangThai,
                     LoaiHoaDon = orderInfo.Order.LoaiHoaDon,
+
                     ChiTietHoaDon = orderDetailsList
                       .Where(o => o.Order.id == orderInfo.Order.id)
                       .Select(o => new ChiTietHoaDonDto
                       {
-                          img = o.OrderDetails.product.Image,
-                          TenSanPham = o.OrderDetails.product.TenSanPham,
+                          img = o.Product.Image,
+                          TenSanPham = o.Product.TenSanPham,
                           SoLuong = o.OrderDetails.soLuong,
-                          Gia = o.OrderDetails.product.GiaGiam >= 0 ?
-                              (decimal)(o.OrderDetails.product.GiaBan - ((o.OrderDetails.product.GiaBan * o.OrderDetails.product.GiaGiam) / 100)) :
-                              (decimal)o.OrderDetails.product.GiaBan,
+                          Gia = o.Product.GiaGiam >= 0 ?
+                              (decimal)(o.Product.GiaBan - ((o.Product.GiaBan * o.Product.GiaGiam) / 100)) :
+                              (decimal)o.Product.GiaBan,
                       }).ToList(),
+
+                    HoaDonHuy = orderInfo.OrderCancel != null ? new HoaDonHuyDto
+                    {
+                        Reason = orderInfo.OrderCancel.Reason,
+                        ReasonAdmin = orderInfo.OrderCancel.AdminId != null
+                  ? Enum.TryParse<CancelOfAdmin>(orderInfo.OrderCancel.Reason, out var reasonAdmin)
+                    ? reasonAdmin
+                    : null
+                  : null,
+                        ReasonCustomer = orderInfo.OrderCancel.CustomerId != null
+                     ? Enum.TryParse<CancelOfClient>(orderInfo.OrderCancel.Reason, out var reasonCustomer)
+                       ? reasonCustomer
+                       : (CancelOfClient?)null
+                     : null,
+                        DateCancel = orderInfo.OrderCancel.CancelledAt,
+                        UserCancel = orderInfo.OrderCancel.AdminId != null
+                 ? "Hệ thống hủy đơn hàng"
+                 : orderInfo.OrderCancel.CustomerId != null
+                   ? "Khách hàng hủy đơn hàng"
+                   : "Không xác định"
+                    } : null,
+
 
                     TongCong = orderInfo.Order.ctdh != null
                           ? (decimal)orderInfo.Order.ctdh.Sum(ct => ct.gia)
@@ -212,7 +241,6 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             {
                 return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
             }
-
         }
 
         //Duyệt Đơn Hàng
@@ -309,11 +337,13 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                                 "vifiretek <span style=\"font-size: 1.25rem; color: #dc3545;\">.VN</span></h1>";
 
             // Thêm tiêu đề hóa đơn
-            builder.HtmlBody += "<h3 style='text-align: center; font-weight: bold;'>HÓA ĐƠN CỦA BẠN</h3>";
+            builder.HtmlBody += "<h3 style='text-align: center; font-weight: bold;color: #007bff;'>HÓA ĐƠN MUA HÀNG CỦA BẠN</h3>";
 
             // Thêm thông tin hóa đơn
             builder.HtmlBody += "<p style=\"font-family: Arial, sans-serif; font-size: 16px;\">" +
                      $"<span style=\"float: left; width: 50%;\">Mã Hóa Đơn: {order.MaHoaDon}</span>" +
+                     $"<br>"+
+                     $"<span style=\"float: left; width: 50%;\">Hình thức thanh toán: {order.LoaiHoaDon}</span>" +
                      $"<span style=\"float: right; width: 50%; text-align: right;\">Ngày Mua: {order.ngayBan.ToString("dd/MM/yyyy HH:mm:ss")}</span>" +
                      $"<div style=\"clear: both;\"></div>" +
                      $"</p>";
@@ -407,60 +437,78 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
         //Hủy Đơn Hàng
         [HttpPost]
-        public IActionResult CancelOrder(OrderCancellationModel cancellationModel)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelOrderAsync([FromBody] OrderCancellationModel cancellationModel)
         {
             try
             {
-                var order = _context.Order.Include(o => o.Customer)
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var order = await _context.Order.Include(o => o.Customer)
                     .Include(o => o.ctdh)
                     .ThenInclude(od => od.product)
-                                          .FirstOrDefault(o => o.id == cancellationModel.OrderId);
+                    .FirstOrDefaultAsync(o => o.id == cancellationModel.OrderId);
 
-                if (order != null)
+                if (order == null)
                 {
-                    if (User.IsInRole("Admin"))
+                    return NotFound("Không tìm thấy đơn hàng.");
+                }
+
+                // Kiểm tra quyền truy cập của người dùng
+                if (!User.IsInRole("Admin") && !User.IsInRole("Employee"))
+                {
+                    return Forbid("Bạn không có quyền hủy đơn hàng.");
+                }
+
+                // Cập nhật trạng thái đơn hàng là "Đã hủy"
+                order.trangThai = "Đã hủy";
+
+                // Lấy UserID của người đăng nhập vào hệ thống và gán cho trường UserID của đơn hàng
+                var userName = User.FindFirstValue(ClaimTypes.Name);
+                var user = await _context.User.FirstOrDefaultAsync(u => u.Email == userName);
+
+                if (user == null)
+                {
+                    return BadRequest("Không tìm thấy người dùng với tên đăng nhập đã cung cấp.");
+                }
+
+                // Gán ID của người dùng cho UserID của đơn hàng
+                order.UserID = user.Id;
+
+                // Cập nhật lại số lượng hàng trong kho
+                foreach (var orderDetail in order.ctdh)
+                {
+                    var inventoryItem = await _context.Inventory.FirstOrDefaultAsync(i => i.ProductId == orderDetail.ProductId);
+                    if (inventoryItem != null)
                     {
-                        foreach (var orderDetail in order.ctdh)
-                        {
-                            var inventoryItem = _context.Inventory.FirstOrDefault(i => i.ProductId == orderDetail.ProductId);
-                            if (inventoryItem != null)
-                            {
-                                inventoryItem.SoLuong += orderDetail.soLuong;
-                            }
-                        }
-                        // Gán giá trị cho các trường cần thiết
-                        cancellationModel.CancelledAt = DateTime.Now;
-
-                        // Thêm thông tin về Order vào model nếu cần
-                        cancellationModel.OrderId = order.id;
-
-                        // Thêm thông tin AdminId từ user đang đăng nhập
-                        cancellationModel.AdminId = cancellationModel.AdminId;
-
-                        // Lưu thông tin vào bảng OrderCancellationModel
-                        _context.OrderCancel.Add(cancellationModel);
-
-                        // Cập nhật trạng thái đơn hàng là "Đã hủy"
-                        order.trangThai = "Đã hủy";
-                        _context.SaveChanges();
-
-                        SendCancellationEmail(order.Customer.Email, order, cancellationModel);
-
-                        return Json(new { success = true });
-                    }
-                    else
-                    {
-                        return Json(new { success = false, message = "Bạn không có quyền hủy đơn hàng." });
+                        inventoryItem.SoLuong += orderDetail.soLuong;
                     }
                 }
-                else
+
+                // Gán giá trị cho các trường cần thiết trong model hủy đơn hàng
+                cancellationModel.CancelledAt = DateTime.Now;
+                cancellationModel.AdminId = user.Id;
+
+                // Lưu thông tin vào bảng OrderCancellationModel
+                _context.OrderCancel.Add(cancellationModel);
+                await _context.SaveChangesAsync();
+
+                // Gửi email thông báo hủy đơn hàng
+                var customerEmail = order.Customer?.Email;
+                if (!string.IsNullOrEmpty(customerEmail))
                 {
-                    return Json(new { success = false, message = "Không tìm thấy đơn hàng." });
+                    SendCancellationEmail(customerEmail, order, cancellationModel);
+                    await _hub.Clients.All.SendAsync("ReceiveOrderCancellationNotification", order.MaHoaDon);
                 }
+
+                return Ok(new { success = true, message = "Đã hủy đơn hàng thành công." });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Đã xảy ra lỗi. Vui lòng thử lại." });
+                return StatusCode(500, new { success = false, message = "Đã xảy ra lỗi khi hủy đơn hàng.", error = ex.Message });
             }
         }
 
