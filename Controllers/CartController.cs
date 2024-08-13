@@ -10,7 +10,7 @@ using WebsiteBanHang.Models;
 using Stripe.Checkout;
 using Stripe;
 using Microsoft.Extensions.Options;
-using static System.Web.Razor.Parser.SyntaxConstants;
+using Newtonsoft.Json;
 
 namespace WebsiteBanHang.Controllers
 {
@@ -245,122 +245,83 @@ namespace WebsiteBanHang.Controllers
         }
         private string GenerateOrderCode()
         {
-            // Get the latest order code from the database
             var latestOrder = _context.Order
                 .OrderByDescending(order => order.MaHoaDon)
                 .FirstOrDefault();
 
             if (latestOrder != null)
             {
-                // Extract the numeric part of the latest order code
                 if (int.TryParse(latestOrder.MaHoaDon.Substring(2), out int latestOrderNumber))
                 {
                     // Increment the order number and format it as HDxxxxx
                     return "HD" + (latestOrderNumber + 1).ToString("D5");
                 }
             }
-
-            // If no existing orders, start from HD00001
             return "HD00001";
         }
+
+
         public async Task<IActionResult> Checkout(string delivery_method)
         {
             var (loggedInCustomer, cartModel) = GetLoggedInCustomerAndCart();
 
             if (cartModel != null)
             {
-                var cartItems = cartModel.CartItems; // Lấy danh sách các mục giỏ hàng từ đối tượng cartModel
+                var cartItems = cartModel.CartItems;
                 float total = 0;
+                OrdersModel order = null;
+
                 try
                 {
-                    foreach (var cartItem in cartItems)
-                    {
-                        float price = 0;
-                        if (cartItem.Product.GiaGiam != 0)
-                        {
-                            var giamgia = cartItem.Product.GiaBan - cartItem.Product.GiaBan * cartItem.Product.GiaGiam / 100;
-                            price = (float)Convert.ToDouble(cartItem.Quantity * giamgia);
-                        }
-                        else
-                        {
-                            price = (float)Convert.ToDouble(cartItem.Quantity * cartItem.Product.GiaBan);
-                        }
-                        total += price;
-                    }
-
-                    // Kiểm tra phương thức thanh toán
                     if (delivery_method == "card")
                     {
-                        var order = new OrdersModel
+                        order = new OrdersModel
                         {
-                            MaHoaDon = GenerateOrderCode(), // Implement your own order code generation logic
-                            CustomerID = loggedInCustomer != null ? loggedInCustomer.Id : null, // Set the user ID as needed
+                            MaHoaDon = GenerateOrderCode(),
+                            CustomerID = loggedInCustomer?.Id,
                             ngayBan = DateTime.Now,
-                            tongTien = total,
                             trangThai = "Đang xử lý",
                             LoaiHoaDon = "Thanh toán qua thẻ"
                         };
+
                         foreach (var cartItem in cartItems)
                         {
-                            float price = 0;
-                            if (cartItem.Product.GiaGiam != 0)
-                            {
-                                var giamgia = cartItem.Product.GiaBan - ((cartItem.Product.GiaBan * cartItem.Product.GiaGiam) / 100);
-                                price = (float)Convert.ToDouble(cartItem.Quantity * giamgia);
-                            }
-                            else
-                            {
-                                price = (float)Convert.ToDouble(cartItem.Quantity * cartItem.Product.GiaBan);
-                            }
+                            float price = CalculatePrice(cartItem);
                             total += price;
 
-                            // Create an order detail for each item in the cart
                             var orderDetail = new OrderDetaiModel
                             {
-                                ProductId = cartItem.ProductId, // Sử dụng ProductId thay vì cartItem.Product.Id
+                                ProductId = cartItem.ProductId,
                                 soLuong = cartItem.Quantity,
-                                gia = price // Sử dụng giá được tính toán ở trên
+                                gia = price
                             };
 
-                            // Reduce the quantity of the product in the inventory
                             var inventoryItem = _context.Inventory.FirstOrDefault(i => i.ProductId == cartItem.ProductId);
                             if (inventoryItem != null)
                             {
                                 inventoryItem.SoLuong -= cartItem.Quantity;
                             }
-                            // Add the order detail to the order
+
                             order.ctdh.Add(orderDetail);
                         }
 
-                        // Assign total value after calculating
+                        // Gán tổng tiền cho đơn hàng
                         order.tongTien = total;
-                        // Save the order temporarily without committing to database
-                        _context.Order.Add(order);
-                        _context.SaveChanges(); // Lưu tạm vào database để có ID của order
 
-                        // Clear the cart after the purchase
-                        _context.Cart_Item.RemoveRange(cartItems); // Xóa các mục giỏ hàng
-                        _context.SaveChanges();
-
-                        // Gửi thông báo tới admin quản trị
-                        await _hub.Clients.All.SendAsync("ReceiveOrderNotification", order.MaHoaDon);
-
-                        var currency = "vnd"; // Currency code  
+                        // Thực hiện thanh toán qua Stripe
                         StripeConfiguration.ApiKey = _stripeSettings.SecretKey;
-
-                        var totalAmount = (int)order.tongTien;
 
                         var options = new SessionCreateOptions
                         {
                             PaymentMethodTypes = new List<string> { "card" },
                             LineItems = new List<SessionLineItemOptions>
-                       {
+                    {
                         new SessionLineItemOptions
                         {
                             PriceData = new SessionLineItemPriceDataOptions
                             {
-                                Currency = currency,
-                                UnitAmount = totalAmount,  // Amount in smallest currency unit (e.g., cents)
+                                Currency = "vnd",
+                                UnitAmount = (int)total,  // Số tiền nhỏ nhất của đơn vị tiền tệ
                                 ProductData = new SessionLineItemPriceDataProductDataOptions
                                 {
                                     Name = "Product Name",
@@ -368,95 +329,125 @@ namespace WebsiteBanHang.Controllers
                                 }
                             },
                             Quantity = 1
-                          }
-                            },
+                        }
+                    },
                             Mode = "payment",
-                            SuccessUrl = Url.Action("PaymentSuccess", "Cart", new { orderId = order.id }, Request.Scheme),
+                            SuccessUrl = Url.Action("PaymentSuccess", "Cart", new { orderId = order.MaHoaDon }, Request.Scheme),
                             CancelUrl = Url.Action("PaymentCancel", "Cart", null, Request.Scheme)
                         };
 
                         var service = new SessionService();
                         var session = service.Create(options);
 
-                        return Redirect(session.Url);
+                        // Lưu thông tin đơn hàng vào session tạm thời để sử dụng sau khi thanh toán thành công
+                        TempData["OrderInfo"] = JsonConvert.SerializeObject(order);
+
+                        // Trả về URL để chuyển hướng người dùng đến trang thanh toán
+                        return Json(new { success = true, stripeSessionUrl = session.Url });
                     }
-                    else
+                    else if (delivery_method == "cod")
                     {
-                        // Đánh dấu đơn hàng đã thanh toán khi nhận hàng
-                        var order = new OrdersModel
+                        // Thanh toán khi nhận hàng
+                        order = new OrdersModel
                         {
-                            MaHoaDon = GenerateOrderCode(), // Implement your own order code generation logic
-                            CustomerID = loggedInCustomer != null ? loggedInCustomer.Id : null, // Set the user ID as needed
+                            MaHoaDon = GenerateOrderCode(),
+                            CustomerID = loggedInCustomer?.Id,
                             ngayBan = DateTime.Now,
                             tongTien = total,
                             trangThai = "Đang xử lý",
                             LoaiHoaDon = "Thanh toán khi nhận hàng"
                         };
+
                         foreach (var cartItem in cartItems)
                         {
-                            float price = 0;
-                            if (cartItem.Product.GiaGiam != 0)
-                            {
-                                var giamgia = cartItem.Product.GiaBan - ((cartItem.Product.GiaBan * cartItem.Product.GiaGiam) / 100);
-                                price = (float)Convert.ToDouble(cartItem.Quantity * giamgia);
-                            }
-                            else
-                            {
-                                price = (float)Convert.ToDouble(cartItem.Quantity * cartItem.Product.GiaBan);
-                            }
+                            float price = CalculatePrice(cartItem);
                             total += price;
 
-                            // Create an order detail for each item in the cart
                             var orderDetail = new OrderDetaiModel
                             {
-                                ProductId = cartItem.ProductId, // Sử dụng ProductId thay vì cartItem.Product.Id
+                                ProductId = cartItem.ProductId,
                                 soLuong = cartItem.Quantity,
-                                gia = price // Sử dụng giá được tính toán ở trên
+                                gia = price
                             };
 
-                            // Reduce the quantity of the product in the inventory
                             var inventoryItem = _context.Inventory.FirstOrDefault(i => i.ProductId == cartItem.ProductId);
                             if (inventoryItem != null)
                             {
                                 inventoryItem.SoLuong -= cartItem.Quantity;
                             }
-                            // Add the order detail to the order
+
                             order.ctdh.Add(orderDetail);
                         }
 
-                        // Assign total value after calculating
                         order.tongTien = total;
-                        // Save the order temporarily without committing to database
                         _context.Order.Add(order);
-                        _context.SaveChanges(); // Lưu tạm vào database để có ID của order
-
-                        // Clear the cart after the purchase
-                        _context.Cart_Item.RemoveRange(cartItems); // Xóa các mục giỏ hàng
                         _context.SaveChanges();
 
-                        // Gửi thông báo tới admin quản trị
+                        _context.Cart_Item.RemoveRange(cartItems);
+                        _context.SaveChanges();
+
                         await _hub.Clients.All.SendAsync("ReceiveOrderNotification", order.MaHoaDon);
-                        return RedirectToAction("Index");
+
+                        return Json(new { success = true, redirectUrl = Url.Action("Index", "Cart") });
                     }
                 }
                 catch (Exception ex)
                 {
                     TempData["CheckoutError"] = "Đã xảy ra lỗi khi đặt hàng.";
-                    // Handle the exception
+                    return RedirectToAction("Index", "Cart");
                 }
             }
 
             return RedirectToAction("Index");
         }
 
-        public IActionResult PaymentSuccess()
+        public async Task<IActionResult> PaymentSuccess(string orderId)
         {
+            // Lấy thông tin đơn hàng từ TempData
+            var orderInfo = TempData["OrderInfo"]?.ToString();
+            if (orderInfo == null)
+            {
+                return RedirectToAction("Index", "Cart");
+            }
+
+            var order = JsonConvert.DeserializeObject<OrdersModel>(orderInfo);
+
+            order.trangThai = "Đang xử lý";
+            _context.Order.Add(order);
+            _context.SaveChanges();
+
+            var (loggedInCustomer, cartModel) = GetLoggedInCustomerAndCart();
+
+            if (cartModel != null)
+            {
+                _context.Cart_Item.RemoveRange(cartModel.CartItems);
+                _context.SaveChanges();
+            }
+
+            await _hub.Clients.All.SendAsync("ReceiveOrderNotification", order.MaHoaDon);
+
             return View();
         }
+
 
         public IActionResult PaymentCancel()
         {
             return View();
         }
+
+        private float CalculatePrice(Cart_Item cartItem)
+        {
+            float price = 0;
+            if (cartItem.Product.GiaGiam != 0)
+            {
+                price = (float)Convert.ToDouble(cartItem.Quantity * (cartItem.Product.GiaBan - (cartItem.Product.GiaBan * cartItem.Product.GiaGiam) / 100));
+            }
+            else
+            {
+                price = (float)Convert.ToDouble(cartItem.Quantity * cartItem.Product.GiaBan);
+            }
+            return price;
+        }
+
     }
 }

@@ -160,7 +160,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                                         on order.id equals cancelOrder.OrderId into orderCancelDetails
                                         from orderCancel in orderCancelDetails.DefaultIfEmpty()
 
-                                        where order.id == id && (orderCancel != null || orderCancel == null )// Lọc các đơn hàng bị hủy
+                                        where order.id == id && (orderCancel != null || orderCancel == null)// Lọc các đơn hàng bị hủy
                                         orderby order.id descending
                                         select new
                                         {
@@ -184,6 +184,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                     .Select(group => group.First())
                     .ToList();
 
+#pragma warning disable CS8601 // Possible null reference assignment.
                 var orderDtos = distinctOrders.Select(orderInfo => new OrderDto
                 {
                     Id = orderInfo.Order.id,
@@ -229,11 +230,11 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                    : "Không xác định"
                     } : null,
 
-
                     TongCong = orderInfo.Order.ctdh != null
                           ? (decimal)orderInfo.Order.ctdh.Sum(ct => ct.gia)
                           : 0
                 }).ToList();
+#pragma warning restore CS8601 // Possible null reference assignment.
 
                 return PartialView("_OrderView", orderDtos);
             }
@@ -342,7 +343,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             // Thêm thông tin hóa đơn
             builder.HtmlBody += "<p style=\"font-family: Arial, sans-serif; font-size: 16px;\">" +
                      $"<span style=\"float: left; width: 50%;\">Mã Hóa Đơn: {order.MaHoaDon}</span>" +
-                     $"<br>"+
+                     $"<br>" +
                      $"<span style=\"float: left; width: 50%;\">Hình thức thanh toán: {order.LoaiHoaDon}</span>" +
                      $"<span style=\"float: right; width: 50%; text-align: right;\">Ngày Mua: {order.ngayBan.ToString("dd/MM/yyyy HH:mm:ss")}</span>" +
                      $"<div style=\"clear: both;\"></div>" +

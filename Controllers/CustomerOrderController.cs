@@ -90,6 +90,7 @@ namespace WebsiteBanHang.Controllers
                 .Select(group => group.First())
                 .ToList();
 
+#pragma warning disable CS8601 // Possible null reference assignment.
             var orderDtos = distinctOrders.Select(orderInfo => new OrderDto
             {
                 Id = orderInfo.Order.id,
@@ -140,6 +141,7 @@ namespace WebsiteBanHang.Controllers
                       ? (decimal)orderInfo.Order.ctdh.Sum(ct => ct.gia)
                       : 0
             }).ToList();
+#pragma warning restore CS8601 // Possible null reference assignment.
 
             return View(orderDtos);
         }
