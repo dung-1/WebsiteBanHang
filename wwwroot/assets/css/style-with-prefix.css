@@ -288,7 +288,7 @@ li.fb a::before {
   color: #666666;
 }
 
-    .the-form [type="submit"] {
+    .the-form [type="submit"], .submit_login {
         background: #3f5be4;
         border: 1px solid rgba(0, 0, 0, 0.1);
         padding: 18px;

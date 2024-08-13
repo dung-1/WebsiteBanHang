@@ -30,6 +30,7 @@ namespace WebsiteBanHang.Controllers
             _context = context;
             _logger = logger;
         }
+        
         [Route("account")]
         public IActionResult Index()
         {
@@ -38,57 +39,59 @@ namespace WebsiteBanHang.Controllers
 
         [HttpPost]
         [Route("formSignUp")]
-        public IActionResult formSignUp(string email, string fullname, string phoneNumber, string address, string password)
+        public async Task<IActionResult> formSignUp(string email, string fullname, string phoneNumber, string address, string password)
         {
-            string userCodeString = "KH00001"; // Giá trị mặc định
-
-            var lastUser = _context.Customer.OrderByDescending(u => u.Id).FirstOrDefault();
-
-            if (lastUser != null)
+            try
             {
-                // Lấy mã người dùng cuối cùng, tăng giá trị lên 1 và sử dụng cho người dùng mới
-                string lastUserCode = lastUser.MaNguoiDung;
-                int lastUserCodeNumber = int.Parse(lastUserCode.Substring(4)); // Loại bỏ "user" và chuyển thành số
-                int newCodeNumber = lastUserCodeNumber + 1;
-                userCodeString = "KH" + newCodeNumber.ToString("D5");
+                string userCodeString = "KH00001"; // Giá trị mặc định
+                var lastUser = await _context.Customer.OrderByDescending(u => u.Id).FirstOrDefaultAsync();
+                if (lastUser != null)
+                {
+                    string lastUserCode = lastUser.MaNguoiDung;
+                    int lastUserCodeNumber = int.Parse(lastUserCode.Substring(2)); // Loại bỏ "KH" và chuyển thành số
+                    int newCodeNumber = lastUserCodeNumber + 1;
+                    userCodeString = "KH" + newCodeNumber.ToString("D5");
+                }
+
+                bool isEmailExists = await _context.Customer.AnyAsync(u => u.Email == email);
+                if (isEmailExists)
+                {
+                    return Json(new { success = false, message = "Email đã tồn tại" });
+                }
+
+                // Email không trùng, lưu thông tin vào session
+                Random random = new Random();
+                int code = random.Next(100000, 999999);
+                HttpContext.Session.SetInt32("VerificationCode", code);
+                HttpContext.Session.SetString("UserCode", userCodeString);
+                HttpContext.Session.SetString("Email", email);
+                HttpContext.Session.SetString("Password", password);
+                HttpContext.Session.SetString("Fullname", fullname);
+                HttpContext.Session.SetString("PhoneNumber", phoneNumber);
+                HttpContext.Session.SetString("Address", address);
+
+                // Gửi email chứa mã code
+                var emailMessage = new MimeMessage();
+                emailMessage.From.Add(new MailboxAddress("Nguyễn Văn Dụng", _configuration["EmailSettings:Email"]));
+                emailMessage.To.Add(new MailboxAddress("Recipient Name", email));
+                emailMessage.Subject = "Xác minh tài khoản";
+                emailMessage.Body = new TextPart(TextFormat.Html)
+                {
+                    Text = $"Mã xác minh của bạn là: {code}"
+                };
+
+                using var smtp = new SmtpClient();
+                await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+                await smtp.AuthenticateAsync(_configuration["EmailSettings:Email"], _configuration["EmailSettings:Password"]);
+                await smtp.SendAsync(emailMessage);
+                await smtp.DisconnectAsync(true);
+
+                return Json(new { success = true, message = "Vui lòng kiểm tra email của bạn để xác minh tài khoản" });
             }
-
-            bool isEmailExists = _context.Customer.Any(u => u.Email == email);
-            if (isEmailExists)
+            catch (Exception ex)
             {
-                // Email đã tồn tại, quay lại trang đăng ký
-                return RedirectToAction("Index");
+                return Json(new { success = false, message = "Đã xảy ra lỗi: " + ex.Message });
             }
-
-            // Email không trùng, lưu thông tin vào session
-            Random random = new Random();
-            int code = random.Next(100000, 999999);
-            HttpContext.Session.SetInt32("VerificationCode", code);// Tạo mã người dùng mới
-            HttpContext.Session.SetString("iserCode", userCodeString);
-            HttpContext.Session.SetString("email", email);
-            HttpContext.Session.SetString("password", password);
-            HttpContext.Session.SetString("fullname", fullname);
-            HttpContext.Session.SetString("phoneNumber", phoneNumber);
-            HttpContext.Session.SetString("address", address);
-
-            // Gửi email chứa mã code
-            var emailMessage = new MimeMessage();
-            emailMessage.From.Add(new MailboxAddress("Nguyễn Văn Dụng", _configuration["EmailSettings:Email"]));
-            emailMessage.To.Add(new MailboxAddress("Recipient Name", email));
-            emailMessage.Subject = "Xác minh tài khoản";
-
-            emailMessage.Body = new TextPart(TextFormat.Html)
-            {
-                Text = $"Mã xác minh của bạn là: {code}"
-            };
-
-            using var smtp = new SmtpClient();
-            smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-            smtp.Authenticate(_configuration["EmailSettings:Email"], _configuration["EmailSettings:Password"]);
-            smtp.Send(emailMessage);
-            smtp.Disconnect(true);
-
-            return RedirectToAction("Check_Verification");
         }
 
         [HttpPost]
@@ -103,8 +106,6 @@ namespace WebsiteBanHang.Controllers
         [Route("Check_Verification")]
         public IActionResult Check_Verification()
         {
-            // Lấy Fullname từ Session
-            ViewBag.Fullname = HttpContext.Session.GetString("fullname");
             return View();
         }
 
@@ -185,24 +186,24 @@ namespace WebsiteBanHang.Controllers
             var hashedPassword = GetMd5Hash(loginModel.MatKhau);
 
             // Check in the User table
-            var user = _context.User
-                .Include(u => u.userDetail) // Include the navigation property
-                .FirstOrDefault(m => m.Email == loginModel.Email && m.MatKhau == hashedPassword);
+            var user = await _context.User
+                .Include(u => u.userDetail)
+                .FirstOrDefaultAsync(m => m.Email == loginModel.Email && m.MatKhau == hashedPassword);
 
             if (user == null)
             {
                 // Check in the Customer table
-                var customer = _context.Customer
-                    .Include(c => c.CustomerDetail) // Include the navigation property
-                    .FirstOrDefault(m => m.Email == loginModel.Email && m.MatKhau == hashedPassword);
+                var customer = await _context.Customer
+                    .Include(c => c.CustomerDetail)
+                    .FirstOrDefaultAsync(m => m.Email == loginModel.Email && m.MatKhau == hashedPassword);
 
                 if (customer != null)
                 {
-                    var customerRoles = _context.CustomerRole
+                    var customerRoles = await _context.CustomerRole
                         .Include(cr => cr.Role)
                         .Where(cr => cr.Customer_ID == customer.Id)
                         .Select(cr => cr.Role.Name)
-                        .ToList();
+                        .ToListAsync();
 
                     var claims = new List<Claim>
             {
@@ -210,7 +211,7 @@ namespace WebsiteBanHang.Controllers
                 new Claim(ClaimTypes.Email, customer.CustomerDetail?.HoTen),
                 new Claim(ClaimTypes.StreetAddress, customer.CustomerDetail?.DiaChi),
                 new Claim(ClaimTypes.MobilePhone, customer.CustomerDetail?.SoDienThoai),
-                new Claim("UserId", customer.Id.ToString()) // Add UserId claim
+                new Claim("UserId", customer.Id.ToString())
             };
 
                     foreach (var role in customerRoles)
@@ -223,31 +224,29 @@ namespace WebsiteBanHang.Controllers
 
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal);
 
-                    ViewBag.UserId = customer.Id; // Set UserId in ViewBag
-
                     if (customerRoles.Contains("Admin") || customerRoles.Contains("Employee"))
                     {
-                        return RedirectToAction("Index", "AdminHome", new { area = "Admin" });
+                        return Json(new { success = true, redirectUrl = Url.Action("Index", "AdminHome", new { area = "Admin" }) });
                     }
                     else if (customerRoles.Contains("Customer"))
                     {
-                        return RedirectToAction("Index", "User", new { area = "" });
+                        return Json(new { success = true, redirectUrl = Url.Action("Index", "User", new { area = "" }) });
                     }
                 }
             }
             else
             {
-                var userRoles = _context.UserRole
+                var userRoles = await _context.UserRole
                     .Include(ur => ur.Role)
                     .Where(ur => ur.User_ID == user.Id)
                     .Select(ur => ur.Role.Name)
-                    .ToList();
+                    .ToListAsync();
 
                 var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.Email),
-            new Claim(ClaimTypes.Email, user.userDetail?.HoTen), // Assuming userDetail is a navigation property
-            new Claim("UserId", user.Id.ToString()) // Add UserId claim
+            new Claim(ClaimTypes.Email, user.userDetail?.HoTen),
+            new Claim("UserId", user.Id.ToString())
         };
 
                 foreach (var role in userRoles)
@@ -260,22 +259,18 @@ namespace WebsiteBanHang.Controllers
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal);
 
-                ViewBag.AdminId = user.Id; // Set UserId in ViewBag
-
                 if (userRoles.Contains("Admin") || userRoles.Contains("Employee"))
                 {
-                    return RedirectToAction("Index", "AdminHome", new { area = "Admin" });
+                    return Json(new { success = true, redirectUrl = Url.Action("Index", "AdminHome", new { area = "Admin" }) });
                 }
                 else if (userRoles.Contains("Customer"))
                 {
-                    return RedirectToAction("Index", "User");
+                    return Json(new { success = true, redirectUrl = Url.Action("Index", "User") });
                 }
             }
 
-            ModelState.AddModelError(string.Empty, "Tên đăng nhập hoặc mật khẩu không chính xác.");
-            return View(loginModel);
+            return Json(new { success = false, message = "Tên đăng nhập hoặc mật khẩu không chính xác." });
         }
-
 
         private string GetMd5Hash(string input)
         {

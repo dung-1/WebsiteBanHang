@@ -2,15 +2,108 @@
     ViewData["Title"] = "Check_verification";
     Layout = "~/Areas/Login/Shared/_LayoutLogin.cshtml";
 }
-<div class="form-body">
-    <h4 class="card-title mb-4">Chào bạn <span class="fs-5 text-dark text-uppercase">@ViewBag.Fullname </span>, bạn hãy vào email của bạn để lấy mã xác thực để kích hoạt tài khoản !!! </h4>
-    <form asp-area="Login" asp-controller="Account" asp-action="formCheck_Verification" method="post" class="the-form">
-        <label for="inputUsernamecheck" class="form-label">Nhập Mã Xác Minh Của Bạn </label>
-        <input type="text" class="form-control" id="inputCode" name="code">
-        <span id="error-message" class="text-danger" style="display:none;">Mã xác minh không đúng.</span>
+@using System.Security.Claims
+@using WebsiteBanHang.Models
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@using System.Globalization;
+@inject LanguageService language
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
 
-        <input type="submit" value="Xác Nhận">
+    .container {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        width: 400px;
+    }
 
+    h2 {
+        color: #333;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #555;
+    }
+
+    .input-container {
+        position: relative;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #4A90E2;
+            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+        }
+
+    .btn {
+        display: block;
+        width: 100%;
+        padding: 0.75rem;
+        background-color: #4A90E2;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .btn:hover {
+            background-color: #3A7BC8;
+        }
+
+    .back-link {
+        display: inline-block;
+        margin-bottom: 1rem;
+        color: #4A90E2;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+</style>
+<div class="container">
+    <a href="javascript:window.history.back();" class="back-link">
+        <i class="fa-solid fa-left-long"></i> @language.GetKey("Back")
+    </a>
+    <h2>Mã Xác Minh</h2>
+    <form method="post" id="CheckVerificationForm">
+        <div class="form-group">
+            <label for="code">Nhập Mã Xác Minh Của Bạn:</label>
+            <div class="input-container">
+                <input type="text" id="inputCode" name="code" required />
+            </div>
+        </div>
+        <button type="button" onclick="buttonCheckVerificationForm()" class="btn">Xác Nhận</button>
     </form>
-
 </div>

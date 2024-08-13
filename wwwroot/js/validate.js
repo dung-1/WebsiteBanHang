@@ -105,8 +105,6 @@ function clearErrors() {
         errorElements[i].textContent = "";
     }
 }
-
-// Sử dụng hàm này để kiểm tra có lỗi trước khi submit
 function validateForm() {
     hasErrors = false; // Đặt lại biến hasErrors thành false
     clearErrors(); // Xóa thông báo lỗi hiện tại
@@ -118,6 +116,65 @@ function validateForm() {
     validateField(passwordInput, passwordError, validatePassword, "Mật khẩu phải có ít nhất 6 ký tự");
     // Trả về true nếu không có lỗi
     return !hasErrors;
+}
+
+
+// Sử dụng hàm này để kiểm tra có lỗi trước khi submit
+$(document).ready(function () {
+    $('form').on('submit', function (e) {
+        e.preventDefault(); // Ngăn chặn form submit mặc định
+        if (validateForm()) { // Nếu form hợp lệ
+            submitForm();
+        }
+    });
+});
+
+function submitForm() {
+    var formData = $('form').serialize(); // Lấy dữ liệu form
+
+    $.ajax({
+        url: '/Login/Account/formSignUp',
+        type: 'POST',
+        data: formData,
+        beforeSend: function () {
+            // Hiển thị loading nếu cần
+            showLoading();
+        },
+        success: function (response) {
+            if (response.success) {
+                Swal.fire({
+                    title: 'Đăng ký thành công!',
+                    text: response.message,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/Login/Account/Check_Verification';
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: 'Đăng ký không thành công',
+                    text: response.message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        },
+        error: function (xhr, status, error) {
+            // Xử lý khi có lỗi kết nối
+            Swal.fire({
+                title: 'Lỗi',
+                text: 'Không thể kết nối đến server. Vui lòng thử lại sau.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        },
+        complete: function () {
+            // Ẩn loading nếu cần
+            hideLoading();
+        }
+    });
 }
 function showLoading() {
     $('#loading-spinner').show();
@@ -180,3 +237,70 @@ function buttonResetPassword() {
         }
     });
 }
+
+function buttonCheckVerificationForm() {
+    var data = $("#CheckVerificationForm").serialize();
+    showLoading(); 
+    $.ajax({
+        url: '/Login/account/formCheck_Verification', 
+        type: 'POST',
+        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+        data: data,
+        success: function (result) {
+
+            if (result) {
+                Swal.fire('Thành công', 'Kích hoạt khoản thành công!', 'success')
+                    .then(() => {
+                        location.href = '/Login/account/Login';
+                    });
+            } else {
+                Swal.fire('Lỗi', result.message || 'Có lỗi xảy ra khi kích hoạt khoản!', 'error');
+            }
+        },
+        error: function (xhr) {
+            Swal.fire('Lỗi', xhr.responseText || 'Có lỗi xảy ra trong quá trình kích hoạt khoản!', 'error');
+        },
+        complete: function () {
+            hideLoading();
+        }
+    });
+}
+
+function buttonLoginForm() {
+    var formData = $('#LoginForm').serialize();
+    $.ajax({
+        url: '/Login/Account/Login',
+        type: 'POST',
+        data: formData,
+        success: function (response) {
+            if (response.success) {
+                Swal.fire({
+                    title: 'Đăng nhập thành công!',
+                    text: 'Bạn sẽ được chuyển hướng đến trang chủ.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = response.redirectUrl;
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: 'Đăng nhập thất bại',
+                    text: response.message || 'Email hoặc mật khẩu không chính xác.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        },
+        error: function (xhr, status, error) {
+            Swal.fire({
+                title: 'Lỗi',
+                text: 'Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại sau.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    });
+}
+
