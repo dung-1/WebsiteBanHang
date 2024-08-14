@@ -33,35 +33,38 @@ namespace WebsiteBanHang.Controllers
             var customerId = User.FindFirst("UserId")?.Value;
             if (string.IsNullOrEmpty(customerId) || !int.TryParse(customerId, out int id))
             {
-                return Unauthorized("Người dùng chưa đăng nhập hoặc ID không hợp lệ.");
+                return Json(new { success = false, message = "Người dùng chưa đăng nhập hoặc ID không hợp lệ." });
+            }
+
+            if (string.IsNullOrEmpty(currentPassword) || string.IsNullOrEmpty(newPassword) || string.IsNullOrEmpty(newPasswordAgain))
+            {
+                return Json(new { success = false, message = "Vui lòng nhập đầy đủ thông tin." });
             }
 
             if (newPassword != newPasswordAgain)
             {
-                ModelState.AddModelError("", "Mật khẩu mới không khớp.");
-                return View();
+                return Json(new { success = false, message = "Mật khẩu mới không khớp." });
             }
 
-            var customer = await _context.Customer
-                .FirstOrDefaultAsync(c => c.Id == id);
+            var customer = await _context.Customer.FirstOrDefaultAsync(c => c.Id == id);
 
             if (customer == null)
             {
-                return NotFound("Không tìm thấy khách hàng.");
+                return Json(new { success = false, message = "Không tìm thấy khách hàng." });
             }
 
             var currentPasswordHash = GetMd5Hash(currentPassword);
             if (customer.MatKhau != currentPasswordHash)
             {
-                ModelState.AddModelError("", "Mật khẩu hiện tại không đúng.");
-                return View();
+                return Json(new { success = false, message = "Mật khẩu hiện tại không đúng." });
             }
 
             customer.MatKhau = GetMd5Hash(newPassword);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index", "User"); // Hoặc trang bạn muốn chuyển hướng sau khi đổi mật khẩu thành công
+            return Json(new { success = true, message = "Cập nhật mật khẩu thành công." });
         }
+
 
         private string GetMd5Hash(string input)
         {

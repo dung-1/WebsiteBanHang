@@ -6,7 +6,7 @@ var phoneNumberInput = document.getElementById('inputPhoneNumber');
 var phoneNumberError = document.getElementById('phoneNumberError');
 var addressInput = document.getElementById('inputAddress');
 var addressError = document.getElementById('addressError');
-var passwordInput = document.getElementById('inputPassword');
+var passwordInput = document.getElementById('password');
 var passwordError = document.getElementById('passwordError');
 
 var hasErrors = false; // Biến kiểm tra có lỗi hay không
@@ -304,3 +304,17 @@ function buttonLoginForm() {
     });
 }
 
+function togglePassword() {
+    var passwordInput = document.getElementById("password");
+    var toggleIcon = document.querySelector(".password-toggle i");
+
+    if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        toggleIcon.classList.remove("fa-eye");
+        toggleIcon.classList.add("fa-eye-slash");
+    } else {
+        passwordInput.type = "password";
+        toggleIcon.classList.remove("fa-eye-slash");
+        toggleIcon.classList.add("fa-eye");
+    }
+}

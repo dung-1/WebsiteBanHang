@@ -1,4 +1,17 @@
-﻿function showLoading() {
+﻿
+function togglePasswords() {
+    var passwordInputs = document.querySelectorAll('.password-input');
+    var showPasswordCheckbox = document.getElementById('showPassword');
+
+    passwordInputs.forEach(function (input) {
+        if (showPasswordCheckbox.checked) {
+            input.type = 'text';
+        } else {
+            input.type = 'password';
+        }
+    });
+}
+function showLoading() {
     $('#loading-spinner').show();
 }
 
@@ -123,6 +136,33 @@ function buttonCheckout() {
         },
         error: function () {
             Swal.fire('Có lỗi xảy ra khi đặt hàng!', '', 'error');
+        },
+        complete: function () {
+            hideLoading();
+        }
+    });
+}
+
+function buttonChangePassword() {
+    var data = $("#ChangePasswordForm").serialize();
+    showLoading();
+    $.ajax({
+        url: '/CustomerInfo/Changepassword',
+        type: 'POST',
+        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+        data: data,
+        success: function (response) {
+            if (response.success) {
+                Swal.fire('Cập nhật mật khẩu thành công!', '', 'success')
+                    .then(() => {
+                        location.href = '/CustomerInfo/Changepassword';
+                    });
+            } else {
+                Swal.fire(response.message || 'Cập nhật mật khẩu không thành công!', '', 'error');
+            }
+        },
+        error: function () {
+            Swal.fire('Có lỗi xảy ra khi cập nhật mật khẩu!', '', 'error');
         },
         complete: function () {
             hideLoading();
