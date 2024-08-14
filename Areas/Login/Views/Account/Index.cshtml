@@ -8,7 +8,64 @@
     ViewData["Title"] = "Index";
     Layout = "~/Areas/Login/Shared/_LayoutLogin.cshtml";
 }
+<style>
 
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+
+    .password-container {
+        position: relative;
+    }
+
+    .password-input-container {
+        position: relative;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #888;
+    }
+
+        .password-toggle:hover {
+            color: #333;
+        }
+
+    .submit_login {
+        width: 100%;
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        .submit_login:hover {
+            background-color: #0056b3;
+        }
+</style>
 <div class="form-body">
     <a href="javascript:window.history.back();" style="color:black;"><i class="fa-solid fa-left-long"></i> @language.GetKey("Back")</a>
     <h3 class="title fw-bold text-uppercase ">@language.GetKey("Register")</h3>
@@ -40,10 +97,17 @@
         <input type="text" id="inputAddress" name="address" placeholder="Nhập Địa Chỉ Của Bạn">
         <span id="addressError" class="text-danger"></span>
 
+        <div class="form-group password-container">
+            <label for="password">@language.GetKey("Password")</label>
+            <div class="password-input-container">
+                <input type="password" id="password" name="password" class="form-control" placeholder="Nhập Mật Khẩu Của Bạn" />
+                <span class="password-toggle" onclick="togglePassword()">
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                </span>
+            </div>
+                <span id="passwordError" class="text-danger"></span>
+        </div>
 
-        <label for="inputPassword" class="form-label ">@language.GetKey("Password")</label>
-        <input type="password" id="inputPassword" name="password" placeholder="Nhập password Của Bạn">
-        <span id="passwordError" class="text-danger"></span>
 
         <input type="submit" value="@language.GetKey("Register")">
     </form>

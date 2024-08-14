@@ -79,6 +79,7 @@
                                         <th> Gía Nhập </th>
                                         <th> Gía Bán </th>
                                         <th> giảm (%) </th>
+                                        <th>Trạng thái</th>
                                         <th> Ảnh </th>
                                         <th> Chỉnh Sửa </th>
                                         @if (User.IsInRole("Admin"))
@@ -105,6 +106,9 @@
                                             </td>
                                             <td>
                                                 @string.Format("{0:0.##}", item.GiaGiam)
+                                            </td>
+                                            <td>
+                                                @item.StatusString
                                             </td>
                                             <td>
                                                 <img src="~/@item.Image" style="height: 70px; width: 70px;" alt="Hình ảnh sản phẩm" />

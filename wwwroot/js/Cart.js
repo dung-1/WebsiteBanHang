@@ -1,4 +1,17 @@
-﻿function showLoading() {
+﻿
+function togglePasswords() {
+    var passwordInputs = document.querySelectorAll('.password-input');
+    var showPasswordCheckbox = document.getElementById('showPassword');
+
+    passwordInputs.forEach(function (input) {
+        if (showPasswordCheckbox.checked) {
+            input.type = 'text';
+        } else {
+            input.type = 'password';
+        }
+    });
+}
+function showLoading() {
     $('#loading-spinner').show();
 }
 
@@ -130,7 +143,97 @@ function buttonCheckout() {
     });
 }
 
+function buttonChangePassword() {
+    var data = $("#ChangePasswordForm").serialize();
+    showLoading();
+    $.ajax({
+        url: '/CustomerInfo/Changepassword',
+        type: 'POST',
+        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+        data: data,
+        success: function (response) {
+            if (response.success) {
+                Swal.fire('Cập nhật mật khẩu thành công!', '', 'success')
+                    .then(() => {
+                        location.href = '/CustomerInfo/Changepassword';
+                    });
+            } else {
+                Swal.fire(response.message || 'Cập nhật mật khẩu không thành công!', '', 'error');
+            }
+        },
+        error: function () {
+            Swal.fire('Có lỗi xảy ra khi cập nhật mật khẩu!', '', 'error');
+        },
+        complete: function () {
+            hideLoading();
+        }
+    });
+}
 
+$(document).on("click", ".View-CanCelReason", function (e) {
+    // Lấy giá trị id từ thuộc tính data-id của phần tử được nhấp
+    let id = $(this).data("id");
+
+    // Gọi AJAX để lấy nội dung modal
+    $.ajax({
+        url: "/CustomerOrder/CancelReason?id=" + id, // Đường dẫn đến API của bạn
+        type: "GET",
+        dataType: "html", // Đặt kiểu dữ liệu trả về
+        success: function (data) {
+            // Đổ dữ liệu vào modal-content
+            $('#View_CanCelReason').find('.modal-content').html(data);
+            $('#OrderId').val(id);
+            // Hiển thị modal
+            $('#View_CanCelReason').modal('show');
+        }
+    });
+});
+function SubmitOrderCancel() {
+    var form = document.getElementById('cancelOrderForm');
+    var formData = new FormData(form);
+
+    // Convert FormData to JSON
+    var object = {};
+    formData.forEach((value, key) => {
+        // Xử lý đặc biệt cho __RequestVerificationToken
+        if (key === '__RequestVerificationToken') {
+            object['__RequestVerificationToken'] = value;
+        } else {
+            object[key] = value;
+        }
+    });
+    var json = JSON.stringify(object);
+
+    showLoading();
+    $.ajax({
+        url: '/CustomerOrder/CancelOrder',
+        type: 'POST',
+        data: json,
+        headers: {
+            'RequestVerificationToken': formData.get('__RequestVerificationToken')
+        },
+        contentType: "application/json",
+        async: true,
+        processData: false,
+        success: function (response) {
+            if (response.success) {
+                Swal.fire('Đơn hàng đã hủy thành công!', '', 'success')
+                    .then(() => {
+                        $('#CanCelCustomerReason').modal('hide');
+                        location.reload();
+                    });
+            } else {
+                Swal.fire('Đã xảy ra lỗi khi hủy đơn hàng!', '', 'error');
+            }
+        },
+        error: function () {
+            Swal.fire('Đã xảy ra lỗi. Vui lòng thử lại!', '', 'error');
+        },
+        complete: function () {
+            hideLoading();
+        }
+    });
+}
 // updateCartItemCount.js
 
 function updateCartItemCount() {

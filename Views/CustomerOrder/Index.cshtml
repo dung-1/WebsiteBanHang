@@ -10,8 +10,15 @@
 </section> <!-- section-pagetop.// -->
 
 <section class="section-content padding-y">
+
     <div class="container">
         <div class="row">
+            <div class="modal fade" id="View_CanCelReason" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                    </div>
+                </div>
+            </div>
 
             <aside class="col-md-3 mb-md-0 mb-3">
                 <nav class="list-group">
@@ -46,7 +53,7 @@
                                         <td><span class="badge bg-danger">@item.TrangThai</span></td>
                                         <td class="text-center text-nowrap">
                                             <a class="btn btn-primary me-2" asp-controller="CustomerOrder" asp-action="OrderDetail" asp-route-id="@item.Id" role="button">@language.GetKey("View orders")</a>
-                                            <a class="btn btn-danger me-2" asp-controller="CustomerOrder" asp-action="CancelOrder" asp-route-id="@item.Id" role="button">@language.GetKey("Cancel order")</a>
+                                            <a class="btn btn-danger me-2 View-CanCelReason" data-id="@item.Id" role="button">@language.GetKey("Cancel order")</a>
                                         </td>
                                     </tr>
                                 }

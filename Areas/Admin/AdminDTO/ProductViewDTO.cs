@@ -1,4 +1,7 @@
-﻿namespace WebsiteBanHang.Areas.Admin.AdminDTO
+﻿using System.ComponentModel.DataAnnotations;
+using WebsiteBanHang.Areas.Admin.Common;
+
+namespace WebsiteBanHang.Areas.Admin.AdminDTO
 {
     public class ProductViewDTO
     {
@@ -12,6 +15,9 @@
         public decimal GiaGiam { get; set; }
         public string? Image { get; set; }
         public string? ThongTinSanPham { get; set; }
+        public StatusActivity Status { get; set; }
+        [Display(Name = "Trạng thái")]
+        public string StatusString { get => Status.GetDescription(); }
         public List<CommentDTO> Comments { get; set; }
 
 

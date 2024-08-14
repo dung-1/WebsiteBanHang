@@ -68,6 +68,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                         GiaNhap = e.GiaNhap,
                         GiaBan = e.GiaBan,
                         GiaGiam = e.GiaGiam,
+                        Status = e.Status,
                         HangTen = e.Brand.TenHang,
                         Image = e.Image,
                         MaSanPham = e.MaSanPham,
@@ -264,6 +265,7 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                     existingProduct.ThongTinSanPham = updatedProduct.ThongTinSanPham;
                     existingProduct.GiaBan = updatedProduct.GiaBan;
                     existingProduct.GiaNhap = updatedProduct.GiaNhap;
+                    existingProduct.Status = updatedProduct.Status;
                     existingProduct.GiaGiam = updatedProduct.GiaGiam;
                     existingProduct.HangId = updatedProduct.HangId;
                     existingProduct.LoaiId = updatedProduct.LoaiId;

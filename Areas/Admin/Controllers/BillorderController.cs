@@ -502,7 +502,6 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 if (!string.IsNullOrEmpty(customerEmail))
                 {
                     SendCancellationEmail(customerEmail, order, cancellationModel);
-                    await _hub.Clients.All.SendAsync("ReceiveOrderCancellationNotification", order.MaHoaDon);
                 }
 
                 return Ok(new { success = true, message = "Đã hủy đơn hàng thành công." });
