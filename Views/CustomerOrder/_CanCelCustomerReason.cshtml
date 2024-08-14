@@ -1,0 +1,31 @@
+﻿@{
+    var userId = User.FindFirst("UserId")?.Value;
+}
+@using WebsiteBanHang.Areas.Admin.Common
+@model WebsiteBanHang.Areas.Admin.Models.OrderCancellationModel
+
+<div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Lý do hủy đơn hàng</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+</div>
+<div class="modal-body">
+    <form id="cancelOrderForm" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="userId" value="@userId" />
+        <input type="hidden" asp-for="OrderId" name="OrderId" id="OrderId" />
+        <div class="form-group">
+            <label asp-for="Reason" class="col-md control-label">Lý do:</label>
+            <div class="col-md">
+                <select asp-for="Reason" asp-items="Html.GetEnumSelectList<CancelOfClient>()" name="Reason" id="Reason" class="form-control" required>
+                    <option selected value="">--Chọn lý do hủy--</option>
+                </select>
+                <span asp-validation-for="Reason" class="text-danger" data-valmsg-for="Reason"></span>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+    <button type="button" onclick="SubmitOrderCancel()" class="btn btn-primary">Đồng ý hủy</button>
+</div>
