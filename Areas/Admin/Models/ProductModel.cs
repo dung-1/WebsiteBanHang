@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing.Drawing2D;
 using System.Reflection.Metadata;
+using WebsiteBanHang.Areas.Admin.Common;
 using WebsiteBanHang.Models;
 
 namespace WebsiteBanHang.Areas.Admin.Models
@@ -44,6 +45,7 @@ namespace WebsiteBanHang.Areas.Admin.Models
 
         [DataType(DataType.Date)]
         public DateTime ModifiedTime { get; set; }
+        public StatusActivity Status { get; set; }
 
         public ICollection<OrderDetaiModel> Order_Detai { get; } = new List<OrderDetaiModel>();
         public ICollection<InventoriesModel> Inventory { get; set; } = new List<InventoriesModel>();

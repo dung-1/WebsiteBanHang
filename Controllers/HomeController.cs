@@ -32,6 +32,8 @@ namespace WebsiteBanHang.Controllers
             int pageSize = 8;
 
             var products = _context.Product
+                   .Where(p => p.Status == StatusActivity.Active)
+                   .OrderByDescending(p => p.ModifiedTime)
                    .Select(p => new ProductModel
                    {
                        Id = p.Id,

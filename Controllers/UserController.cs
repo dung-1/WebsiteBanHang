@@ -31,6 +31,8 @@ namespace WebsiteBanHang.Controllers
             int pageSize = 8;
 
             var products = _context.Product
+                              .Where(p => p.Status == StatusActivity.Active)
+                              .OrderByDescending(p => p.ModifiedTime)
                               .Select(p => new ProductModel
                               {
                                   Id = p.Id,
@@ -217,7 +219,7 @@ namespace WebsiteBanHang.Controllers
                 }
 
                 var topHighlightedPosts = await _context.Posts
-                    .Where(p =>  p.Status == StatusActivity.Active && p.FromDate <= DateTime.Now && p.ToDate >= DateTime.Now)
+                    .Where(p => p.Status == StatusActivity.Active && p.FromDate <= DateTime.Now && p.ToDate >= DateTime.Now)
                         .OrderByDescending(p => p.ViewCount)
                         .Take(5)
                         .Select(p => new HighlightedPostDto
