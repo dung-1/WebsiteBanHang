@@ -7,6 +7,7 @@ using WebsiteBanHang.Areas.Admin.AdminDTO;
 using WebsiteBanHang.Areas.Admin.Common;
 using WebsiteBanHang.Areas.Admin.Controllers;
 using WebsiteBanHang.Areas.Admin.Data;
+using WebsiteBanHang.Areas.Admin.Models;
 using X.PagedList;
 
 namespace WebsiteBanHang.Controllers
@@ -217,43 +218,75 @@ namespace WebsiteBanHang.Controllers
         }
 
         //Hủy Đơn Hàng
-        public IActionResult CancelOrder(int Id)
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> CancelOrderAsync([FromBody] OrderCancellationModel cancellationModel)
         {
-            var order = _context.Order.Include(o => o.ctdh).FirstOrDefault(o => o.id == Id);
-
-            if (order != null)
+            try
             {
-                // Kiểm tra quyền truy cập của người dùng, ví dụ chỉ cho phép khách hàng hủy đơn
-                if (User.IsInRole("Customer"))
+                if (!ModelState.IsValid)
                 {
-                    // Duyệt qua các mục chi tiết của đơn hàng để khôi phục số lượng sản phẩm trong kho hàng
-                    foreach (var orderDetail in order.ctdh)
+                    return BadRequest(ModelState);
+                }
+
+                var order = await _context.Order.Include(o => o.Customer)
+                    .Include(o => o.ctdh)
+                    .ThenInclude(od => od.product)
+                    .FirstOrDefaultAsync(o => o.id == cancellationModel.OrderId);
+
+                if (order == null)
+                {
+                    return NotFound("Không tìm thấy đơn hàng.");
+                }
+
+                // Kiểm tra quyền truy cập của người dùng
+                if (!User.IsInRole("Customer"))
+                {
+                    return Forbid("Bạn không có quyền hủy đơn hàng.");
+                }
+
+                // Cập nhật trạng thái đơn hàng là "Đã hủy"
+                order.trangThai = "Đã hủy";
+
+                // Lấy UserID của người đăng nhập vào hệ thống và gán cho trường UserID của đơn hàng
+                var userName = User.FindFirstValue(ClaimTypes.Name);
+                var user = await _context.Customer.FirstOrDefaultAsync(u => u.Email == userName);
+
+                if (user == null)
+                {
+                    return BadRequest("Không tìm thấy người dùng với tên đăng nhập đã cung cấp.");
+                }
+
+                // Gán ID của người dùng cho UserID của đơn hàng
+                order.CustomerID = user.Id;
+
+                // Cập nhật lại số lượng hàng trong kho
+                foreach (var orderDetail in order.ctdh)
+                {
+                    var inventoryItem = await _context.Inventory.FirstOrDefaultAsync(i => i.ProductId == orderDetail.ProductId);
+                    if (inventoryItem != null)
                     {
-                        var inventoryItem = _context.Inventory.FirstOrDefault(i => i.ProductId == orderDetail.ProductId);
-                        if (inventoryItem != null)
-                        {
-                            inventoryItem.SoLuong += orderDetail.soLuong;
-                        }
+                        inventoryItem.SoLuong += orderDetail.soLuong;
                     }
-
-                    // Cập nhật trạng thái đơn hàng là đã hủy
-                    order.trangThai = "Đã hủy";
-                    _context.SaveChanges();
-
-                    TempData["SuccessMessage"] = "Đã hủy đơn hàng thành công.";
                 }
-                else
-                {
-                    TempData["ErrorMessage"] = "Bạn không có quyền hủy đơn hàng.";
-                }
+
+                // Gán giá trị cho các trường cần thiết trong model hủy đơn hàng
+                cancellationModel.CancelledAt = DateTime.Now;
+                cancellationModel.CustomerId = user.Id;
+
+                // Lưu thông tin vào bảng OrderCancellationModel
+                _context.OrderCancel.Add(cancellationModel);
+                await _context.SaveChangesAsync();
+
+
+                return Ok(new { success = true, message = "Đã hủy đơn hàng thành công." });
             }
-            else
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Không tìm thấy đơn hàng.";
+                return StatusCode(500, new { success = false, message = "Đã xảy ra lỗi khi hủy đơn hàng.", error = ex.Message });
             }
-
-            return RedirectToAction("CancelOrders"); // Chuyển hướng về trang danh sách đơn hàng
         }
+
 
         //Xác nhận Đơn Hàng
         public IActionResult ConfirmOrder(int Id)
@@ -281,6 +314,19 @@ namespace WebsiteBanHang.Controllers
             }
 
             return RedirectToAction("Complete"); // Chuyển hướng về trang danh sách đơn hàng
+        }
+
+        [HttpGet]
+        public IActionResult CancelReason(int id)
+        {
+            try
+            {
+                return PartialView("_CanCelCustomerReason");
+            }
+            catch
+            {
+                return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
+            }
         }
     }
 }
