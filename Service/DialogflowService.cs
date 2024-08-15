@@ -21,7 +21,7 @@
             _sessionsClient = builder.Build();
         }
 
-        public string DetectIntent(string sessionId, string query)
+        public string DetectIntentAsync(string sessionId, string query)
         {
             var sessionName = SessionName.FromProjectSession(_projectId, sessionId);
             var textInput = new TextInput { Text = query, LanguageCode = "vi" };

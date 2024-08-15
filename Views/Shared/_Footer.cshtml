@@ -138,61 +138,64 @@
 
 <!-- Popup chat window -->
 <!-- chat open -->
-<div class="chat-bar-open" id="chat-open">
-    <button id="chat-open-button" type="button" class="collapsible close " onclick="chatOpen()">
-        <img src="~/img/telegram.png" alt="send messenger image" />
-    </button>
-</div>
-
-<!-- chat close -->
-<div class="chat-bar-close" id="chat-close">
-    <button id="chat-close-button"
-            type="button"
-            class="collapsible close"
-            onclick="chatClose()">
-        <i class="material-icons-outlined"> close </i>
-    </button>
-</div>
-
-<!-- chat-window 1 -->
-<div class="chat-window" id="chat-window1">
-    <div class="hi-there">
-        <p class="p1">Xin chào quý khách !</p>
-        <br />
-        <p class="p2">Xin chào Hãy hỏi chúng tôi bất cứ điều gì, Chia sẻ của bạn<br />Nhận xét.</p>
-    </div>
-    <div class="start-conversation">
-        <h1>
-            Chúng tôi thường trả lời sau vài phút.
-        </h1>
-        <button class="new-conversation"
-                type="button"
-                onclick="openConversation()">
-            <span>Bắt đầu ngay</span><i class="material-icons-outlined"> send </i>
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="chat-bar-open" id="chat-open">
+        <button id="chat-open-button" type="button" class="collapsible close " onclick="chatOpen()">
+            <img src="~/img/telegram.png" alt="send messenger image" />
         </button>
     </div>
-</div>
 
+    <!-- chat close -->
+    <div class="chat-bar-close" id="chat-close">
+        <button id="chat-close-button"
+                type="button"
+                class="collapsible close"
+                onclick="chatClose()">
+            <i class="material-icons-outlined"> close </i>
+        </button>
+    </div>
 
-<div class="chat-window2" id="chat-window2" data-user-id="@userId">
-    <div class="message-box" id="messageBox">
-
-        <div class="first-chat">
-            <p>Is there any offlines versions available for Maxeon Player?</p>
-            <div class="arrow"></div>
+    <!-- chat-window 1 -->
+    <div class="chat-window" id="chat-window1">
+        <div class="hi-there">
+            <p class="p1">Xin chào quý khách !</p>
+            <br />
+            <p class="p2">Xin chào Hãy hỏi chúng tôi bất cứ điều gì, Chia sẻ của bạn<br />Nhận xét.</p>
         </div>
-        <div class="second-chat">
-            <div class="circle"></div>
-            <p>Currently we don't have but we will launch soon.</p>
+        <div class="start-conversation">
+            <h1>
+                Chúng tôi thường trả lời sau vài phút.
+            </h1>
+            <button class="new-conversation"
+                    type="button"
+                    onclick="openConversation()">
+                <span>Bắt đầu ngay</span><i class="material-icons-outlined"> send </i>
+            </button>
         </div>
     </div>
-    <div class="input-box">
-        <div class="write-reply">
-            <input type="text" id="messageInput" placeholder="Nhập tin nhắn" />
+
+
+    <div class="chat-window2" id="chat-window2" data-user-id="@userId">
+        <div class="message-box" id="messageBox">
+
+            <div class="first-chat">
+                <p>Is there any offlines versions available for Maxeon Player?</p>
+                <div class="arrow"></div>
+            </div>
+            <div class="second-chat">
+                <div class="circle"></div>
+                <p>Currently we don't have but we will launch soon.</p>
+            </div>
         </div>
-        <div class="send-button">
-            <button id="sendButton">Gửi</button>
+        <div class="input-box">
+            <div class="write-reply">
+                <input type="text" id="messageInput" placeholder="Nhập tin nhắn" />
+            </div>
+            <div class="send-button">
+                <button id="sendButton">Gửi</button>
+            </div>
         </div>
     </div>
-</div>
 
+}

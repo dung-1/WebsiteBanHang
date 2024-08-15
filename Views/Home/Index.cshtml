@@ -93,11 +93,11 @@
 
                                 </span>
                             </span>
-                            <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id"  class="img-wrap text-center">
+                            <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id" class="img-wrap text-center">
                                 <img class="img-fluid" src="@product.Image">
                             </a>
                             <figcaption class="info-wrap mt-2">
-                                <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id"  class="title text-capitalize">@product.TenSanPham</a>
+                                <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id" class="title text-capitalize">@product.TenSanPham</a>
                                 <div class="row">
                                     <div class="col-6 price mt-1 fw-bold text-danger">
                                         @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", giamgia)
@@ -142,11 +142,11 @@
 
                     <div class="col-lg-3 col-md-6">
                         <div class="card p-3 mb-4 hvr-float">
-                            <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id"  class="img-wrap text-center">
+                            <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id" class="img-wrap text-center">
                                 <img class="img-fluid" src="@product.Image">
                             </a>
                             <figcaption class="info-wrap mt-2">
-                                <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id"  class="title text-capitalize">@product.TenSanPham</a>
+                                <a asp-controller="Home" asp-action="ProductDetail" asp-route-productid="@product.Id" class="title text-capitalize">@product.TenSanPham</a>
                                 <div class="row">
                                     <div class="col-6 price mt-1 fw-bold text-danger">
                                         @string.Format(new CultureInfo("vi-VN", false), "{0:c0}", @product.GiaBan)
