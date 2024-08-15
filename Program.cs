@@ -9,7 +9,8 @@ using OfficeOpenXml;
 using LicenseContext = OfficeOpenXml.LicenseContext;
 using WebsiteBanHang.Areas.Admin.Controllers;
 using WebsiteBanHang.Areas.Admin.Common;
-
+using WebsiteBanHang.Service;
+using Google.Cloud.Dialogflow.V2;
 
 namespace WebsiteBanHang
 {
@@ -104,6 +105,17 @@ namespace WebsiteBanHang
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
             builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+
+
+            var jsonPath = builder.Configuration["Google:JsonPath"];
+            builder.Services.AddSingleton<DialogflowService>(sp =>
+            {
+                var projectId = builder.Configuration["Google:ProjectId"];
+                return new DialogflowService(projectId, jsonPath);
+            });
+
+
+
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())
@@ -121,6 +133,10 @@ namespace WebsiteBanHang
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
             app.UseEndpoints(endpoints =>
             {
                 // Đặt route của Admin area lên trước với tiền tố "admin"
