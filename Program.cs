@@ -12,6 +12,8 @@ using WebsiteBanHang.Areas.Admin.Common;
 using WebsiteBanHang.Service;
 using Google.Cloud.Dialogflow.V2;
 using WebsiteBanHang.Middleware;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
+
 
 namespace WebsiteBanHang
 {
@@ -29,30 +31,39 @@ namespace WebsiteBanHang
                 });
 
             builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-            // Cấu hình DbContext và session SQL Server
+            // Cấu hình DbContext với SQL Server
             var connectionString = builder.Configuration.GetConnectionString("SqlServerSession");
 
-            builder.Services.AddDbContext<ApplicationDbContext>(o =>
-                o.UseSqlServer(connectionString, sqlServerOptionsAction: sqlOption =>
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(connectionString, sqlServerOptionsAction: sqlOption =>
                 {
                     sqlOption.EnableRetryOnFailure();
-                }));
+                })
+            );
 
-            builder.Services.AddDistributedSqlServerCache(options =>
+            // Lấy connection string cho Redis từ appsettings.json
+            var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
+
+            // Cấu hình Redis để lưu trữ session
+            builder.Services.AddStackExchangeRedisCache(options =>
             {
-                options.ConnectionString = builder.Configuration.GetConnectionString("SqlServerSession");
-                options.SchemaName = "dbo";
-                options.TableName = "Sessions";
+                options.Configuration = redisConnectionString;  // Địa chỉ của Redis server
+                options.InstanceName = "Session_";  // Tiền tố cho khóa session trong Redis
             });
 
-            // Cấu hình session với tên khác biệt
+            // Cấu hình Session Middleware với Redis
             builder.Services.AddSession(options =>
             {
-                options.Cookie.Name = "SessionCTS";
-                options.IdleTimeout = TimeSpan.FromMinutes(30);
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
+                options.Cookie.Name = ".SessionCTS";  // Đặt tên cookie session
+                options.IdleTimeout = TimeSpan.FromMinutes(30);  // Thời gian hết hạn session
+                options.Cookie.HttpOnly = true;  // Đảm bảo cookie chỉ có thể truy cập qua HTTP
+                options.Cookie.IsEssential = true;  // Đảm bảo session cookie luôn được thiết lập
+            });
+
+            // Cấu hình Kestrel để lắng nghe trên các cổng đã chỉ định trong appsettings.json
+            builder.WebHost.ConfigureKestrel(serverOptions =>
+            {
+                serverOptions.Configure(builder.Configuration.GetSection("Kestrel"));
             });
 
             // Cấu hình Authentication với tên khác biệt
@@ -126,6 +137,14 @@ namespace WebsiteBanHang
 
             // Add Razor runtime compilation
             builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            builder.WebHost.ConfigureKestrel(serverOptions =>
+            {
+                serverOptions.ListenAnyIP(5000); // Thay đổi cổng HTTP
+                serverOptions.ListenAnyIP(5001, listenOptions =>
+                {
+                    listenOptions.UseHttps(); // Thay đổi cổng HTTPS
+                });
+            });
 
             var app = builder.Build();
 
@@ -149,7 +168,6 @@ namespace WebsiteBanHang
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseSession();
-            app.UseMiddleware<SessionMiddleware>();
 
             // Map routes
             app.UseEndpoints(endpoints =>
