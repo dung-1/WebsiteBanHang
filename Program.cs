@@ -10,9 +10,6 @@ using LicenseContext = OfficeOpenXml.LicenseContext;
 using WebsiteBanHang.Areas.Admin.Controllers;
 using WebsiteBanHang.Areas.Admin.Common;
 using WebsiteBanHang.Service;
-using Google.Cloud.Dialogflow.V2;
-using WebsiteBanHang.Middleware;
-using Microsoft.Extensions.Caching.StackExchangeRedis;
 
 
 namespace WebsiteBanHang
@@ -145,6 +142,10 @@ namespace WebsiteBanHang
                     listenOptions.UseHttps(); // Thay đổi cổng HTTPS
                 });
             });
+
+            // Add vietqrservice
+            builder.Services.AddHttpClient<VietQRService>();
+            builder.Services.AddScoped<VietQRService>();
 
             var app = builder.Build();
 
