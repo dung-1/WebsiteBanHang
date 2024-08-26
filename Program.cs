@@ -10,7 +10,8 @@ using LicenseContext = OfficeOpenXml.LicenseContext;
 using WebsiteBanHang.Areas.Admin.Controllers;
 using WebsiteBanHang.Areas.Admin.Common;
 using WebsiteBanHang.Service;
-
+using Hangfire;
+using Hangfire.SqlServer;
 
 namespace WebsiteBanHang
 {
@@ -147,6 +148,30 @@ namespace WebsiteBanHang
             builder.Services.AddHttpClient<VietQRService>();
             builder.Services.AddScoped<VietQRService>();
 
+
+            // Add scheduled task Service
+            var hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection")
+                ?? builder.Configuration.GetConnectionString("SqlServerSession");
+
+            if (string.IsNullOrEmpty(hangfireConnectionString))
+            {
+                throw new InvalidOperationException("No valid connection string found for Hangfire. Please check your configuration.");
+            }
+
+            builder.Services.AddHangfire(configuration => configuration
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseSqlServerStorage(hangfireConnectionString, new SqlServerStorageOptions
+                {
+                    CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+                    SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+                    QueuePollInterval = TimeSpan.Zero,
+                    UseRecommendedIsolationLevel = true,
+                    DisableGlobalLocks = true
+                }));
+
+            builder.Services.AddHangfireServer();
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())
@@ -159,7 +184,7 @@ namespace WebsiteBanHang
             app.UseRequestLocalization();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseHangfireDashboard();
             app.UseRouting();
             app.UseCors(builder => builder
                 .AllowAnyOrigin()
@@ -196,8 +221,11 @@ namespace WebsiteBanHang
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-
-            app.Run();
+                RecurringJob.AddOrUpdate<OrderAutoCompleteService>(
+                "order-auto-complete",
+                job => job.Execute(),
+                Cron.MinuteInterval(2));
+                app.Run();
         }
     }
 }

@@ -407,17 +407,17 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             try
             {
                 var order = _context.Order.Find(Id);
-
                 if (order != null)
                 {
                     // Kiểm tra quyền truy cập của người dùng, ví dụ chỉ cho phép admin giao hàng
                     if (User.IsInRole("Admin"))
                     {
-                        // Cập nhật trạng thái đơn hàng là đã giao hàng
+                        // Cập nhật trạng thái đơn hàng là đang giao hàng
                         order.trangThai = "Đang giao hàng";
+                        // Set NgayGiaoHang là thời điểm hiện tại
+                        order.NgayGiaoHang = DateTime.Now;
                         _context.SaveChanges();
-
-                        TempData["SuccessMessage"] = "Đã giao hàng thành công.";
+                        TempData["SuccessMessage"] = "Đã chuyển trạng thái đơn hàng sang đang giao hàng.";
                     }
                     else
                     {
@@ -428,16 +428,14 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 {
                     TempData["ErrorMessage"] = "Không tìm thấy đơn hàng.";
                 }
-
                 return RedirectToAction("Approved"); // Chuyển hướng về trang danh sách đơn hàng
             }
             catch (Exception ex)
             {
+                // Ghi log lỗi nếu cần
+                // _logger.LogError(ex, "Lỗi khi giao đơn hàng");
                 return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
-
-
             }
-
         }
 
         //Hủy Đơn Hàng

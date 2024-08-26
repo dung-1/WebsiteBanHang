@@ -16,6 +16,7 @@ namespace WebsiteBanHang.Areas.Admin.Models
         public int? CustomerID { get; set; }
         public CustomerModel? Customer { get; set; }
         public DateTime ngayBan { get; set; }
+        public DateTime NgayGiaoHang { get; set; }
         public float tongTien { get; set; }
         [StringLength(20)]
         public string? trangThai { get; set; }
