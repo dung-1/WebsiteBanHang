@@ -39,18 +39,19 @@
                                     </button>
                                 </div>
 
-@*                                  <div class="col-3">
-                                     <form id="importForm" asp-controller="Category" asp-action="Import" enctype="multipart/form-data" method="post">
-                                         <input type="file" id="fileInput" name="formFile" style="display: none;" />
-                                         <button type="button" class="btn btn-danger" onclick="document.getElementById('fileInput').click();"><i class="fa-solid fa-file-excel"></i> Import Excel</button>
-                                     </form>
+                                 <div class="col-3">
+                                    <form id="importForm" asp-controller="Brand" asp-action="Import" enctype="multipart/form-data" method="post">
+                                        <input type="file" id="fileInput" name="formFile" style="display: none;" />
+                                        <button type="button" class="btn btn-danger" onclick="document.getElementById('fileInput').click();"><i class="fa-solid fa-file-excel"></i> Import Excel</button>
+                                    </form>
+
 
                                  </div>
                                  <div class="col-3">
                                      <form autocomplete="off" asp-controller="Category" asp-antiforgery="true" asp-action="DownloadReport" method="post">
                                          <button type="submit" id="btnsubmit" class="btn btn-success"><i class="fa-solid fa-file-excel"></i> Export to Excel</button>
                                      </form>
-                                 </div> *@
+                                 </div>
 
 
                             </div>

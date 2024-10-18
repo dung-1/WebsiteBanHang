@@ -100,16 +100,12 @@ function loadCustomerMessages(customerId) {
 
 function updateActiveNameCustomer(messages) {
     const chat_header = document.querySelector(".chat-header");
-
-    // Clear current chat body
     chat_header.innerHTML = "";
-
-    // Append messages to chat body
-    messages.forEach(message => {
-        addMessageActiveNameCustomer(message);
-    });
-
+    if (messages.length > 0) {
+        addMessageActiveNameCustomer(messages[0]);
+    }
 }
+
 
 
 function updateMessageList(messages, customerId) {
@@ -126,8 +122,6 @@ function updateMessageList(messages, customerId) {
 
 function addMessageActiveNameCustomer(message) {
     const chatHeader = document.querySelector(".chat-header");
-
-    // Xóa hết các tin nhắn hiện tại trong chatHeader
     chatHeader.innerHTML = '';
 
     const messageElement = document.createElement("div");
@@ -164,8 +158,6 @@ function addMessageActiveNameCustomer(message) {
            ${activityStatus}
         </div>
     `;
-
-    // Chèn messageElement vào chatHeader
     chatHeader.appendChild(messageElement);
 }
 
@@ -214,7 +206,6 @@ function addMessageToCustomerUI(message) {
     // Chèn messageElement vào chatBody
     chatBody.appendChild(messageElement);
 }
-
 function updateCustomerMessage(customerId, message, sentAt) {
     selectedCustomerId = customerId;
     const customerElement = document.querySelector(`#customer-${selectedCustomerId}`);
@@ -236,7 +227,6 @@ function updateCustomerMessage(customerId, message, sentAt) {
         });
     }
 }
-
 function updateChatInterface(userId, message, sentAt) {
     const chatWindow = document.querySelector('.chat-window[data-user-id="' + userId + '"]');
     if (chatWindow) {
@@ -251,11 +241,9 @@ function updateChatInterface(userId, message, sentAt) {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 }
-
 function formatTime(date) {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 }
-
 function timeAgo(date) {
     const now = new Date();
     const diff = now - date;
@@ -269,8 +257,6 @@ function timeAgo(date) {
     if (hours < 24) return `${hours} giờ trước`;
     return `${days} ngày trước`;
 }
-
-
 function updateCustomerTimeAgo() {
     setInterval(() => {
         const customerElements = document.querySelectorAll('[id^=customer-]');
@@ -283,7 +269,6 @@ function updateCustomerTimeAgo() {
         });
     }, 60000); // Update every minute
 }
-
 function updateCustomerTimelastActiveAgo() {
     setInterval(() => {
         const customerElements = document.querySelectorAll('[id^=customer-]');
@@ -296,10 +281,6 @@ function updateCustomerTimelastActiveAgo() {
         });
     }, 60000); // Update every minute
 }
-
-
-
-// Function to send message to customer
 function sendMessageToCustomer(customerId, message) {
     const sentAt = new Date().toISOString(); // Lấy thời gian hiện tại và định dạng thành chuỗi ISO
 
@@ -326,7 +307,6 @@ function sendMessageToCustomer(customerId, message) {
         console.log("Connection is not established. Message not sent.");
     }
 }
-
 
 document.addEventListener('DOMContentLoaded', function () {
     // Event listener for send button click

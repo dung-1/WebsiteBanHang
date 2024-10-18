@@ -58,6 +58,8 @@ namespace WebsiteBanHang
                 options.Cookie.IsEssential = true;  // Đảm bảo session cookie luôn được thiết lập
             });
 
+            // Cấu hình SignalR
+            builder.Services.AddSignalR();
             // Cấu hình Kestrel để lắng nghe trên các cổng đã chỉ định trong appsettings.json
             builder.WebHost.ConfigureKestrel(serverOptions =>
             {
@@ -147,7 +149,23 @@ namespace WebsiteBanHang
             // Add vietqrservice
             builder.Services.AddHttpClient<VietQRService>();
             builder.Services.AddScoped<VietQRService>();
+            builder.Services.AddRazorPages();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins("http://www.dungcts_shoplaptop.com",
+                     "https://www.dungcts_shoplaptop.com",
+                     "http://localhost:5000",
+                     "https://localhost:5001",
+                     "http://localhost:59481",
+                     "https://localhost:44308")
+                            .AllowAnyMethod()
+                           .AllowAnyHeader()
+                           .AllowCredentials();
+                });
+            });
 
             // Add scheduled task Service
             var hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection")
@@ -186,14 +204,12 @@ namespace WebsiteBanHang
             app.UseStaticFiles();
             app.UseHangfireDashboard();
             app.UseRouting();
-            app.UseCors(builder => builder
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
+            app.UseCors();
 
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseSession();
+            app.UseWebSockets();
 
             // Map routes
             app.UseEndpoints(endpoints =>
@@ -221,11 +237,12 @@ namespace WebsiteBanHang
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-                RecurringJob.AddOrUpdate<OrderAutoCompleteService>(
-                "order-auto-complete",
-                job => job.Execute(),
-                Cron.MinuteInterval(2));
-                app.Run();
+            RecurringJob.AddOrUpdate<OrderAutoCompleteService>(
+            "order-auto-complete",
+            job => job.Execute(),
+            Cron.MinuteInterval(2));
+            app.Run();
         }
     }
+
 }
