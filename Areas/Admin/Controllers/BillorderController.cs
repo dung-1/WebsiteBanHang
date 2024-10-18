@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.SignalR;
 using WebsiteBanHang.HubSignalR;
 using WebsiteBanHang.Areas.Admin.Common;
 using Newtonsoft.Json;
+using WebsiteBanHang.Service;
 
 
 namespace WebsiteBanHang.Areas.Admin.Controllers
@@ -25,20 +26,18 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
     public class BillorderController : Controller
     {
         private readonly IConfiguration _configuration;
-
-
         private readonly ILogger<BillorderController> _logger;
-
+        private readonly VietQRService _vietQRService;
         private readonly ApplicationDbContext _context;
         private readonly IHubContext<NotificationHub> _hub;
 
-        public BillorderController(ApplicationDbContext context, ILogger<BillorderController> logger, IConfiguration configuration, IHubContext<NotificationHub> hub)
+        public BillorderController(ApplicationDbContext context, ILogger<BillorderController> logger, IConfiguration configuration, IHubContext<NotificationHub> hub, VietQRService vietQRService)
         {
             _context = context;
             _logger = logger;
             _configuration = configuration;
             _hub = hub;
-
+            _vietQRService = vietQRService;
         }
 
         private IPagedList<OrderDto> GetOrdersByStatus(string status, int? page, string searchName)
@@ -244,61 +243,84 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
             }
         }
 
-        //Duyệt Đơn Hàng
+
         [HttpPost]
         public async Task<IActionResult> ApproveOrderAsync(int Id)
         {
             try
             {
                 var order = _context.Order
-               .Include(o => o.Customer)
-               .Include(o => o.ctdh) // Load danh sách chi tiết đơn hàng
-               .ThenInclude(od => od.product) // Load thông tin sản phẩm cho mỗi chi tiết đơn hàng
-               .FirstOrDefault(o => o.id == Id);
+                    .Include(o => o.Customer)
+                    .Include(o => o.ctdh)
+                    .ThenInclude(od => od.product)
+                    .FirstOrDefault(o => o.id == Id);
 
                 if (order != null)
                 {
-                    // Kiểm tra quyền truy cập của người dùng, ví dụ chỉ cho phép admin duyệt đơn
                     if (User.IsInRole("Admin") || User.IsInRole("Employee"))
                     {
-                        // Cập nhật trạng thái đơn hàng là đã duyệt
                         order.trangThai = "Đã duyệt";
-
-                        // Lấy UserID của người đăng nhập vào hệ thống và gán cho trường UserID của đơn hàng
-                        // Lấy tên đăng nhập từ claim
                         var userName = User.FindFirstValue(ClaimTypes.Name);
-
-                        // Tìm kiếm người dùng trong cơ sở dữ liệu dựa trên tên đăng nhập
                         var user = await _context.User.FirstOrDefaultAsync(u => u.Email == userName);
 
                         if (user != null)
                         {
-                            // Gán ID của người dùng cho UserID của đơn hàng
                             order.UserID = user.Id;
                         }
-                        else
-                        {
-                            TempData["ErrorMessage"] = "Không tìm thấy người dùng với tên đăng nhập đã cung cấp.";
-                        }
-
-
-
-                        // Lấy email của khách hàng
-                        var customerEmail = order.Customer?.Email;
 
                         _context.SaveChanges();
 
+                        var customerEmail = order.Customer?.Email;
+
+                        decimal tongCong = 0;
+                        foreach (var orderDetail in order.ctdh)
+                        {
+                            var donGia = (orderDetail.product.GiaGiam >= 0)
+                                ? orderDetail.product.GiaBan - (orderDetail.product.GiaBan * orderDetail.product.GiaGiam / 100)
+                                : orderDetail.product.GiaBan;
+                            tongCong += orderDetail.soLuong * donGia;
+                        }
+                        long tongCongInCent = Convert.ToInt64(tongCong);
+
+
+                        var qrCodeBase64 = await _vietQRService.GenerateQRCodeAsync(tongCongInCent);
+
                         TempData["SuccessMessage"] = "Đã duyệt đơn hàng thành công.";
 
-                        // Gửi hóa đơn qua email
                         if (!string.IsNullOrEmpty(customerEmail))
                         {
-                            SendInvoiceByEmail(customerEmail, order);
+                            byte[] qrCodeBytes;
+
+                            if (Uri.TryCreate(qrCodeBase64, UriKind.Absolute, out Uri uriResult)
+                                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
+                            {
+                                using (var client = new HttpClient())
+                                {
+                                    qrCodeBytes = await client.GetByteArrayAsync(qrCodeBase64);
+                                }
+                            }
+                            else
+                            {
+                                string base64Data = qrCodeBase64.Split(',').LastOrDefault() ?? qrCodeBase64;
+
+                                try
+                                {
+                                    qrCodeBytes = Convert.FromBase64String(base64Data);
+                                }
+                                catch (FormatException)
+                                {
+                                    _logger.LogError($"Invalid Base64 string: {base64Data}");
+                                    throw new ArgumentException("The provided QR code data is not a valid Base64 string or URL.");
+                                }
+                            }
+
+                            // Gửi email với mã QR
+                            await SendInvoiceByEmailAsync(customerEmail, order, qrCodeBytes);
                             await _hub.Clients.All.SendAsync("ReceiveOrderNotification", order.MaHoaDon);
                         }
                         else
                         {
-                            TempData["ErrorMessage"] = "Không tìm thấy email người nhận !!!";
+                            TempData["ErrorMessage"] = "Không tìm thấy email người nhận!";
                         }
                     }
                     else
@@ -313,55 +335,45 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
 
                 return RedirectToAction("Index");
             }
-            catch
+            catch (Exception ex)
             {
+                TempData["ErrorMessage"] = "Có lỗi xảy ra trong quá trình duyệt đơn hàng.";
                 return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
-
             }
-
         }
 
         //sendmail
-        private void SendInvoiceByEmail(string recipientEmail, OrdersModel order)
+        private async Task SendInvoiceByEmailAsync(string recipientEmail, OrdersModel order, byte[] qrCodeImage)
         {
             var emailMessage = new MimeMessage();
-
             emailMessage.From.Add(new MailboxAddress("Nguyễn Văn Dụng", _configuration["EmailSettings:Email"]));
             emailMessage.To.Add(new MailboxAddress("Người Nhận", recipientEmail));
             emailMessage.Subject = "Hóa Đơn Mua Hàng";
 
             var builder = new BodyBuilder();
 
-            // Bắt đầu tạo nội dung email
+            // Phần đầu của email (giữ nguyên như cũ)
             builder.HtmlBody = "<div style='font-family: Arial, sans-serif; padding: 20px;'>";
             builder.HtmlBody += "<h1 style=\"color: #007bff; font-weight: bold; text-transform: uppercase;\">" +
                                 "vifiretek <span style=\"font-size: 1.25rem; color: #dc3545;\">.VN</span></h1>";
-
-            // Thêm tiêu đề hóa đơn
             builder.HtmlBody += "<h3 style='text-align: center; font-weight: bold;color: #007bff;'>HÓA ĐƠN MUA HÀNG CỦA BẠN</h3>";
 
-            // Thêm thông tin hóa đơn
+            // Thông tin hóa đơn (giữ nguyên như cũ)
             builder.HtmlBody += "<p style=\"font-family: Arial, sans-serif; font-size: 16px;\">" +
-                     $"<span style=\"float: left; width: 50%;\">Mã Hóa Đơn: {order.MaHoaDon}</span>" +
-                     $"<br>" +
-                     $"<span style=\"float: left; width: 50%;\">Hình thức thanh toán: {order.LoaiHoaDon}</span>" +
-                     $"<span style=\"float: right; width: 50%; text-align: right;\">Ngày Mua: {order.ngayBan.ToString("dd/MM/yyyy HH:mm:ss")}</span>" +
-                     $"<div style=\"clear: both;\"></div>" +
-                     $"</p>";
+                                $"<span style=\"float: left; width: 50%;\">Mã Hóa Đơn: {order.MaHoaDon}</span><br>" +
+                                $"<span style=\"float: left; width: 50%;\">Hình thức thanh toán: {order.LoaiHoaDon}</span>" +
+                                $"<span style=\"float: right; width: 50%; text-align: right;\">Ngày Mua: {order.ngayBan.ToString("dd/MM/yyyy HH:mm:ss")}</span>" +
+                                $"<div style=\"clear: both;\"></div></p>";
 
-            // Thêm bảng chi tiết đơn hàng
+            // Bảng chi tiết sản phẩm (giữ nguyên như cũ)
             builder.HtmlBody += "<table style='width:100%; border-collapse: collapse;'>";
             builder.HtmlBody += "<tr><th style='border: 1px solid #ddd; padding: 8px;'>STT</th><th style='border: 1px solid #ddd; padding: 8px;'>Sản phẩm</th><th style='border: 1px solid #ddd; padding: 8px;'>Số lượng</th><th style='border: 1px solid #ddd; padding: 8px;'>Đơn giá</th><th style='border: 1px solid #ddd; padding: 8px;'>Thành tiền</th></tr>";
 
-            // Thêm chi tiết đơn hàng
             int stt = 1;
             decimal tongCong = 0;
             foreach (var orderDetail in order.ctdh)
             {
-                // Sử dụng orderDetail để lấy thông tin sản phẩm từ đơn hàng
                 var product = orderDetail.product;
-
-                // Tính tổng tiền cho sản phẩm này
                 decimal donGia = (decimal)(orderDetail.product.GiaGiam >= 0 ?
                     (decimal)(orderDetail.product.GiaBan - ((orderDetail.product.GiaBan * orderDetail.product.GiaGiam) / 100)) :
                     (decimal)orderDetail.product.GiaBan);
@@ -370,50 +382,42 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 tongCong += thanhTien;
                 stt++;
             }
-
-
-            // Kết thúc bảng
             builder.HtmlBody += "</table>";
 
-            // Thêm tổng cộng
             builder.HtmlBody += $"<p style='text-align: right; font-weight: bold;font-site:18px;'>Tổng cộng: {tongCong.ToString("C0", new CultureInfo("vi-VN"))}</p>";
 
-            // Thêm dòng chân trang và cảm ơn
+            // Đính kèm hình ảnh QR
+            builder.Attachments.Add("qr-code.png", qrCodeImage, ContentType.Parse("image/png"));
+
             builder.HtmlBody += "<hr>";
             builder.HtmlBody += "<p style='text-align: center; font-weight: bold;'>Cảm ơn quý khách đã mua hàng của chúng tôi !!!</p>";
-
-            // Kết thúc nội dung email
             builder.HtmlBody += "</div>";
 
-            emailMessage.Body = new TextPart(TextFormat.Html)
-            {
-                Text = builder.HtmlBody
-            };
+            emailMessage.Body = builder.ToMessageBody();
 
             using var smtp = new SmtpClient();
-            smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-            smtp.Authenticate(_configuration["EmailSettings:Email"], _configuration["EmailSettings:Password"]);
-            smtp.Send(emailMessage);
-            smtp.Disconnect(true);
+            await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+            await smtp.AuthenticateAsync(_configuration["EmailSettings:Email"], _configuration["EmailSettings:Password"]);
+            await smtp.SendAsync(emailMessage);
+            await smtp.DisconnectAsync(true);
         }
-
         //Giao Đơn Hàng
         public IActionResult DeliverOrder(int Id)
         {
             try
             {
                 var order = _context.Order.Find(Id);
-
                 if (order != null)
                 {
                     // Kiểm tra quyền truy cập của người dùng, ví dụ chỉ cho phép admin giao hàng
                     if (User.IsInRole("Admin"))
                     {
-                        // Cập nhật trạng thái đơn hàng là đã giao hàng
+                        // Cập nhật trạng thái đơn hàng là đang giao hàng
                         order.trangThai = "Đang giao hàng";
+                        // Set NgayGiaoHang là thời điểm hiện tại
+                        order.NgayGiaoHang = DateTime.Now;
                         _context.SaveChanges();
-
-                        TempData["SuccessMessage"] = "Đã giao hàng thành công.";
+                        TempData["SuccessMessage"] = "Đã chuyển trạng thái đơn hàng sang đang giao hàng.";
                     }
                     else
                     {
@@ -424,16 +428,14 @@ namespace WebsiteBanHang.Areas.Admin.Controllers
                 {
                     TempData["ErrorMessage"] = "Không tìm thấy đơn hàng.";
                 }
-
                 return RedirectToAction("Approved"); // Chuyển hướng về trang danh sách đơn hàng
             }
             catch (Exception ex)
             {
+                // Ghi log lỗi nếu cần
+                // _logger.LogError(ex, "Lỗi khi giao đơn hàng");
                 return View("~/Areas/Admin/Views/Shared/_ErrorAdmin.cshtml");
-
-
             }
-
         }
 
         //Hủy Đơn Hàng

@@ -146,7 +146,7 @@ namespace WebsiteBanHang.HubSignalR
                 Console.WriteLine($"SendMessageToCustomer called with customerId: {customerId}");
 
                 var customer = await _context.Customer
-                    .Include(u => u.ChatConnection) // eager load ChatConnection
+                    .Include(u => u.ChatConnection) 
                     .FirstOrDefaultAsync(u => u.Id == customerId);
 
                 var chatMessage = new ChatMessage

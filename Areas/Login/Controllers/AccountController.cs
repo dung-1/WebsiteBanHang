@@ -109,48 +109,63 @@ namespace WebsiteBanHang.Controllers
             return View();
         }
 
-
         [HttpPost]
         [Route("formCheck_Verification")]
         public IActionResult formCheck_Verification(int code)
         {
+            // Lấy mã xác minh từ session
             int? verificationCode = HttpContext.Session.GetInt32("VerificationCode");
-            string? customerCodeString = HttpContext.Session.GetString("iserCode");
+            string? customerCodeString = HttpContext.Session.GetString("UserCode");
 
             if (verificationCode.HasValue && code == verificationCode.Value)
             {
-                // Tạo một đối tượng UserModel từ session
+                // Lấy các giá trị từ session
+                string? email = HttpContext.Session.GetString("Email");
+                string? password = HttpContext.Session.GetString("Password");
+                string? fullname = HttpContext.Session.GetString("Fullname");
+                string? phoneNumber = HttpContext.Session.GetString("PhoneNumber");
+                string? address = HttpContext.Session.GetString("Address");
+
+                // Kiểm tra nếu bất kỳ giá trị nào bị null
+                if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(fullname) ||
+                    string.IsNullOrEmpty(phoneNumber) || string.IsNullOrEmpty(address))
+                {
+                    ModelState.AddModelError("", "Dữ liệu xác minh không đầy đủ. Vui lòng đăng ký lại.");
+                    return View(); // Trả về view hiện tại với thông báo lỗi
+                }
+
+                // Tạo một đối tượng CustomerModel từ session
                 var CustomerModel = new CustomerModel
                 {
                     MaNguoiDung = customerCodeString, // Sử dụng mã người dùng từ session
-                    Email = HttpContext.Session.GetString("email"),
-                    MatKhau = GetMd5Hash(HttpContext.Session.GetString("password")),
+                    Email = email,
+                    MatKhau = GetMd5Hash(password), // Mã hóa mật khẩu
                     NgayTao = DateTime.Now
                 };
 
-                // Tạo một đối tượng Users_Details từ session
+                // Tạo một đối tượng Customer_Details từ session
                 var CustomerDetails = new Customer_Details
                 {
-                    HoTen = HttpContext.Session.GetString("fullname"),
-                    SoDienThoai = HttpContext.Session.GetString("phoneNumber"),
-                    DiaChi = HttpContext.Session.GetString("address")
+                    HoTen = fullname,
+                    SoDienThoai = phoneNumber,
+                    DiaChi = address
                 };
 
-                // Thiết lập quan hệ giữa UserModel và Users_Details
+                // Thiết lập quan hệ giữa CustomerModel và Customer_Details
                 CustomerModel.CustomerDetail = CustomerDetails;
 
                 // Lưu thông tin người dùng vào cơ sở dữ liệu
                 _context.Customer.Add(CustomerModel);
                 _context.SaveChanges();
 
-                // Tạo một bản ghi trong bảng UserRole để gán người dùng vào vai trò "Customer" (hoặc vai trò tương ứng)
+                // Gán người dùng vào vai trò "Customer"
                 var customerRoleId = _context.Role.FirstOrDefault(r => r.Name == "Customer")?.Id;
                 if (customerRoleId.HasValue)
                 {
                     var CustomerRole = new CustomerRoleModel
                     {
                         Customer_ID = CustomerModel.Id, // ID của người dùng mới
-                        Role_ID = customerRoleId.Value // ID của vai trò "Customer" hoặc tương ứng
+                        Role_ID = customerRoleId.Value // ID của vai trò "Customer"
                     };
                     _context.CustomerRole.Add(CustomerRole);
                     _context.SaveChanges();
@@ -158,19 +173,21 @@ namespace WebsiteBanHang.Controllers
 
                 // Xóa mã code và các thông tin từ session sau khi đã sử dụng
                 HttpContext.Session.Remove("VerificationCode");
-                HttpContext.Session.Remove("iserCode");
-                HttpContext.Session.Remove("username");
-                HttpContext.Session.Remove("email");
-                HttpContext.Session.Remove("password");
-                HttpContext.Session.Remove("fullname");
-                HttpContext.Session.Remove("phoneNumber");
-                HttpContext.Session.Remove("address");
+                HttpContext.Session.Remove("UserCode");
+                HttpContext.Session.Remove("Email");
+                HttpContext.Session.Remove("Password");
+                HttpContext.Session.Remove("Fullname");
+                HttpContext.Session.Remove("PhoneNumber");
+                HttpContext.Session.Remove("Address");
+
                 return RedirectToAction("Login");
             }
 
             // Mã code không khớp, hiển thị thông báo lỗi
+            ModelState.AddModelError("", "Mã xác minh không hợp lệ.");
             return View();
         }
+
 
         [Route("Login")]
         public IActionResult Login()

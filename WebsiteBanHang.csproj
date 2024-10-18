@@ -1,17 +1,28 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿	<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>4e69b57a-3133-4ee5-b47e-564d22275ba5</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\LayoutAdmin\Lte\plugins\bootstrap-colorpicker\**" />
+    <Content Remove="wwwroot\LayoutAdmin\Lte\plugins\bootstrap-colorpicker\**" />
+    <EmbeddedResource Remove="wwwroot\LayoutAdmin\Lte\plugins\bootstrap-colorpicker\**" />
+    <None Remove="wwwroot\LayoutAdmin\Lte\plugins\bootstrap-colorpicker\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="bundleconfig.json" />
+    <Content Remove="Views\Shared\Components\_Chatbot.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="bundleconfig.json" />
+    <_ContentIncludedByDefault Remove="Views\Shared\Components\_Chatbot.cshtml" />
+    <_ContentIncludedByDefault Remove="wwwroot\LayoutAdmin\Lte\dist\css\customize-lte.css" />
   </ItemGroup>
 
 	<ItemGroup>
@@ -19,7 +30,13 @@
 		<PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
 		<PackageReference Include="Chart.js" Version="3.7.1" />
 		<PackageReference Include="CurrieTechnologies.Razor.SweetAlert2" Version="5.5.0" />
+		<PackageReference Include="elFinder.Net.Drivers.FileSystem" Version="1.5.0" />
 		<PackageReference Include="EPPlus" Version="7.1.2" />
+		<PackageReference Include="Google.Cloud.Dialogflow.V2" Version="4.21.0" />
+		<PackageReference Include="Hangfire" Version="1.8.14" />
+		<PackageReference Include="Hangfire.AspNetCore" Version="1.8.14" />
+		<PackageReference Include="Hangfire.Core" Version="1.8.14" />
+		<PackageReference Include="Hangfire.SqlServer" Version="1.8.14" />
 		<PackageReference Include="I18N" Version="2.1.17" />
 		<PackageReference Include="I18Next.Net" Version="1.0.0" />
 		<PackageReference Include="I18Next.Net.AspNetCore" Version="1.0.0" />
@@ -39,11 +56,14 @@
 		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.23" />
 		<PackageReference Include="Microsoft.AspNetCore.Localization" Version="2.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.21" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.21" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.WebApiCompatShim" Version="2.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
 		<PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="6.0.21" />
 		<PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="6.0.21" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="6.0.29" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.1">
@@ -52,6 +72,7 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Caching.SqlServer" Version="8.0.6" />
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="6.0.21" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Identity.Core" Version="6.0.23" />
@@ -63,6 +84,7 @@
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="pythonnet" Version="3.0.3" />
 		<PackageReference Include="RazorPay.Core" Version="1.0.2" />
+		<PackageReference Include="StackExchange.Redis" Version="2.8.0" />
 		<PackageReference Include="Stripe.net" Version="44.13.0" />
 		<PackageReference Include="X.PagedList" Version="8.4.7" />
 		<PackageReference Include="X.PagedList.Mvc.Core" Version="8.4.7" />
@@ -76,6 +98,7 @@
 	<ItemGroup>
 	  <None Include="Areas\Admin\Views\FileManager\Index.cshtml" />
 	  <None Include="bundleconfig.json" />
+	  <None Include="Views\Shared\_Chatbot.cshtml" />
 	  <None Include="wwwroot\LayoutAdmin\Lte\dist\css\adminlte.css.map" />
 	  <None Include="wwwroot\LayoutAdmin\Lte\dist\css\adminlte.min.css.map" />
 	  <None Include="wwwroot\LayoutAdmin\Lte\dist\css\alt\adminlte.components.css.map" />
@@ -98,12 +121,6 @@
 	  <None Include="wwwroot\LayoutAdmin\Lte\dist\js\pages\dashboard.js" />
 	  <None Include="wwwroot\LayoutAdmin\Lte\dist\js\pages\dashboard2.js" />
 	  <None Include="wwwroot\LayoutAdmin\Lte\dist\js\pages\dashboard3.js" />
-	  <None Include="wwwroot\LayoutAdmin\Lte\plugins\bootstrap-colorpicker\css\bootstrap-colorpicker.css.map" />
-	  <None Include="wwwroot\LayoutAdmin\Lte\plugins\bootstrap-colorpicker\css\bootstrap-colorpicker.min.css.map" />
-	  <None Include="wwwroot\LayoutAdmin\Lte\plugins\bootstrap-colorpicker\js\bootstrap-colorpicker.js" />
-	  <None Include="wwwroot\LayoutAdmin\Lte\plugins\bootstrap-colorpicker\js\bootstrap-colorpicker.js.map" />
-	  <None Include="wwwroot\LayoutAdmin\Lte\plugins\bootstrap-colorpicker\js\bootstrap-colorpicker.min.js" />
-	  <None Include="wwwroot\LayoutAdmin\Lte\plugins\bootstrap-colorpicker\js\bootstrap-colorpicker.min.js.map" />
 	  <None Include="wwwroot\LayoutAdmin\Lte\plugins\bootstrap-slider\bootstrap-slider.js" />
 	  <None Include="wwwroot\LayoutAdmin\Lte\plugins\bootstrap-slider\bootstrap-slider.min.js" />
 	  <None Include="wwwroot\LayoutAdmin\Lte\plugins\bootstrap-switch\js\bootstrap-switch.js" />
@@ -1680,6 +1697,10 @@
 	  <EmbeddedResource Update="Resources\SharedResource.vi-VN.resx">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="Views\Shared\Components\_Chatbot.cshtml" />
 	</ItemGroup>
 
 </Project>
