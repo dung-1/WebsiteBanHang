@@ -115,9 +115,6 @@ namespace WebsiteBanHang
                 options.RequestCultureProviders.Insert(1, questStringCultureProvider);
             });
 
-            // Đăng ký SignalR
-            builder.Services.AddSignalR();
-
             // Cấu hình cho Stripe
             builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("StripeSettings"));
 
@@ -156,7 +153,9 @@ namespace WebsiteBanHang
                 options.AddDefaultPolicy(builder =>
                 {
                     builder.WithOrigins("http://www.dungcts_shoplaptop.com",
+                     "http://dungcts_shoplaptop.com",
                      "https://www.dungcts_shoplaptop.com",
+                     "https://dungcts_shoplaptop.com",
                      "http://localhost:5000",
                      "https://localhost:5001",
                      "http://localhost:59481",
@@ -190,6 +189,8 @@ namespace WebsiteBanHang
                 }));
 
             builder.Services.AddHangfireServer();
+            // Đăng ký SignalR
+            builder.Services.AddSignalR();
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())
@@ -205,7 +206,6 @@ namespace WebsiteBanHang
             app.UseHangfireDashboard();
             app.UseRouting();
             app.UseCors();
-
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseSession();

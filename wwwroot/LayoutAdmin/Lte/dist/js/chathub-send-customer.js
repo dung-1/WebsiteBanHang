@@ -1,5 +1,10 @@
 ﻿const Chatconnection = new signalR.HubConnectionBuilder()
-    .withUrl("/chathub")
+    .withUrl("/chathub", {
+        skipNegotiation: false,
+        transport: signalR.HttpTransportType.WebSockets |
+            signalR.HttpTransportType.ServerSentEvents |
+            signalR.HttpTransportType.LongPolling
+    })
     .withAutomaticReconnect()
     .configureLogging(signalR.LogLevel.Information)
     .build();

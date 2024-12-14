@@ -1,5 +1,10 @@
 ﻿// Khởi tạo kết nối SignalR
-var connection = new signalR.HubConnectionBuilder().withUrl("/notificationHub").build();
+var connection = new signalR.HubConnectionBuilder().withUrl("/notificationHub", {
+    skipNegotiation: false,
+    transport: signalR.HttpTransportType.WebSockets |
+        signalR.HttpTransportType.ServerSentEvents |
+        signalR.HttpTransportType.LongPolling
+}).build();
 
 // Xử lý sự kiện khi nhận được thông báo về đơn hàng mới
 connection.on("ReceiveOrderNotification", function (orderCode) {
